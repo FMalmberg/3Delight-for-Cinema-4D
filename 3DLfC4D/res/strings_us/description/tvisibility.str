@@ -1,0 +1,12 @@
+STRINGTABLE Tvisibility
+{
+	Tvisibility	"DL_CompositingTag";
+	SEEN_BY_CAMERA "Seen by camera";
+	SEEN_BY_DIFFUSE "Seen by diffuse";
+	SEEN_BY_REFLECTION "Seen by reflection";
+	SEEN_BY_REFRACTION "Seen by refraction";
+	SEEN_BY_HAIR "Seen by hair";
+	SEEN_BY_SHADOW "Seen by shadows";
+	SEEN_BY_VOLUME "Seen by volumes";
+	MATTE_OBJECT "Matte";
+}

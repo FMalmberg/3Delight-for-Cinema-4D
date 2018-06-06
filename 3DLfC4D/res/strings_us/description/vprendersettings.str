@@ -1,0 +1,55 @@
+STRINGTABLE vprendersettings
+{
+	vprendersettings			"3Delight";
+
+	DL_GROUP_QUALITY			"Quality";
+	DL_GENERAL_MODE			"Render mode";
+	DL_MODE_SCANLINE			"REYES";
+	DL_MODE_RAYTRACER		"Raytracer";
+	DL_MODE_PROGRESSIVE		"Raytracer (Progressive)";
+
+	DL_GROUP_QUALITY			"Quality";
+	DL_SHADINGRATE			"Shading rate";
+	DL_PIXELSAMPLES			"Pixel samples";
+	DL_PIXELFILTER			"Pixel filter";
+	DL_FILTERWIDTH			"Filter width";
+	DL_FILTER_BOX 			"Box";
+	DL_FILTER_TRIANGLE		"Triangle";
+	DL_FILTER_CATMULL_ROM		"Catmull-Rom";
+	DL_FILTER_MITCHELL		"Mitchell";
+	DL_FILTER_BLACKMANN_HARRIS	"Blackmann-Harris";
+	DL_FILTER_BESSEL		"Bessel";
+	DL_FILTER_SINC 			"Sinc";
+	DL_FILTER_GAUSSIAN		"Gaussian";
+
+	DL_GROUP_CAMERA			"Camera";
+	DL_USE_MOTION_BLUR		"Render motion blur";
+	DL_MOTION_SAMPLES 		"Motion samples";
+	DL_TRANSFORMATION_SAMPLES	"Transformation samples";
+	DL_DEFORMATION_SAMPLES	"Deformation samples";
+	DL_SHUTTER_ANGLE			"Shutter angle";
+	DL_SHUTTER_OPENING_EFFICIENCY		"Shutter opening efficiency";
+	DL_SHUTTER_CLOSING_EFFICIENCY		"Shutter closing efficiency";
+
+	DL_GROUP_OUTPUT			"Output";
+	DL_RENDERMODE			"Render mode";
+	DL_MODE_DIRECT			"Render";
+	DL_MODE_STREAM			"Export NSI stream";
+	DL_SHOW_IMAGE			"Show in iDisplay";
+	DL_SAVE_IMAGE			"";
+	DL_OUTPUTFILE			"NSI Stream Path";
+	DL_RIBOUT			"RIB out";
+
+	DL_GROUP_RAYTRACING		"Illumination";
+	DL_MAX_SAMPLES			"Max Samples";
+	DL_MIN_SAMPLES			"Min Samples";
+	DL_SHADING_SAMPLES		"Shading Samples";
+	DL_MAX_SPECULAR_DEPTH	"Max Specular Depth";
+	DL_MAX_REFLECTION_DEPTH	"Max Reflection Depth";
+	DL_MAX_REFRACTION_DEPTH	"Max Refraction Depth";
+	DL_MAX_DIFFUSE_DEPTH	"Max Diffuse Depth";
+	DL_TRACE_BIAS			"Ray Bias";
+	DL_RAYCACHE				"Use Raycache";
+	DL_GROUP_LWF			"Color management";
+	DL_GAMMA				"Monitor gamma";
+}

@@ -1,0 +1,12 @@
+STRINGTABLE Tcamera
+{
+	Tcamera		"DL_CameraProperties";
+	SHUTTER_ANGLE			"Shutter angle";
+	SHUTTER_OPENING_EFFICIENCY		"Shutter opening efficiency";
+	SHUTTER_CLOSING_EFFICIENCY		"Shutter closing efficiency";
+	ENABLE_DOF "Enable depth of field";
+	F_STOP	"F-stop";
+	FINITE_BLADES "Use finite number of blades";
+	NUMBER_OF_BLADES "Number of blades";
+	ROTATION "Rotation";
+}

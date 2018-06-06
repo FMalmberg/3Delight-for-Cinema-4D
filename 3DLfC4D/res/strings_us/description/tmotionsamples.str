@@ -1,0 +1,8 @@
+STRINGTABLE Tmotionsamples
+{
+	Tmotionsamples	"DL_MotionblurTag";
+	USE_TRANSFORMATION_BLUR "Transformation blur";
+	TRANSFORMATION_EXTRA_SAMPLES "Extra samples";
+	USE_DEFORMATION_BLUR "Deformation blur";
+	DEFORMATION_EXTRA_SAMPLES	"Extra samples";
+}

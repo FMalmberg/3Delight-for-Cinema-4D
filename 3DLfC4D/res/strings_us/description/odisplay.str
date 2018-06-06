@@ -1,0 +1,19 @@
+STRINGTABLE Odisplay
+{
+	Odisplay "DL_Output";
+
+	DISPLAY_GROUP		"Output";
+	FILENAME		"Filename";
+	DRIVER			"File format";
+	DRIVER_TIFF		"TIFF";
+	DRIVER_EXR		"OpenEXR";
+	PATH			"Save directory";
+	LAYERS			"Image layers";
+	VARIABLE		"Variable";
+	DEPTH			"Bit Depth";
+	DEPTH_8			"8-bit";
+	DEPTH_16		"16-bit";
+	DEPTH_32		"32-bit";
+	LIGHTS			"Lights";
+	
+}
