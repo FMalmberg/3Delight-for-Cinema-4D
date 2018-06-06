@@ -1,0 +1,15 @@
+STRINGTABLE Mdelightmaterial
+{
+	Mdelightmaterial	"3Delight Material";
+
+	MATERIAL_COLOR	"Color";
+	SURFACE_PAGE "Surface";
+	GROUP_SURFACE "Surface";
+	SURFACE_LINK  "Surface shader";
+	DISPLACEMENT_PAGE "Displacement";
+	GROUP_DISPLACEMENT "Displacement";
+	DISPLACEMENT_LINK "Displacement shader";
+	DISPLACEMENT_BOUND "Displacement bound";
+	GROUP_EDITOR 	"Editor";
+	EDITOR_COLOR	"Color";
+}

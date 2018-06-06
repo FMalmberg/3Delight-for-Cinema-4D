@@ -1,0 +1,11 @@
+STRINGTABLE Oenvironmentlight
+{
+	Oenvironmentlight "Environment";
+
+	ENVIRONMENT_TEXTURE		"Texture";
+	ENVIRONMENT_INTENSITY	"Intensity";
+	ENVIRONMENT_TINT	"Tint";			
+	ENVIRONMENT_EXPOSURE	"Exposure";
+	ENVIRONMENT_SEEN_BY_CAMERA "Seen by camera";
+	ENVIRONMENT_ANGLE	"Angle";	
+}

@@ -1,0 +1,12 @@
+STRINGTABLE Oblendmaterial
+{
+	Oblendmaterial "Blend Material";
+
+	SHADER_GROUP			"Shader properties";
+	SHADER_A			"Shader A";
+	BLEND_STRENGTH			"Mix";
+	BLEND_STRENGTH_SHADER		" ";
+	SHADER_B			"Shader B";
+	
+	
+}

@@ -1,0 +1,7 @@
+STRINGTABLE Tshader
+{
+	Tshader			"ShaderNetwork";
+	SURFACE_LINK		"Surface";
+	DISPLACEMENT_LINK	"Displacement";
+	DISPLACEMENT_BOUND	"Displacement bound";
+}

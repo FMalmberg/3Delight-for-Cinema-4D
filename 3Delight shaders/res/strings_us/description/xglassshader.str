@@ -1,0 +1,16 @@
+STRINGTABLE Xglassshader
+{
+	Xglassshader "Glass";
+
+	SHADER_GROUP			"Shader properties";
+	REFLECTION_COLOR		"Reflection color";
+	REFRACTION_COLOR		"Refraction color";
+	ROUGHNESS				"Roughness";
+	ROUGHNESS_SHADER		"Texture";
+	IOR						"IOR";
+	MODE					"Transparency mode";
+	MODE_REFRACTION			"Refraction";
+	MODE_OPACITY			"Opacity";
+	TINT				"Tint";
+	
+}

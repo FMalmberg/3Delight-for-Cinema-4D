@@ -1,0 +1,10 @@
+STRINGTABLE Xtextureshader
+{
+	Xtextureshader "Texture";
+
+	Otexture "Texture";
+
+	TEXTURE_GROUP			"Texture";
+	TEXTURE_FILE			"Texture file";
+	
+}

@@ -1,0 +1,16 @@
+STRINGTABLE Olightcard
+{
+	Olightcard "Arealight";
+
+	LIGHTCARD_WIDTH		"Width";
+	LIGHTCARD_HEIGHT		"Height";
+	LIGHTCARD_COLOR		"Tint";
+	LIGHTCARD_INTENSITY	"Intensity";
+	LIGHTCARD_SAMPLES	"Samples";
+	LIGHTCARD_TEXTURE	"Texture";
+	LIGHTCARD_ALPHA		"Alpha";
+	LIGHTCARD_EXPOSURE	"Exposure";
+	LIGHTCARD_SPREAD	"Spread";
+	LIGHTCARD_SEEN_BY_CAMERA	"Seen by camera";
+	
+}

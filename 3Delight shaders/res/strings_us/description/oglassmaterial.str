@@ -1,0 +1,13 @@
+STRINGTABLE Oglassmaterial
+{
+	Oglassmaterial "Glass Material";
+
+	SHADER_GROUP			"Shader properties";
+	REFLECTION_COLOR		"Reflection color";
+	REFRACTION_COLOR		"Refraction color";
+	ROUGHNESS				"Roughness";
+	ROUGHNESS_SHADER		" ";
+	IOR						"IOR";
+	TINT				"Tint";
+	
+}

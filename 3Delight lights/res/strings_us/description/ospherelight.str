@@ -1,0 +1,9 @@
+STRINGTABLE Ospherelight
+{
+	Ospherelight "Pointlight";
+
+	SPHERELIGHT_RADIUS	"Radius";
+	SPHERELIGHT_COLOR		"Color";
+	SPHERELIGHT_INTENSITY	"Intensity";
+	
+}

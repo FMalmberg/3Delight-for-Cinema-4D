@@ -1,0 +1,13 @@
+surface EnvLight(float intensity=1, color tint=1, string texname="") {
+	 color tex_col=1;
+	  if(texname!=""){
+		vector wi=I;
+		float longitude = atan2(-wi[2], -wi[0]);
+		float latitude = asin(-wi[1]);
+		float s = (longitude + M_PI) / M_2PI;
+		float t = 1-((latitude + M_PI_2) / M_PI);
+		tex_col=texture(texname, s,t);
+	}
+	 Ci =  intensity * tint *tex_col* emission();
+	
+}
