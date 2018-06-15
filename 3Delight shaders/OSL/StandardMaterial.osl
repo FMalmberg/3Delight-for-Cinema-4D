@@ -1,0 +1,90 @@
+//-------------------------------------
+//Norrsken standard osl material
+//Filip Malmberg 2017
+//-------------------------------------
+
+//Helper functions
+float eta_from_intensity( float x )
+{
+	if( x >= 1 )
+	{
+		/* perfect mirror */
+		return 500;
+	}
+
+	float T = sqrt( x );
+	return (T+1) / (1-T);
+}
+
+float rgb_to_float(color c){
+	return (c[0]+c[1]+c[2])/3.0;
+}
+
+
+shader StandardMaterial(	
+	int coating_on=0,
+	color coating_color=1,
+	float coating_roughness=0.1,
+	float coating_fresnel_reflectance=0.1,
+	color diffuse_color=1,
+	float diffuse_weight=0.8,
+	float diffuse_roughness=0,
+	color specular_color=1,
+	float specular_weight=0.2,
+	float specular_roughness=0.1,
+	float specular_fresnel_reflectance=1,
+	float specular_anisotropy=0,
+	color anisotropy_direction=color(1,0,0),
+	int emission_on=0,
+	float emission_weight=1,
+	color emission_color=1,
+	output float f_out=0,
+	output color c_out=0,
+	output closure color bsdf_out=0
+	)
+{
+	
+	vector Nn=normalize(N);
+	vector In=normalize(I);
+	
+	//Diffuse component
+	bsdf_out=diffuse_color*diffuse_weight*oren_nayar(N, diffuse_roughness);
+	
+	//Specular component
+	float specular_eta=eta_from_intensity(specular_fresnel_reflectance);
+	float xalpha=pow(specular_roughness,1.5);
+	float yalpha=pow(specular_roughness,1.5);
+	float anisotropy=1;
+	if(specular_anisotropy!=0){
+		anisotropy=1/(1+0.75*abs(specular_anisotropy));
+		if(specular_anisotropy<0){
+			anisotropy=1/anisotropy;
+		}
+	}
+	xalpha=xalpha*anisotropy;
+	yalpha=yalpha/anisotropy;
+	xalpha=max(xalpha,0.001);
+	yalpha=max(yalpha,0.001);
+	float u_x=anisotropy_direction[0]-0.5;
+	float u_y=anisotropy_direction[1]-0.5;
+	float u_z=anisotropy_direction[2]-0.5;
+	
+	vector U=vector("object", u_x,u_y,u_z); 	
+	U=normalize(U);
+	bsdf_out+=specular_color*specular_weight*microfacet("cooktorrance", N,U, xalpha,yalpha, specular_eta, 0);
+
+	//Emission component
+	bsdf_out+=emission_on*emission_color*emission_weight*emission();
+
+	//coating component
+	if(coating_on==1){
+	
+		float coating_eta=eta_from_intensity(coating_fresnel_reflectance);
+		float Kr,Kt;
+		vector R,T;
+		fresnel (In, Nn, 1/coating_eta,Kr, Kt);
+		float coating_alpha=max(coating_roughness,0.001);
+		
+		bsdf_out=Kt*bsdf_out+coating_color*microfacet("cooktorrance", N, pow(coating_alpha,1.5), coating_eta, 0);
+	}
+}

@@ -1,0 +1,34 @@
+//-------------------------------------
+//3DlfC4D texture material
+//Filip Malmberg 2018
+//-------------------------------------
+
+
+float rgb_to_float(color c){
+	return (c[0]+c[1]+c[2])/3.0;
+}
+
+
+shader Texture(	
+	string texname="",
+	output float f_out=0,
+	output color c_out=0,
+	output closure color bsdf_out=0
+	)
+{
+	float st[2];
+	getattribute("st",st);
+	if(texname!=""){
+		c_out=texture(texname, st[0],st[1]);
+		
+		int nchannels=3;
+		gettextureinfo (texname, "channels" ,nchannels);
+		if(nchannels<3){
+			c_out[1]=c_out[0];
+			c_out[2]=c_out[0];
+		}
+		
+		f_out=rgb_to_float(c_out);
+		bsdf_out=c_out*emission();
+	}
+}

@@ -1,0 +1,41 @@
+//-------------------------------------
+//Norrsken glass osl material
+//Filip Malmberg 2017
+//-------------------------------------
+
+
+float rgb_to_float(color c){
+	return (c[0]+c[1]+c[2])/3.0;
+}
+
+
+shader GlassMaterial(	
+	color tint=1,
+	color reflection_color=1,
+	color refraction_color=1,
+	float roughness=0.1,
+	int use_refraction=1,
+	float ior = 1.2,
+	output float f_out=0,
+	output color c_out=0,
+	output closure color bsdf_out=0
+	)
+{
+	
+	vector Nn=normalize(N);
+	vector In=normalize(I);
+	
+	//Reflection component
+	bsdf_out=reflection_color*microfacet("cooktorrance", N, pow(roughness,1.5), ior, 0);
+	
+	//Refraction component
+	float Kr,Kt;
+	fresnel (In, Nn, 1/ior,Kr, Kt);
+	if(use_refraction==1){	
+		bsdf_out+=Kt*refraction_color*microfacet("ggx", N, pow(roughness,1.5), ior, 1);
+	}
+	else{
+		bsdf_out+=Kt*refraction_color*transparent();
+	}
+	
+}

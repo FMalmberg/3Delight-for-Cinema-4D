@@ -1,0 +1,16 @@
+//-------------------------------------
+//3DLfC4D displacement shader
+//Filip Malmberg 2018
+//-------------------------------------
+
+displacement NormalDisplacement(
+	float height=0,
+	float strength=1,
+	float scalarzero=0
+)
+{
+	vector Nn=normalize(N);
+	P=P+height*(strength-scalarzero)*point(N);
+	N=calculatenormal(P);
+
+}

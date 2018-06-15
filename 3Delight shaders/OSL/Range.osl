@@ -1,0 +1,32 @@
+//-------------------------------------
+//3DLfC4d Range shader
+//Filip Malmberg 2018
+//-------------------------------------
+
+
+float rgb_to_float(color c){
+	return (c[0]+c[1]+c[2])/3.0;
+}
+
+
+shader Range(	
+	color c_in=1,
+	float f_in=1,
+	float in_min=0,
+	float in_max=1,
+	float out_min=0,
+	float out_max=1,
+	output float f_out=0,
+	output color c_out=0,
+	output closure color bsdf_out=0
+	)
+{
+	c_out=(1.0/(in_max-in_min))*c_in-in_min;
+	c_out=(out_max-out_min)*c_out+out_min;
+	
+	f_out=(1.0/(in_max-in_min))*f_in-in_min;
+	f_out=(out_max-out_min)*f_out+out_min;
+
+	bsdf_out=c_out*emission();
+
+}
