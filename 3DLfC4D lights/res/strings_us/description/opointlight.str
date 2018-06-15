@@ -1,0 +1,12 @@
+STRINGTABLE Opointlight
+{
+	Opointlight "DL_Pointlight";
+	
+	POINTLIGHT_COLOR		"Tint";
+	POINTLIGHT_INTENSITY	"Intensity";
+	POINTLIGHT_EXPOSURE		"Exposure";	
+	POINTLIGHT_RADIUS	"Radius";
+	POINTLIGHT_SEEN_BY_CAMERA	"Seen by camera";
+	
+	
+}

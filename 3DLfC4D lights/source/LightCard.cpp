@@ -26,7 +26,7 @@ Bool LightCard::Init(GeListNode* node){
 	data->SetFloat(LIGHTCARD_INTENSITY,1.0);
 	data->SetFloat(LIGHTCARD_EXPOSURE,0.0);
 	data->SetFloat(LIGHTCARD_SPREAD,1.0);
-	data->SetInt32(LIGHTCARD_SAMPLES,32);
+	//data->SetInt32(LIGHTCARD_SAMPLES,32);
 	return true;
 }
 
