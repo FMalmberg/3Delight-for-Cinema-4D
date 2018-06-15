@@ -44,11 +44,11 @@ Bool StandardShader::Init(GeListNode* node)
 	data->SetVector(EMISSION_COLOR, Vector(1, 1, 1));
 
 	//Refraction default values
-	data->SetBool(REFRACTION_ON, false);
-	data->SetFloat(REFRACTION_WEIGHT, 1.0);
-	data->SetVector(REFRACTION_COLOR, Vector(1, 1, 1));
-	data->SetFloat(REFRACTION_ROUGHNESS, 0.05);
-	data->SetFloat(REFRACTION_IOR, 1.5);
+	//data->SetBool(REFRACTION_ON, false);
+	//data->SetFloat(REFRACTION_WEIGHT, 1.0);
+	//data->SetVector(REFRACTION_COLOR, Vector(1, 1, 1));
+	//data->SetFloat(REFRACTION_ROUGHNESS, 0.05);
+	//data->SetFloat(REFRACTION_IOR, 1.5);
 
 	return true;
 }

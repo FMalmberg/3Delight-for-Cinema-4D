@@ -7,7 +7,7 @@
 
 void TextureTranslator::CreateNSINodes(const char* ParentTransformHandle, GeListNode* C4DNode, BaseDocument* doc, DL_SceneParser* parser){
 	NSI::Context ctx(parser->GetContext());
-	
+
 	//Create the shader node
 	string shader_handle=string(parser->GetUniqueName("texture"));
 	ctx.Create(shader_handle, "shader");

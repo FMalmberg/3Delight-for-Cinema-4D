@@ -6,11 +6,14 @@
 #include "DL_API.h"
 
 #include "ShaderSettingsHook.h"
+#include "TextureTagTranslator.h"
 #include "TextureTranslator.h"
 #include "DL_material_translator.h"
 #include "StandardShaderTranslator.h"
 #include "TextureShaderTranslator.h"
 #include "GlassShaderTranslator.h"
+#include "NormalDisplacementTranslator.h"
+#include "RangeTranslator.h"
 
 #include "IDs.h"
 
@@ -18,12 +21,16 @@
 Bool RegisterDLMaterial(void);
 Bool RegisterStandardShader(void);
 Bool RegisterGlassShader(void);
+Bool RegisterNormalDisplacementShader(void);
+Bool RegisterRangeShader(void);
 
 Bool PluginStart(void)
 {
 	if (!RegisterDLMaterial()) return FALSE;
 	if (!RegisterStandardShader()) return FALSE;
 	if(!RegisterGlassShader()) return FALSE;
+	if (!RegisterNormalDisplacementShader()) return FALSE;
+	if (!RegisterRangeShader()) return FALSE;
 	return true;
 }
 
@@ -48,8 +55,11 @@ Bool PluginMessage(Int32 id, void *data)
 		pm->RegisterTranslator(ID_STANDARDSHADER, AllocateTranslator<StandardShaderTranslator>);
 		pm->RegisterTranslator(ID_TEXTURESHADER, AllocateTranslator<TextureShaderTranslator>);
 		pm->RegisterTranslator(ID_GLASSSHADER, AllocateTranslator<GlassShaderTranslator>);
+		pm->RegisterTranslator(ID_NORMALDISPLACEMENTSHADER, AllocateTranslator<NormalDisplacementTranslator>);
+		pm->RegisterTranslator(ID_RANGESHADER, AllocateTranslator<RangeTranslator>);
 		pm->RegisterTranslator(Xbitmap, AllocateTranslator<TextureTranslator>);
-		
+		pm->RegisterTranslator(Ttexture, AllocateTranslator<TextureTagTranslator>);
+
 		break;
 
 	}

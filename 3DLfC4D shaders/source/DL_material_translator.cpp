@@ -36,7 +36,20 @@ void DL_material_translator::ConnectNSINodes(GeListNode* C4DNode, BaseDocument* 
 	if (surface_shader){
 		string surface_handle = string(parser->GetAssociatedHandle(surface_shader));
 		if (surface_handle != ""){
-			ctx.Connect(surface_handle, "", attributes_handle, "surfaceshader");
+			//Create root shader node
+			string root_handle = string(parser->GetUniqueName("root_surface"));
+			ctx.Create(root_handle, "shader");
+
+			//Root shader file path
+			Filename shaderpath = Filename(GeGetPluginPath() + Filename("OSL") + Filename("RootSurface.oso"));
+			vector<char> c_shaderpath = StringToChars(shaderpath.GetString());
+
+			ctx.SetAttribute(root_handle, (
+				NSI::StringArg("shaderfilename", std::string(&c_shaderpath[0]))
+				));
+			
+			ctx.Connect(surface_handle, "bsdf_out", root_handle, "cl_in");
+			ctx.Connect(root_handle, "", attributes_handle, "surfaceshader");
 		}
 	}
 
