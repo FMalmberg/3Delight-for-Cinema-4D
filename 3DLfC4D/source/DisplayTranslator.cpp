@@ -8,8 +8,7 @@
 #include <customgui_inexclude.h>
 
 void DisplayTranslator::CreateNSINodes(const char* ParentTransformHandle, GeListNode* C4DNode, BaseDocument* doc, DL_SceneParser* parser){
-	
-	if (parser->GetRenderMode() != FINAL_RENDER){
+	if (parser->GetRenderMode() != FINAL_RENDER){ //Don't output AOVs for preview render
 		return;
 	}
 	NSI::Context ctx(parser->GetContext());
@@ -81,7 +80,7 @@ void DisplayTranslator::CreateNSINodes(const char* ParentTransformHandle, GeList
 }
 
 void DisplayTranslator::ConnectNSINodes(GeListNode* C4DNode, BaseDocument* doc,DL_SceneParser* parser){
-	if (parser->GetRenderMode() != FINAL_RENDER){
+	if (parser->GetRenderMode() != FINAL_RENDER){ //Don't output AOVs for preview render
 		return;
 	}
 
