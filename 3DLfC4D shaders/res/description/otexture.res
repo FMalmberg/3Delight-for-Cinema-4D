@@ -1,0 +1,14 @@
+CONTAINER Otexture
+{
+	NAME Otexture;
+	INCLUDE Obase;
+
+	GROUP TEXTURE_GROUP
+	{
+		DEFAULT 1;
+		FILENAME TEXTURE_FILE {ANIM OFF;}
+		
+		
+	}
+	
+}

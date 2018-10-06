@@ -1,0 +1,33 @@
+﻿Build started 2018-10-06 10:18:15.
+     1>Project "C:\Program Files\MAXON\CINEMA 4D R17\plugins\3DlfC4D\cinema4dsdk.vcxproj" on node 2 (Build target(s)).
+     1>ClCompile:
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\x86_amd64\CL.exe /c /IC:\Users\Filip\Documents\Development\boost_1_66_0 /I"C:\Program Files\3Delight\include" /I.\API\include /I./source /I./res /I./res/description /I..\../frameworks/cinema.framework/source /I..\../frameworks/cinema.framework/source/c4d_customgui /I..\../frameworks/cinema.framework/source/c4d_gv /I..\../frameworks/cinema.framework/source/c4d_libs /I..\../frameworks/cinema.framework/source/c4d_misc /I..\../frameworks/cinema.framework/source/c4d_misc/datastructures /I..\../frameworks/cinema.framework/source/c4d_misc/memory /I..\../frameworks/cinema.framework/source/c4d_misc/utilities /I..\../frameworks/cinema.framework/source/c4d_preview /I..\../frameworks/cinema.framework/source/c4d_scaling /I..\../frameworks/cinema.framework/source/description /I..\..\_bin\resource\descriptions\res /I..\precompiled /Zi /nologo /W2 /WX- /MP /Ox /Ob2 /Oi /Ot /Oy- /D MAXON_TARGET_RELEASE /D NDEBUG /D _CONSOLE /D MAXON_TARGET_WINDOWS /D _WINDOWS /D __PC /D _CRT_SECURE_NO_WARNINGS /D PSAPI_VERSION=1 /D MAXON_TARGET_64BIT /D __64BIT /D _WIN64 /D _WINDLL /D _UNICODE /D UNICODE /GF /Gm- /MD /GS- /Gy- /fp:precise /Zc:wchar_t /Zc:forScope /Fo"C:\Program Files\MAXON\CINEMA 4D R17\plugins\3DlfC4D\_obj\3DLfC4D\x64_Release\\" /Fd"C:\Program Files\MAXON\CINEMA 4D R17\plugins\3DlfC4D\_obj\3DLfC4D\x64_Release\vc_3DLfC4D.pdb" /Gd /TP /wd4625 /wd4061 /wd4062 /wd4100 /wd4127 /wd4131 /wd4191 /wd4296 /wd4324 /wd4350 /wd4351 /wd4355 /wd4365 /wd4371 /wd4514 /wd4519 /wd4530 /wd4548 /wd4574 /wd4611 /wd4623 /wd4625 /wd4626 /wd4640 /wd4668 /wd4710 /wd4711 /wd4714 /wd4738 /wd4820 /wd4826 /wd4917 /wd4928 /wd4946 /FC /errorReport:prompt /bigobj /vmg /vms source\RenderSettings.cpp source\main.cpp
+         RenderSettings.cpp
+         main.cpp
+       Link:
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\x86_amd64\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Program Files\MAXON\CINEMA 4D R17\plugins\3DlfC4D\3DLfC4D.cdl64" /NOLOGO /LIBPATH:"C:\Program Files\3Delight\lib" 3Delight.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:\Program Files\MAXON\CINEMA 4D R17\plugins\3DlfC4D\_obj\3DLfC4D\x64_Release\3DLfC4D.pdb" /SUBSYSTEM:CONSOLE /OPT:REF /TLBID:1 /DYNAMICBASE /FIXED:NO /NXCOMPAT /IMPLIB:"C:\Program Files\MAXON\CINEMA 4D R17\plugins\3DlfC4D\_obj\3DLfC4D\x64_Release\3DLfC4D.cdl64.lib" /MACHINE:X64 /DLL "C:\Program Files\MAXON\CINEMA 4D R17\plugins\3DlfC4D\_obj\3DLfC4D\x64_Release\BitmapDisplayDriver.obj"
+         "C:\Program Files\MAXON\CINEMA 4D R17\plugins\3DlfC4D\_obj\3DLfC4D\x64_Release\CameraHook.obj"
+         "C:\Program Files\MAXON\CINEMA 4D R17\plugins\3DlfC4D\_obj\3DLfC4D\x64_Release\CameraTag.obj"
+         "C:\Program Files\MAXON\CINEMA 4D R17\plugins\3DlfC4D\_obj\3DLfC4D\x64_Release\Display.obj"
+         "C:\Program Files\MAXON\CINEMA 4D R17\plugins\3DlfC4D\_obj\3DLfC4D\x64_Release\DisplayTranslator.obj"
+         "C:\Program Files\MAXON\CINEMA 4D R17\plugins\3DlfC4D\_obj\3DLfC4D\x64_Release\main.obj"
+         "C:\Program Files\MAXON\CINEMA 4D R17\plugins\3DlfC4D\_obj\3DLfC4D\x64_Release\MotionBlurTag.obj"
+         "C:\Program Files\MAXON\CINEMA 4D R17\plugins\3DlfC4D\_obj\3DLfC4D\x64_Release\Node.obj"
+         "C:\Program Files\MAXON\CINEMA 4D R17\plugins\3DlfC4D\_obj\3DLfC4D\x64_Release\DL_Render.obj"
+         "C:\Program Files\MAXON\CINEMA 4D R17\plugins\3DlfC4D\_obj\3DLfC4D\x64_Release\PluginManager.obj"
+         "C:\Program Files\MAXON\CINEMA 4D R17\plugins\3DlfC4D\_obj\3DLfC4D\x64_Release\RenderFrame.obj"
+         "C:\Program Files\MAXON\CINEMA 4D R17\plugins\3DlfC4D\_obj\3DLfC4D\x64_Release\RenderOptionsHook.obj"
+         "C:\Program Files\MAXON\CINEMA 4D R17\plugins\3DlfC4D\_obj\3DLfC4D\x64_Release\RenderSequence.obj"
+         "C:\Program Files\MAXON\CINEMA 4D R17\plugins\3DlfC4D\_obj\3DLfC4D\x64_Release\RenderSettings.obj"
+         "C:\Program Files\MAXON\CINEMA 4D R17\plugins\3DlfC4D\_obj\3DLfC4D\x64_Release\SceneParser.obj"
+         "C:\Program Files\MAXON\CINEMA 4D R17\plugins\3DlfC4D\_obj\3DLfC4D\x64_Release\Transform.obj"
+         "C:\Program Files\MAXON\CINEMA 4D R17\plugins\3DlfC4D\_obj\3DLfC4D\x64_Release\VisibilityTag.obj"
+         "C:\Program Files\MAXON\CINEMA 4D R17\plugins\3DlfC4D\_obj\3DLfC4D\x64_Release\VisibilityTagTranslator.obj"
+         "C:\Program Files\MAXON\CINEMA 4D R17\plugins\3DlfC4D\_obj\cinema.framework\x64_Release\cinema.framework_Release_64bit.lib"
+            Creating library C:\Program Files\MAXON\CINEMA 4D R17\plugins\3DlfC4D\_obj\3DLfC4D\x64_Release\3DLfC4D.cdl64.lib and object C:\Program Files\MAXON\CINEMA 4D R17\plugins\3DlfC4D\_obj\3DLfC4D\x64_Release\3DLfC4D.cdl64.exp
+         cinema4dsdk.vcxproj -> C:\Program Files\MAXON\CINEMA 4D R17\plugins\3DlfC4D\3DLfC4D.cdl64
+     1>Done Building Project "C:\Program Files\MAXON\CINEMA 4D R17\plugins\3DlfC4D\cinema4dsdk.vcxproj" (Build target(s)).
+
+Build succeeded.
+
+Time Elapsed 00:00:03.96

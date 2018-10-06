@@ -9,6 +9,7 @@
 void RenderOptionsHook::CreateNSINodes(BaseDocument* doc, DL_SceneParser* parser){
 	NSI::Context ctx(parser->GetContext());
 
+
 	BaseContainer* settings=parser->GetSettings();
 	int shading_samples=settings->GetInt32(DL_SHADING_SAMPLES,16);
 
@@ -44,7 +45,22 @@ void RenderOptionsHook::CreateNSINodes(BaseDocument* doc, DL_SceneParser* parser
 		NSI::StringArg("filter", "gaussian")
 		));
 
-	driver_handle=string(parser->GetUniqueName("outputdriver"));
+	BaseBitmap* bmp = BaseBitmap::Alloc();
+	//GePrint(String::IntToString((int)bmp));
+	//bmp->Init(256, 256);
+	//ShowBitmap(bmp);
+
+
+	//bitmapdriver_handle=string(parser->GetUniqueName("bitmapdriver"));
+
+	//ctx.Create(bitmapdriver_handle, "outputdriver");
+	/*ctx.SetAttribute(bitmapdriver_handle, (
+		NSI::StringArg("drivername", "C4D_bitmap"),
+		NSI::StringArg("imagefilename", "bitmap_output"),
+		NSI::PointerArg("BaseBitmap", (void*)bmp)
+		));*/
+
+	driver_handle = string(parser->GetUniqueName("outputdriver"));
 
 	ctx.Create(driver_handle, "outputdriver");
 	ctx.SetAttribute(driver_handle, (
@@ -54,6 +70,7 @@ void RenderOptionsHook::CreateNSINodes(BaseDocument* doc, DL_SceneParser* parser
 
 
 	ctx.Connect(driver_handle, "",layer_handle, "outputdrivers");
+	//ctx.Connect(bitmapdriver_handle, "", layer_handle, "outputdrivers");
 }
 
 void RenderOptionsHook::ConnectNSINodes(BaseDocument* doc, DL_SceneParser* parser){

@@ -1,0 +1,11 @@
+STRINGTABLE Xnormaldisplacementshader
+{
+	Xnormaldisplacementshader "DL_NormalDisplacement";
+
+	DISPLACEMENT_GROUP		"Displacement";
+	DISPLACEMENT_HEIGHT		"Height";
+	DISPLACEMENT_STRENGTH		"Strength";
+	DISPLACEMENT_STRENGTH_SHADER	"Texture";
+	DISPLACEMENT_SCALARZERO		"Scalar zero value";
+	
+}

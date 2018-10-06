@@ -1,0 +1,54 @@
+OpenShadingLanguage 1.00
+# Compiled by oslc 1.10.0dev
+# options: 
+shader Range
+param	color	c_in	1 1 1		%read{2,2} %write{2147483647,-1}
+param	float	f_in	1		%read{9,9} %write{2147483647,-1}
+param	float	in_min	0		%read{0,10} %write{2147483647,-1}
+param	float	in_max	1		%read{0,7} %write{2147483647,-1}
+param	float	out_min	0		%read{4,13} %write{2147483647,-1}
+param	float	out_max	1		%read{4,11} %write{2147483647,-1}
+oparam	float	f_out	0		%read{12,12} %write{10,13}
+oparam	color	c_out	0 0 0		%read{5,15} %write{3,6}
+oparam	closure color	bsdf_out			%read{2147483647,-1} %write{15,15}
+const	float	$const1	1		%read{1,8} %write{2147483647,-1}
+temp	float	$tmp1	%read{1,1} %write{0,0}
+temp	float	$tmp2	%read{2,2} %write{1,1}
+temp	color	$tmp3	%read{3,3} %write{2,2}
+temp	float	$tmp4	%read{5,5} %write{4,4}
+temp	color	$tmp5	%read{6,6} %write{5,5}
+temp	float	$tmp6	%read{8,8} %write{7,7}
+temp	float	$tmp7	%read{9,9} %write{8,8}
+temp	float	$tmp8	%read{10,10} %write{9,9}
+temp	float	$tmp9	%read{12,12} %write{11,11}
+temp	float	$tmp10	%read{13,13} %write{12,12}
+temp	closure color	$tmp11	%read{15,15} %write{14,14}
+const	string	$const2	"emission"		%read{14,14} %write{2147483647,-1}
+code ___main___
+# Range.osl:24
+# 	c_out=(1.0/(in_max-in_min))*c_in-in_min;
+	sub		$tmp1 in_max in_min 	%filename{"Range.osl"} %line{24} %argrw{"wrr"}
+	div		$tmp2 $const1 $tmp1 	%argrw{"wrr"}
+	mul		$tmp3 $tmp2 c_in 	%argrw{"wrr"}
+	sub		c_out $tmp3 in_min 	%argrw{"wrr"}
+# Range.osl:25
+# 	c_out=(out_max-out_min)*c_out+out_min;
+	sub		$tmp4 out_max out_min 	%line{25} %argrw{"wrr"}
+	mul		$tmp5 $tmp4 c_out 	%argrw{"wrr"}
+	add		c_out $tmp5 out_min 	%argrw{"wrr"}
+# Range.osl:27
+# 	f_out=(1.0/(in_max-in_min))*f_in-in_min;
+	sub		$tmp6 in_max in_min 	%line{27} %argrw{"wrr"}
+	div		$tmp7 $const1 $tmp6 	%argrw{"wrr"}
+	mul		$tmp8 $tmp7 f_in 	%argrw{"wrr"}
+	sub		f_out $tmp8 in_min 	%argrw{"wrr"}
+# Range.osl:28
+# 	f_out=(out_max-out_min)*f_out+out_min;
+	sub		$tmp9 out_max out_min 	%line{28} %argrw{"wrr"}
+	mul		$tmp10 $tmp9 f_out 	%argrw{"wrr"}
+	add		f_out $tmp10 out_min 	%argrw{"wrr"}
+# Range.osl:30
+# 	bsdf_out=c_out*emission();
+	closure		$tmp11 $const2 	%line{30} %argrw{"wr"}
+	mul		bsdf_out $tmp11 c_out 	%argrw{"wrr"}
+	end

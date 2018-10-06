@@ -1,0 +1,29 @@
+OpenShadingLanguage 1.00
+# Compiled by oslc 1.8.2dev
+# options: -IC:\Program Files\3Delight/osl
+displacement NormalDisplacement
+param	float	height	0		%read{2,2} %write{2147483647,-1} %derivs
+param	float	strength	1		%read{1,1} %write{2147483647,-1} %derivs
+param	float	scalarzero	0		%read{1,1} %write{2147483647,-1} %derivs
+global	point	P	%read{5,6} %write{5,5} %derivs
+global	normal	N	%read{0,3} %write{6,6} %derivs
+local	vector	Nn	%read{2147483647,-1} %write{0,0}
+temp	float	$tmp1	%read{2,2} %write{1,1} %derivs
+temp	float	$tmp2	%read{4,4} %write{2,2} %derivs
+temp	point	$tmp3	%read{4,4} %write{3,3} %derivs
+temp	point	$tmp4	%read{5,5} %write{4,4} %derivs
+code ___main___
+# C:\\Program Files\\MAXON\\CINEMA 4D R17\\plugins\\3Delight shaders\\OSL\\NormalDisplacement.osl:13
+# 	P=P+height*(strength-scalarzero)*point(N);
+	normalize	Nn N 	%filename{"C:\\Program Files\\MAXON\\CINEMA 4D R17\\plugins\\3Delight shaders\\OSL\\NormalDisplacement.osl"} %line{13} %argrw{"wr"}
+# C:\\Program Files\\MAXON\\CINEMA 4D R17\\plugins\\3Delight shaders\\OSL\\NormalDisplacement.osl:14
+# 	N=calculatenormal(P);
+	sub		$tmp1 strength scalarzero 	%line{14} %argrw{"wrr"}
+	mul		$tmp2 height $tmp1 	%argrw{"wrr"}
+	assign		$tmp3 N 	%argrw{"wr"}
+	mul		$tmp4 $tmp2 $tmp3 	%argrw{"wrr"}
+	add		P P $tmp4 	%argrw{"wrr"}
+# C:\\Program Files\\MAXON\\CINEMA 4D R17\\plugins\\3Delight shaders\\OSL\\NormalDisplacement.osl:15
+# 
+	calculatenormal	N P 	%line{15} %argrw{"wr"} %argderivs{1}
+	end

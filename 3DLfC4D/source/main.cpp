@@ -5,6 +5,7 @@
 
 #include "c4d.h"
 #include "PluginManager.h"
+#include "BitmapDisplayDriver.h"
 #include "CameraHook.h"
 #include "RenderOptionsHook.h"
 #include "DisplayTranslator.h"
@@ -32,9 +33,20 @@ Bool PluginStart(void)
 	if (!RegisterRenderSettings()) return FALSE;
 	//if (!RegisterInteractiveRenderManager())return FALSE;
 	if (!RegisterDisplay()) return FALSE;
-	if (!RegisterDL_CameraTag()) return FALSE;
-	if (!RegisterDL_MotionBlurTag()) return FALSE;
+	//if (!RegisterDL_CameraTag()) return FALSE;
+	//if (!RegisterDL_MotionBlurTag()) return FALSE;
 	if (!RegisterDL_VisibilityTag()) return FALSE;
+
+	//Register 3Delight display driver for rendering to C4D bitmaps
+	/*PtDspyDriverFunctionTable table;
+	memset(&table, 0, sizeof(table));
+	table.Version = 1;
+	table.pOpen = &BmpDspyImageOpen;
+	table.pQuery = &BmpDspyImageQuery;
+	table.pWrite = &BmpDspyImageData;
+	table.pClose = &BmpDspyImageClose;
+	
+	PtDspyError err= DspyRegisterDriverTable("C4D_bitmap", &table); */
 	
 	return true;
 }

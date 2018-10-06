@@ -13,7 +13,7 @@ public:
 private:
 	std::string layer_handle;
 	std::string driver_handle;
-	
+	std::string bitmapdriver_handle;
 	
 };
 

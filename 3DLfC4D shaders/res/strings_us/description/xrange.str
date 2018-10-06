@@ -1,0 +1,13 @@
+STRINGTABLE Xrange
+{
+	Xrange "Range";
+
+	RANGE_GROUP			"Range";
+	INPUT_SHADER			"Input shader";
+	IN_MIN				"Input min";
+	IN_MAX				"Input max";
+	OUT_MIN				"Output min";
+	OUT_MAX				"Output max";
+	
+	
+}

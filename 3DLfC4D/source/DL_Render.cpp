@@ -8,6 +8,7 @@ using namespace std;
 
 bool DL_RenderFrame(BaseDocument* doc, long frame, RENDER_MODE mode, bool progressive){
 
+
 	RenderData* rd=doc->GetActiveRenderData();
 	BaseVideoPost* vp=rd->GetFirstVideoPost();
 
@@ -39,6 +40,10 @@ bool DL_RenderFrame(BaseDocument* doc, long frame, RENDER_MODE mode, bool progre
 		return false;
 	}
 
+	BaseDocument* renderdoc = (BaseDocument*)doc->GetClone(COPYFLAGS_DOCUMENT,nullptr);
+	rd = renderdoc->GetActiveRenderData();
+	vp = rd->GetFirstVideoPost();
+
 	BaseContainer render_data = rd->GetData();
 	BaseContainer vp_data = vp->GetData();
 	SceneParser sp;
@@ -59,8 +64,9 @@ bool DL_RenderFrame(BaseDocument* doc, long frame, RENDER_MODE mode, bool progre
 	sp.SetShutter(shutterOpen,shutterClose);
 
 	//Render scene
-	bool RenderOK=	sp.Parse(doc, frame);
+	bool RenderOK=	sp.Parse(renderdoc, frame);
 
+	BaseDocument::Free(renderdoc);  
 	return RenderOK; 
 }
 

@@ -18,6 +18,7 @@ shader Texture(
 {
 	float st[2];
 	getattribute("st",st);
+	st[1]=1-st[1]; //Flip v coordinate to match C4D UV conventions
 	if(texname!=""){
 		c_out=texture(texname, st[0],st[1]);
 		

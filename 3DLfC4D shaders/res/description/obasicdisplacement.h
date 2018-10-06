@@ -1,0 +1,14 @@
+#ifndef _Obasicdisplacement_H_
+#define _Obasicdisplacement_H_
+
+enum
+{
+	DISPLACEMENT_GROUP			= 1000,
+	DISPLACEMENT_HEIGHT			=1001,
+	DISPLACEMENT_STRENGTH			=1002,
+	DISPLACEMENT_STRENGTH_SHADER		=1003,
+	DISPLACEMENT_CENTERED			=1004
+	
+	
+};
+#endif

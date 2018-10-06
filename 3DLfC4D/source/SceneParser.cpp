@@ -11,7 +11,14 @@
 #include <sstream>      // std::stringstream, std::stringbuf
 using namespace std;
 
-
+void StoppedCallback(
+	void* stoppedcallbackdata,
+	NSIContext_t ctx,
+	int status){
+	
+	int* data = (int*)stoppedcallbackdata;
+	*data = status;
+}
 
 extern PluginManager PM;
 
@@ -127,57 +134,74 @@ void SceneParser::SetAOVExport(bool export_aovs){
 }*/
 
 bool SceneParser::Parse(BaseDocument* doc, long frame){
-	if(!doc){return false;}
-	
+	if (!doc){ return false; }
+
 	render_doc = doc;
 
-	RenderData* rd=doc->GetActiveRenderData();
-	BaseContainer* render_data=rd->GetDataInstance();
-	BaseVideoPost* vp=rd->GetFirstVideoPost();
+	RenderData* rd = doc->GetActiveRenderData();
+	BaseContainer* render_data = rd->GetDataInstance();
+	BaseVideoPost* vp = rd->GetFirstVideoPost();
 
-	bool has_vp=false;
-	while(vp!=NULL && !has_vp){
-		has_vp=(vp->GetType()==ID_RENDERSETTINGS); //Look for rendersettings
-		if(!has_vp){
-			vp=vp->GetNext();
+	bool has_vp = false;
+	while (vp != NULL && !has_vp){
+		has_vp = (vp->GetType() == ID_RENDERSETTINGS); //Look for rendersettings
+		if (!has_vp){
+			vp = vp->GetNext();
 		}
 	}
 
 	settings = NULL;
-	if(has_vp){ settings=vp->GetDataInstance();}
-	if(settings==NULL){	return false; }
+	if (has_vp){ settings = vp->GetDataInstance(); }
+	if (settings == NULL){ return false; }
 
-	bool streamout=(settings->GetInt32(DL_RENDERMODE)==DL_MODE_STREAM);
+	bool streamout = (settings->GetInt32(DL_RENDERMODE) == DL_MODE_STREAM);
 	string stream_path("");
-	if(streamout){
-		Filename streamfile=settings->GetFilename(DL_OUTPUTFILE);
-		if(!streamfile.GetString().Content()){
-			bool ok=streamfile.FileSelect(FILESELECTTYPE_ANYTHING, FILESELECT_SAVE, "Save File","nsi" );
-			if(!ok){return false;}
+	string context_type("render");
+	if (streamout){
+		context_type = "apistream";
+		Filename streamfile = settings->GetFilename(DL_OUTPUTFILE);
+		if (!streamfile.GetString().Content()){
+			bool ok = streamfile.FileSelect(FILESELECTTYPE_ANYTHING, FILESELECT_SAVE, "Save File", "nsi");
+			if (!ok){ return false; }
 		}
 		streamfile.SetSuffix("nsi");
-		stream_path=StringToStdString(streamfile.GetString());
+		stream_path = StringToStdString(streamfile.GetString());
 	}
 
-	
 
-	NSI::Context direct_ctx;
-	NSI::Context stream_ctx((
+
+	//NSI::Context ctx;
+
+
+	/*((
 		NSI::StringArg("type","apistream"),
 		NSI::StringArg("streamformat","nsi"),
 		NSI::StringArg("streamfilename",stream_path)
-		));
+		));*/
 
-	if(streamout){
+	/*if(streamout){
 		context_handle=stream_ctx.Handle();
 		direct_ctx.End();
-	}
-	else{
+		}
+		else{
 		context_handle=direct_ctx.Handle();
 		stream_ctx.End();
+		}*/
+
+	NSI::Context context;
+
+	if (streamout){
+	context.Begin(((
+		NSI::StringArg("type", context_type),
+		NSI::StringArg("streamformat", "nsi"),
+		NSI::StringArg("streamfilename", stream_path)
+		)));
+	}
+	else{
+		context.Begin();
 	}
 
-	NSI::Context context(context_handle);
+	context_handle = context.Handle();
 
 	//Motion sampling settings
 	bool useMotionBlur=settings->GetBool(DL_USE_MOTION_BLUR);
@@ -247,13 +271,31 @@ bool SceneParser::Parse(BaseDocument* doc, long frame){
 	hooks.clear();
 	transforms.clear();
 
-	//context.RenderControl();
-	context.RenderControl(NSI::StringArg("action", "start"));
 
+	int renderstatus=-1;
+
+	//context.RenderControl();
+	context.RenderControl((
+		NSI::StringArg("action", "start"), 
+		NSI::PointerArg("stoppedcallback", (void*)&StoppedCallback),
+		NSI::PointerArg("stoppedcallbackdata", (void*)&renderstatus)
+		));
+
+	context.RenderControl((
+		NSI::StringArg("action", "wait")
+		));
+
+	/*GePrint("Status: " + String::IntToString(renderstatus) + " vs " + String::IntToString(NSIRenderAborted));
+	if (renderstatus == NSIRenderCompleted){
+		GePrint("Render completed");
+	}
+	else if (renderstatus == NSIRenderAborted){
+		GePrint("Render aborted");
+	}*/
 	context_handle=NSI_BAD_CONTEXT;
 	stage=NONE;
 	//return (progress>99.9); 
-	return true;
+	return (renderstatus == NSIRenderCompleted);
 }
 
 //void Initialize(BaseDocument* doc, long frame, RENDER_MODE mode, BaseContainer settings);

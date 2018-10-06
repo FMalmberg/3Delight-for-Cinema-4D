@@ -14,14 +14,13 @@ public:
 
 
 Bool RenderFrame::Execute(BaseDocument* doc){
-
 	BaseTime t= doc->GetTime();
 	long frame=t.GetFrame(doc->GetFps());
 	DL_RenderFrame(doc, frame, PREVIEW_RENDER, true );
 
 	//Restore document time
-	doc->SetTime(t);
-	EventAdd();
+	//doc->SetTime(t);
+	//EventAdd();
 	return true;
 }
 
