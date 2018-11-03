@@ -123,6 +123,12 @@ void PolygonObjectTranslator::CreateNSINodes(const char* ParentTransformHandle, 
 
 	n_facevertices = facevarying_indices.size();
 
+	ctx.SetAttribute(handle, (
+		arg_nvertices,
+		arg_indices,
+		arg_subdivision
+		));
+
 	//Export first UV set as "st"
 
 	UVWTag* UVtag = (UVWTag*)object->GetTag(Tuvw);
@@ -175,9 +181,6 @@ void PolygonObjectTranslator::CreateNSINodes(const char* ParentTransformHandle, 
 		arg_st_indices.SetValuePointer((void*)&st_indices[0]);
 
 		ctx.SetAttribute(handle, (
-			arg_nvertices,
-			arg_indices,
-			arg_subdivision,
 			arg_st,
 			arg_st_indices
 			));
