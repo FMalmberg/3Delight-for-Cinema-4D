@@ -23,6 +23,7 @@ Bool RegisterStandardShader(void);
 Bool RegisterGlassShader(void);
 Bool RegisterNormalDisplacementShader(void);
 Bool RegisterRangeShader(void);
+//Bool RegisterTextureShader(void);
 
 Bool PluginStart(void)
 {
@@ -31,6 +32,7 @@ Bool PluginStart(void)
 	if(!RegisterGlassShader()) return FALSE;
 	if (!RegisterNormalDisplacementShader()) return FALSE;
 	if (!RegisterRangeShader()) return FALSE;
+	//if (!RegisterTextureShader()) return FALSE;
 	return true;
 }
 
@@ -57,8 +59,10 @@ Bool PluginMessage(Int32 id, void *data)
 		pm->RegisterTranslator(ID_GLASSSHADER, AllocateTranslator<GlassShaderTranslator>);
 		pm->RegisterTranslator(ID_NORMALDISPLACEMENTSHADER, AllocateTranslator<NormalDisplacementTranslator>);
 		pm->RegisterTranslator(ID_RANGESHADER, AllocateTranslator<RangeTranslator>);
+		//pm->RegisterTranslator(ID_TEXTURESHADER, AllocateTranslator<TextureShaderTranslator>);
 		pm->RegisterTranslator(Xbitmap, AllocateTranslator<TextureTranslator>);
 		pm->RegisterTranslator(Ttexture, AllocateTranslator<TextureTagTranslator>);
+
 
 		break;
 

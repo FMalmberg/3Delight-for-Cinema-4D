@@ -475,6 +475,7 @@ void SceneParser::TraverseScene(BaseObject* obj, BaseDocument* doc,std::string p
 			nodes.push_back(n);
 			translator->CreateNSINodes(transform_handle.c_str(), obj, doc, this);
 		}
+		
 	}
 
 	//Handle tags

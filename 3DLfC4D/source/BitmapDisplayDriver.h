@@ -39,6 +39,7 @@ PtDspyError BmpDspyImageData(PtDspyImageHandle image,
 	int entrysize,
 	const unsigned char*data);
 
+
 PtDspyError BmpDspyImageClose(PtDspyImageHandle image);
 
 #endif

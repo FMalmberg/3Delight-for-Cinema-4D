@@ -38,7 +38,7 @@ Bool PluginStart(void)
 	if (!RegisterDL_VisibilityTag()) return FALSE;
 
 	//Register 3Delight display driver for rendering to C4D bitmaps
-	/*PtDspyDriverFunctionTable table;
+	PtDspyDriverFunctionTable table;
 	memset(&table, 0, sizeof(table));
 	table.Version = 1;
 	table.pOpen = &BmpDspyImageOpen;
@@ -46,7 +46,7 @@ Bool PluginStart(void)
 	table.pWrite = &BmpDspyImageData;
 	table.pClose = &BmpDspyImageClose;
 	
-	PtDspyError err= DspyRegisterDriverTable("C4D_bitmap", &table); */
+	PtDspyError err= DspyRegisterDriverTable("C4D_bitmap", &table); 
 	
 	return true;
 }

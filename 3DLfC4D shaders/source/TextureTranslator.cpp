@@ -20,11 +20,23 @@ void TextureTranslator::CreateNSINodes(const char* ParentTransformHandle, GeList
 	vector<char> c_shaderpath =StringToChars(shaderpath.GetString());
 
 	Filename texturefile = data->GetFilename(BITMAPSHADER_FILENAME);
-	string texturename=StringToStdString(texturefile.GetString());
+	Filename texturefile_absolute;
+
+	GenerateTexturePath(doc->GetDocumentPath(), texturefile, Filename(), &texturefile_absolute);
+	string texturename=StringToStdString(texturefile_absolute.GetString());
+
+	string colorspace = "sRGB";
+
+	long colorprofile = data->GetInt32(BITMAPSHADER_COLORPROFILE);
+
+	if (colorprofile == BITMAPSHADER_COLORPROFILE_LINEAR){
+		colorspace = "linear";
+	}
 
 	ctx.SetAttribute(shader_handle,(
 		NSI::StringArg("shaderfilename", std::string(&c_shaderpath[0])),
-		NSI::StringArg("texname", texturename)
+		NSI::StringArg("texname", texturename),
+		NSI::StringArg("texname.meta.colorspace",colorspace)
 		));
 
 	parser->SetAssociatedHandle((BaseList2D*)C4DNode, shader_handle.c_str());

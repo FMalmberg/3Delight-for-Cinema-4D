@@ -51,7 +51,7 @@ void RenderOptionsHook::CreateNSINodes(BaseDocument* doc, DL_SceneParser* parser
 	//ShowBitmap(bmp);
 
 
-	//bitmapdriver_handle=string(parser->GetUniqueName("bitmapdriver"));
+	bitmapdriver_handle=string(parser->GetUniqueName("bitmapdriver"));
 
 	//ctx.Create(bitmapdriver_handle, "outputdriver");
 	/*ctx.SetAttribute(bitmapdriver_handle, (

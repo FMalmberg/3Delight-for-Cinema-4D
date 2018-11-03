@@ -19,6 +19,8 @@ Bool EnvironmentLight::Init(GeListNode* node){
 	data->SetFloat(ENVIRONMENT_INTENSITY,1.0);
 	data->SetFloat(ENVIRONMENT_EXPOSURE,0.0);
 	data->SetVector(ENVIRONMENT_TINT,Vector(1,1,1));
+	data->SetInt32(ENVIRONMENT_TEXTURE_COLORSPACE, ENVIRONMENT_TEXTURE_COLORSPACE_LINEAR);
+
 	/*data->SetFloat(LIGHTCARD_WIDTH,200.0);
 	data->SetFloat(LIGHTCARD_HEIGHT,200.0);
 

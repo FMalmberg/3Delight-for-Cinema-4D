@@ -27,7 +27,6 @@ void PluginManager::RegisterTranslator(long id, TranslatorAllocator allocator){
 	Allocators[id]=allocator;
 }
 
-
 DL_Translator*  PluginManager::GetTranslator(long id){ 
 	DL_Translator*  result=0;
 	TranslatorMap::iterator it=Allocators.find(id);

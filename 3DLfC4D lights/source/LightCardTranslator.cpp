@@ -114,7 +114,7 @@ void LightCardTranslator::SampleMotion(double t, long i, GeListNode* C4DNode, Ba
 	arg_P.SetType(NSITypePoint);
 	arg_P.SetCount(4);
 	arg_P.SetValuePointer((void*)&P[0]);
-	arg_P.SetFlags(NSIParamIndirect);
+	//arg_P.SetFlags(NSIParamIndirect);
 
 	ctx.SetAttributeAtTime(handle,t,(
 			arg_P

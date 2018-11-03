@@ -20,7 +20,7 @@ PtDspyError BmpDspyImageQuery(PtDspyImageHandle image,
 	PtDspyQueryType type,
 	int size,
 	void *data){
-	GePrint("DspyImageQuery");
+	GePrint("DspyImageQuery: ");
 	return PkDspyErrorNone;
 }
 
@@ -45,9 +45,19 @@ PtDspyError BmpDspyImageOpen(PtDspyImageHandle * image,
 		GePrint("Got bitmap");
 	}
 
+
+	for (int i = 0; i < formatcount; i++){
+		GePrint(format[i].name);
+		format[i].type = PkDspyUnsigned8;
+	}
+
+	//flags->flags |= PkDspyFlagsWantsScanLineOrder;
+
 	BaseBitmap* bmp = *bmp_ptr;
 	bmp->Init(width, height);
 	image = (void**)bmp;
+
+
 
 	return PkDspyErrorNone;
 }

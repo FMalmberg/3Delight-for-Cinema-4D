@@ -44,12 +44,21 @@ void EnvironmentLightTranslator::CreateNSINodes(const char* ParentTransformHandl
 	vector<char> c_shaderpath =StringToChars(shaderpath.GetString());
 
 	Filename texturefile = data->GetFilename(ENVIRONMENT_TEXTURE);
-	string texturename=StringToStdString(texturefile.GetString());
+	Filename texturefile_absolute;
+	GenerateTexturePath(doc->GetDocumentPath(), texturefile, Filename(), &texturefile_absolute);
 
+	string texturename=StringToStdString(texturefile_absolute.GetString());
+
+	string colorspace = "linear";
+	long cs = data->GetInt32(ENVIRONMENT_TEXTURE_COLORSPACE);
+	if (cs == ENVIRONMENT_TEXTURE_COLORSPACE_SRGB){
+		colorspace = "sRGB";
+	}
 
 	ctx.SetAttribute(shader_handle,(
 		NSI::StringArg("shaderfilename", std::string(&c_shaderpath[0])),
-		NSI::StringArg("texname", texturename)
+		NSI::StringArg("texname", texturename),
+		NSI::StringArg("texname.meta.colorspace",colorspace)
 		));
 
 	parser->SetAssociatedHandle((BaseList2D*)C4DNode, handle.c_str());

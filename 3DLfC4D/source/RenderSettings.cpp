@@ -48,6 +48,7 @@ Bool RenderSettings::Init(GeListNode *node){
 
 Bool RegisterRenderSettings(void)
 {
-	return RegisterVideoPostPlugin(ID_RENDERSETTINGS, "3Delight", PLUGINFLAG_VIDEOPOST_ISRENDERER, RenderSettings::Alloc, "vprendersettings", 0, 0);
+	//PLUGINFLAG_VIDEOPOST_ISRENDERER
+	return RegisterVideoPostPlugin(ID_RENDERSETTINGS, "3Delight", 0, RenderSettings::Alloc, "vprendersettings", 0, 0);
 }
 

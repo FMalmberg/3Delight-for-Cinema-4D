@@ -24,6 +24,7 @@ public:
 	void SetVisibility(bool visible);
 
 	DL_Translator* GetTranslator();
+	//void SetTranslator(DL_Translator* translator); //Manually override translator for this node
 	BaseList2D* GetC4DNode(BaseDocument* doc);
 	bool IsVisible();
 
