@@ -43,23 +43,28 @@ void EnvironmentLightTranslator::CreateNSINodes(const char* ParentTransformHandl
 	Filename shaderpath=Filename(GeGetPluginPath()+Filename("OSL")+Filename("EnvLight.oso"));
 	vector<char> c_shaderpath =StringToChars(shaderpath.GetString());
 
-	Filename texturefile = data->GetFilename(ENVIRONMENT_TEXTURE);
-	Filename texturefile_absolute;
-	GenerateTexturePath(doc->GetDocumentPath(), texturefile, Filename(), &texturefile_absolute);
-
-	string texturename=StringToStdString(texturefile_absolute.GetString());
-
-	string colorspace = "linear";
-	long cs = data->GetInt32(ENVIRONMENT_TEXTURE_COLORSPACE);
-	if (cs == ENVIRONMENT_TEXTURE_COLORSPACE_SRGB){
-		colorspace = "sRGB";
-	}
-
-	ctx.SetAttribute(shader_handle,(
-		NSI::StringArg("shaderfilename", std::string(&c_shaderpath[0])),
-		NSI::StringArg("texname", texturename),
-		NSI::StringArg("texname.meta.colorspace",colorspace)
+	ctx.SetAttribute(shader_handle, (
+		NSI::StringArg("shaderfilename", std::string(&c_shaderpath[0]))
 		));
+
+	Filename texturefile = data->GetFilename(ENVIRONMENT_TEXTURE);
+	if (texturefile.GetFileString() != String("")){
+		Filename texturefile_absolute;
+		GenerateTexturePath(doc->GetDocumentPath(), texturefile, Filename(), &texturefile_absolute);
+
+		string texturename = StringToStdString(texturefile_absolute.GetString());
+
+		string colorspace = "linear";
+		long cs = data->GetInt32(ENVIRONMENT_TEXTURE_COLORSPACE);
+		if (cs == ENVIRONMENT_TEXTURE_COLORSPACE_SRGB){
+			colorspace = "sRGB";
+		}
+
+		ctx.SetAttribute(shader_handle, (
+			NSI::StringArg("texname", texturename),
+			NSI::StringArg("texname.meta.colorspace", colorspace)
+			));
+	}
 
 	parser->SetAssociatedHandle((BaseList2D*)C4DNode, handle.c_str());
 
@@ -90,7 +95,7 @@ void EnvironmentLightTranslator::CreateNSINodes(const char* ParentTransformHandl
 }
 
 void EnvironmentLightTranslator::SampleMotion(double t, long i, GeListNode* C4DNode, BaseDocument* doc,DL_SceneParser* parser){
-	
+	GePrint("Envlight sample motion");
 	NSI::Context ctx(parser->GetContext());
 
 	BaseList2D *obj=(BaseList2D*)C4DNode;
@@ -101,9 +106,6 @@ void EnvironmentLightTranslator::SampleMotion(double t, long i, GeListNode* C4DN
 
 	//float halfwidth=0.5*width;
 	//float halfheight=0.5*height;
-
-
-
 
 	float intensity=(data->GetFloat(ENVIRONMENT_INTENSITY));
 
