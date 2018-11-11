@@ -8,8 +8,6 @@
 #include <string>
 #include <map>
 
-//typedef std::map<Edge, float, Edge> edgemap;
-
 class PolygonObjectTranslator : public DL_TranslatorPlugin{
 
 public:
@@ -17,10 +15,13 @@ public:
 	virtual void SampleMotion(double t, long i, GeListNode* C4DNode, BaseDocument* doc,DL_SceneParser* parser);
 
 private:
+	bool skip;
 	std::string handle;
 	std::string transform_handle;
 	bool has_phong;
 	bool is_subd;
+	int pointcount;
+	int polycount;
 	int n_facevertices;
 /*	std::vector< std::vector<float> > P_samples;
 	std::vector< std::vector<float> > N_samples;

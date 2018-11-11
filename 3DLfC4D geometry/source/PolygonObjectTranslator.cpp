@@ -31,8 +31,58 @@ int GetUVIndex(int poly_index, float u, float v, map<int, vector<int> > & conmap
 	return result;
 }
 
+PolygonObject* GetMeshFromNode(GeListNode* C4DNode){
+	BaseObject* obj=(BaseObject*)C4DNode;
+
+	//By default, we assume that the node is a polygon object and perform a direct cast
+	PolygonObject* mesh = (PolygonObject*)C4DNode; 
+
+	//If the object is an alembic generator, we get the polygon mesh from the cache instead
+	if (obj->GetType() == Oalembicgenerator){ 
+		BaseObject* cache = obj->GetCache();
+		if (cache == NULL){ return NULL;}
+		if (cache->GetType() != Opolygon){ return NULL; }
+		mesh = (PolygonObject*)cache;
+	}
+	return mesh;
+}
+
 void PolygonObjectTranslator::CreateNSINodes(const char* ParentTransformHandle, GeListNode* C4DNode, BaseDocument* doc, DL_SceneParser* parser){
 	NSI::Context ctx(parser->GetContext());
+
+	skip = false;
+	
+	
+	BaseObject* baseobject = (BaseObject*)C4DNode;
+	PolygonObject* object = GetMeshFromNode(C4DNode);
+
+	if (!object){
+		skip = true;
+		return;
+	}
+
+	//PolygonObject* object = (PolygonObject*)C4DNode;
+
+	//if (baseobject->GetType() == Oalembicgenerator){ //If the object is an alembic generator, we get the polygon mesh from the cache
+	//	BaseObject* cache = baseobject->GetCache();
+	//	if (cache != NULL ){
+	//		if (cache->GetType() == Opolygon){
+	//			object = (PolygonObject*)cache;
+	//		}
+	//		else{
+	//			skip = true;
+	//			return;
+	//		}
+	//	}
+	//	else{
+	//		skip = true; 
+	//		return;
+	//	}
+	//}
+
+	polycount = object->GetPolygonCount();
+	pointcount = object->GetPointCount();
+	const CPolygon* polys = object->GetPolygonR();
 
 	//Create a mesh and connect it to the parent transform
 	handle = string(parser->GetUniqueName("mesh"));
@@ -40,11 +90,6 @@ void PolygonObjectTranslator::CreateNSINodes(const char* ParentTransformHandle, 
 
 	ctx.Create(handle, "mesh");
 	ctx.Connect(handle, "", transform_handle, "objects");
-
-	PolygonObject* object = (PolygonObject*)C4DNode;
-	int polycount = object->GetPolygonCount();
-	int pointcount = object->GetPointCount();
-	const CPolygon* polys = object->GetPolygonR();
 
 	//---------------------------//
 	//Check for SDS
@@ -130,7 +175,6 @@ void PolygonObjectTranslator::CreateNSINodes(const char* ParentTransformHandle, 
 		));
 
 	//Export first UV set as "st"
-
 	UVWTag* UVtag = (UVWTag*)object->GetTag(Tuvw);
 
 	if (UVtag != NULL){
@@ -141,7 +185,6 @@ void PolygonObjectTranslator::CreateNSINodes(const char* ParentTransformHandle, 
 		//For every mesh vertex index (first int), build a vector of indices (second int) into the UV coordinate vector
 
 		vector<float> st;
-		//vector<int> polygon_vertices;
 		st.reserve(n_facevertices * 2);
 		int maxindex = 0;
 		int index = 0;
@@ -184,52 +227,8 @@ void PolygonObjectTranslator::CreateNSINodes(const char* ParentTransformHandle, 
 			arg_st,
 			arg_st_indices
 			));
-		/*polygon_vertices.clear();
-		polygon_vertices.push_back(polys[j].a);
-		polygon_vertices.push_back(polys[j].b);
-		polygon_vertices.push_back(polys[j].c);
-		if (polys[j].c != polys[j].d){
-		polygon_vertices.push_back(polys[j].d);
-		}
-
-		for (int i = 0; i < polygon_vertices.size(); i++){
-
-		}*/
-
-
-
-		/*int index=0;
-		for(int j=0; j<polycount; j++){
-		UVWStruct uv=UVtag->GetSlow(j);
-		st.push_back(uv.a.x); st.push_back(1-uv.a.y); //a
-		st.push_back(uv.b.x); st.push_back(1-uv.b.y); //b
-		st.push_back(uv.c.x); st.push_back(1-uv.c.y); //c
-		if(polys[j].c !=polys[j].d){
-		st.push_back(uv.d.x); st.push_back(1-uv.d.y); //d
-		}
-		}*/
 
 	}
-	/*else { //Default st
-		int index=0;
-		for(int j=0; j<polycount; j++){
-
-		st.push_back(0); st.push_back(1); //a
-		st.push_back(0); st.push_back(0); //b
-		st.push_back(1); st.push_back(0); //c
-		if(polys[j].c !=polys[j].d){
-		st.push_back(1); st.push_back(1); //d
-		}
-		}
-
-		}*/
-
-	//NSI API for defining indirect parameters updated.
-	//Old version:
-	//int st_flags=(NSIParamIndirect|NSIParamPerVertex); 
-
-	//New version:
-
 
 	if (has_phong && !is_subd){
 		NSI::Argument arg_N_indices("N.indices");
@@ -242,21 +241,52 @@ void PolygonObjectTranslator::CreateNSINodes(const char* ParentTransformHandle, 
 }
 
 void PolygonObjectTranslator::SampleMotion(double t, long i, GeListNode* C4DNode, BaseDocument* doc, DL_SceneParser* parser){
+	if (skip){ return; }
+
 	NSI::Context ctx(parser->GetContext());
 
-	PolygonObject* mesh = (PolygonObject*)C4DNode;
+	PolygonObject* mesh = GetMeshFromNode(C4DNode);
+	if (!mesh){
+		skip = true;
+		return;
+	}
+
+	//PolygonObject* mesh = (PolygonObject*)C4DNode;
+
+	//BaseObject* obj = (BaseObject*)C4DNode;
+	//if (obj->GetType() == Oalembicgenerator){ //If the object is an alembic generator, we get the polygon mesh from the cache
+	//	BaseObject* cache = obj->GetCache();
+	//	if (cache != NULL){
+	//		if (cache->GetType() == Opolygon){
+	//			mesh = (PolygonObject*)cache;
+	//		}
+	//		else{
+	//			skip = true;
+	//			return;
+	//		}
+	//	}
+	//	else{
+	//		skip = true;
+	//		return;
+	//	}
+	//}
+
+
 	PolygonObject* deformed = (PolygonObject*)(mesh->GetDeformCache());
+	if (deformed == NULL){
+		deformed = mesh;
+	}
 
 	//Can we skip motion blur sampling if deformed==NULL?
 	//No, the mesh may still have PLA. 
 
-	if (deformed == NULL){
-		deformed = mesh;
+	//Don't sample if the polygon or vertex count changed since the NSI mesh node was created
+	if (!(deformed->GetPointCount() == pointcount &&  deformed->GetPolygonCount() == polycount)){
+		skip = true;
+		return;
 	}
+	
 	const Vector* points = deformed->GetPointR();
-
-	int pointcount = deformed->GetPointCount();
-	int polycount = deformed->GetPolygonCount();
 	const CPolygon* polys = deformed->GetPolygonR();
 
 	//Vertex positions
