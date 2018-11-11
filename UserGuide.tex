@@ -1,0 +1,227 @@
+\documentclass{book}
+
+\usepackage{bookmark}
+\usepackage{hyperref}
+\usepackage[top=1in, bottom=1.25in, left=1.25in, right=1.25in]{geometry}
+\usepackage{graphicx}
+
+
+\begin{document}
+
+
+
+\title{3Delight for Cinema 4D User Guide}
+\maketitle
+\newpage
+\tableofcontents
+\newpage
+
+\chapter{Introduction}
+This is the user guide for 3DLfC4D, a plugin for Cinema 4D that allows you to use the 3Delight renderer from Illumination research directly in Cinema 4D. 
+
+
+%Using NSI scene description API and Open Shading Language (OSL). 
+%\begin{itemize}
+%\item Physically plausible rendering using path tracing.
+%\item Linear workflow.
+%\item Sub-pixel displacement, motion blur, Arbitrary output variables.
+%\item Extensible via third party plugins. 
+%\end{itemize}
+
+\chapter{Installation}
+To use 3DLfC4D, follow these steps: 
+\begin{itemize} 
+\item Download and install the 3Delight renderer itself. See \url{www.3delight.com} for instructions.
+\item Download the 3DLfC4D plugin from \url{https://github.com/FMalmberg/3Delight-for-Cinema-4D/releases}. The zip file contains four folders, each containing a Cinema 4D plugin. To install 3DLfC4D, copy all these folders to the ``plugins'' folder in your Cinema 4D directory. 
+\end{itemize}
+
+\section{System requirements}
+\begin{itemize}
+\item Compatible with Cinema 4D R17-19.
+\item Windows only. 
+\end{itemize}
+
+%\section{First render}
+
+\chapter{Rendering}
+\section{Rendering commands}
+Under the \emph{plugins $\rightarrow$3dlfC4d} menu, you can find the following commands for rendering a Cinema 4d scene:
+
+\begin{description}
+\item[Render frame] Render a preview of the current frame to iDisplay, the image viewer shipped with 3Delight. 
+\item[Render animation] Perform final rendering of the scene, for the range of frames specified in the current render settings. 
+\end{description}
+
+\section{Saving images - the \emph{DL\_output} object}
+When performing a final render 3DLfC4D will by default only render the images to the iDisplay image viewer, and the images are not automatically saved. To write the rendered images to disk, one or more \emph{ DL\_output } objects (available under the \emph{3dlfC4d} menu) must be added to the scene. Each DL\_output object specifies a filename and format for an image to be saved during rendering. Each DL\_output object can also be configured to render a subset of the lights in the scene, allowing various lighting passes to be rendered out for compositing. 
+
+\begin{description}
+\item[Filename] The filename of the saved image. The filename supports 3Delight \emph{tokens}. For example, the default value of "frame\#5f.\#d" will at rendertime be expanded so that "\#5f" is replaced by the current frame number (zero-padded to length 5), and "\#d" is replaced by either "tiff" or "exr", depending on the selected file format. For more information on supported tokens, see the 3Delight manual. 
+\item[Save directory] Speciify the directory where rendered images are saved.
+\item[File format] Specify the fileformat of the rendered images. Supported formats are TIFF and OpenEXR. 
+\item[Bit depth] Specify the bit depth of the rendered images. Supported bit depths for TIFF images are 8-bit (integer), 16-bit (integer) and 32-bit (float). Supported bit depths for OpenEXR images are 16- and 32-bits (float). 
+\item[Lights] This In-{\textbackslash}Exclude field allows you to specify a subset of lights in the scene that should be rendered for this output. If the field is empty, all lights are rendered.
+
+\end{description}
+
+\chapter{Render settings}
+Various 3DLfC4D rendering options are controlled via the "3Delight" videopost effect in the Cinema 4D render settings. This chapter describes the available settings. 
+
+\section{Quality}
+%\begin{figure}[h]
+%\centering
+%\includegraphics[width=0.85\textwidth]{images/quality.jpg}
+%\caption{3DlFC4D Quality render settings. }
+%\end{figure}
+
+\begin{description}
+\item[Shading samples] The amount of rays, per pixel, the renderer will trace to perform shading computations. These computations include BRDF sampling, light sampling, subsurface sampling, transparency and any other shading element requested by the Materials. 3Delight uses an adaptive algorithm to automatically select the right shading component to sample, on a per-ray basis.  This is the only samples settings necessary for rendering with 3Delight; ; there are no per-material, per-light or per-BRDF settings.
+
+\item[Pixel samples] Specifies how many sub-samples each pixel will be subdivided. A draft quality setting for this parameter is 16; a high quality setting could be 64. Higher values might be needed when rendering large motion blur or depth of field. The default value is 9. In 3Delight, screen sampling and surface shading are independent. In other renderers, increasing the amount of "AA" samples will also increase the amount of shading samples, not so in 3Delight. This allows for a more straightforward control over rendering quality.
+
+\item [Pixel filter] \emph{Not implemented}
+
+\item[Render motion blur] Enables or disables rendering of motion blur effects. 
+\item[Motion samples] Sets how many times 3DLfC4D samples scene geometry during the shutter interval for rendering motion blur. 
+\item[Max Reflection Depth] Sets the maximum bounces a reflected ray can reach. Reflection occurs when a ray bounces in the same hemisphere as the surface normal. Reflection rays include both mirror reflection and soft reflections due to rough surfaces. Setting this value to 0 will disable reflections.
+\item[Max Refraction Depth] Sets the maximum bounces a refracted ray can reach. Refraction occurs when a ray bounces in the opposite hemisphere of the surface normal. Refraction rays include hard refraction and soft refracton due to rough surfaces.
+\item[Max Diffuse Depth] Sets the maximum bounce depth a diffuse ray can have. Diffuse bounces are counted each time a ray hits a diffuse surface.
+\end{description}
+
+
+
+\section{Output}
+\begin{description}
+\item[Render mode] Select between rendering the scene directly, or exporting the scene as a NSI stream for later rendering. 
+\item[NSI stream path] Specify the path to save the NSI stream file when rendering, if "Render mode" is set to "Export NSI stream". If this path is empty, 3DLfC4D will open a save file dialog to specify where the file is saved. 
+\item[Show in iDisplay] \emph{Not implemented}
+\end{description}
+
+\section{Camera}
+\begin{description}
+\item[Shutter angle] The angle of the opening in a rotary shutter disc, in percent. A value of 100\% means that the whole frame duration is used as the exposure time (this yields maximum motion blur). A value of 50\% degrees means half the frame duration will be exposed for rendering (thus reducing the motion blur).
+
+
+\item[Shutter opening efficiency, Shutter closing efficiency] Sets how “efficient” the shutter of the camera is at opening and closing times. 100\% is maximum efficiency, meaning that the shutter of the camera opens instantaneously, and then closes instantaneously, which is a non-natural shutter. Lower values, such as the default value of ‘0.75’, will simulate slower opening camera shutter and produces softer motion blurs, closer to what is expected in real life cameras.
+
+\end{description}
+
+\chapter{Scene elements}
+\section{Geometry}
+%Before the describing the supported geometry types in 3DLfC4D, we will say a few words about how the plugin translates C4D %scenes for rendering. Geometry in Cinema 4D can be created \emph{procedurally} using a wide variety of generators and %deformers. When rendering natively in Cinema 4D, objects in the scene are converted to polygons before rendering. 3DLfC4D, %however, uses a different approach. Rather than converting the whole scene to polygons, 3DlFC4D traverses all objects in the %scene. For every object, 3DLfC4D checks if a specific \emph{translator} is available for that type of object. 
+
+\subsection{Polygon meshes}
+Polygon meshes in Cinema 4D are exported by 3DLfC4D. 
+
+\subsubsection{UVs}
+The first UV tag of a polygon mesh is exported. 
+
+\subsubsection{Subdivision surfaces}
+If a mesh is placed under a Cinema 4d Subdivision surface object, it is rendered as a 3Delight subdivision surface. This is more efficient than subdividing the mesh and then rendering. There is also no need to set the number of subdivision levels manually; 3Delight adaptively subdivides the mesh so that it appears smooth at the given render resolution. 
+
+The "Subdivide UVs" setting of the Subdivision Surface object controls how UVs are interpolated. Of the available settings, 3DLfC4D supports the "Standard" and "Boundary" modes. It is recommended to use the "Boundary" mode, as it generally leads to reduced UV distortion. 
+
+\subsection{Alembic generators}
+Alembic generators are rendered as polygon meshes (see above). 
+
+\subsubsection{Motion blur and meshes with varying vertex count}
+Meshes stored in an Alembic file may change their topology and vertex count. 3DLfC4D will render meshes with varying vertex count, but deformation motion blur will only be correctly rendered for meshes whose topology and vertex count is constant across each frame. 
+
+
+%\subsection{Hair}
+%Not implemented yet.
+
+%\subsection{Particles}
+%Not implemented yet. 
+
+\section{Tags}
+\subsection{DL\_CompositingTag}
+This tag controls the visibility of an object and its children to various types of rays. 
+
+\begin{description}
+\item[Seen by camera] Specify if the object is visible to primary (camera) rays.
+\item[Seen by diffuse] Specify if the object is visible to diffuse rays.
+\item [Seen by reflection] Specify if the object is visible to reflection rays.  
+\item [Seen by refraction] Specify if the object is visible to refraction rays.  
+\item [Seen by hair] Specify if the object is visible to hair rays.
+\item[Seen by shadows] Specify if the object is visible to shadow rays.
+\item[Seen by volumes] Specify if the object is visible to volume rays. 
+\item[Matte] Sets the object as a matte. The region covered by a matte object will be rendered with an alpha of 0.
+\end{description}
+
+\section{Lights}
+Standard Cinema 4D lights are not supported in 3DLfC4D. Instead, a number of custom light types are provided.
+
+\subsection{Area light}
+A rectangular area light. 
+
+\begin{description}
+\item[Tint] Sets the color of the light.
+\item[Intensity] Sets the intensity of the light. 
+\item[Exposure] This is an additional control over the standard light intensity. Exposure is in many cases a preferred control due to its likeness to photography. Final light intensity is thus computed by: I = intensity * pow(2, exposure)
+\item[Texture] \emph{Not implemented}
+\item[Alpha] \emph{Not implemented}
+\item[Width] Sets the width of the area light.
+\item[Height] Sets the height of the area light.
+\item[Seen by camera] Makes the light source visible to the camera (a.k.a primary rays in technical term).
+\end{description}
+
+\subsection{Point light}
+A spherical light. 
+
+\subsection{Environment light}
+
+\subsection{Object lights}
+Any object rendered by 3DLfC4D can be used as a light by assigning an emissive shader to it. 3Delight does not make a distinction between lights and other objects: lights are simply emissive objects. 
+
+\section{Shaders}
+\subsection{The 3Delight material}
+All shaders in 3DLfC4D are assigned using the special \emph{3Delight} material. 
+
+\subsection{Surface shaders}
+\subsubsection{Standard surface}
+General purpose physically plausible shader for rendering a variety of different materials.
+
+\subsubsection{Glass}
+Render transparent surfaces such as glass or plastic. 
+
+\subsection{Utility shaders}
+\subsubsection{Texture}
+Select UVW map. Textures need to be prepared using the tdlmake tool. See the 3Delight documentation for details. Textures are automatically converted to the optimized $.tdl$ format.  
+
+%\begin{itemize}
+%\item Textures that represent a color, such as diffuse color, texture should generally use srgb. 
+%item Other textures, e.g. displacement maps, roughness maps, etc, should generally use linear.
+%\end{itemize}
+
+\subsection{Displacement shaders}
+\subsubsection{Normal displacement}
+Displaces the surface along the normal direction. 
+
+
+
+\chapter{For developers}
+%3DLfC4D is designed to be extensible via third party plugins. In fact, most of the functionality of 3DLfC4D comes from plugins that extend a small core. 
+
+%\section{Translators}
+%Determines how a specific type of Cinema 4d nodes (objects, tags, materials, shaders) should be translated to the NSI scene description. 
+%
+%\section{Hooks}
+%Perform a general action, not tied to a specific Cinema 4d node but rather to the entire document. 
+%
+%\section{Registering plugins}
+%In message.
+%
+%\section{A complete example}
+%
+%\subsection{Writing shaders for 3DLfC4D}
+%Follow convention: surface shaders should output a closure, a color and a scalar. 
+%
+%Any color that you pass to an OSL shader should be in a linear color space.
+%
+%\chapter{Preparing textures}
+%It is highly recommended to prepare all textures using the \emph{tdlmake} tool that comes with the 3Delight installation. 
+%Mipmaps. Tiled.  Linear workflow. 
+
+
+\end{document}
