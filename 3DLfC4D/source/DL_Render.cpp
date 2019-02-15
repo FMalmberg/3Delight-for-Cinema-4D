@@ -2,7 +2,7 @@
 #include "DL_TypeConversions.h"
 #include "DL_render.h"
 #include "IDs.h"
-#include "vprendersettings.h"
+#include "myres.h"
 #include <vector>
 using namespace std;
 
@@ -36,11 +36,11 @@ bool DL_RenderFrame(BaseDocument* doc, long frame, RENDER_MODE mode, bool progre
 	}
 
 	if(!found){
-		GePrint("Could not find render settings");
+		GePrint("Could not find render settings"_s);
 		return false;
 	}
 
-	BaseDocument* renderdoc = (BaseDocument*)doc->GetClone(COPYFLAGS_DOCUMENT,nullptr);
+	BaseDocument* renderdoc = (BaseDocument*)doc->GetClone(COPYFLAGS::DOCUMENT,nullptr);
 	rd = renderdoc->GetActiveRenderData();
 	vp = rd->GetFirstVideoPost();
 

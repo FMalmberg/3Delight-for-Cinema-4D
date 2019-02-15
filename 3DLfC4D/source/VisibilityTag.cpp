@@ -36,6 +36,6 @@ Bool DL_VisibilityTag::Init(GeListNode *node)
 
 Bool RegisterDL_VisibilityTag(void)
 {
-	return RegisterTagPlugin(ID_DL_VISIBILITYTAG, "DL_CompositingTag", TAG_VISIBLE, DL_VisibilityTag::Alloc, "tvisibility", AutoBitmap("motionblur.tif"), 0);
+	return RegisterTagPlugin(ID_DL_VISIBILITYTAG, "DL_CompositingTag"_s, TAG_VISIBLE, DL_VisibilityTag::Alloc, "tvisibility"_s, AutoBitmap("motionblur.tif"_s), 0);
 }
 

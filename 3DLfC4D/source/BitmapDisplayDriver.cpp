@@ -20,7 +20,7 @@ PtDspyError BmpDspyImageQuery(PtDspyImageHandle image,
 	PtDspyQueryType type,
 	int size,
 	void *data){
-	GePrint("DspyImageQuery: ");
+	GePrint("DspyImageQuery: "_s);
 	return PkDspyErrorNone;
 }
 
@@ -38,16 +38,16 @@ PtDspyError BmpDspyImageOpen(PtDspyImageHandle * image,
 	BaseBitmap** bmp_ptr = (BaseBitmap**)GetParameter("BaseBitmap", paramcount, parameters);
 
 	if (!bmp_ptr){
-		GePrint("Didn't get bitmap");
+		GePrint("Didn't get bitmap"_s);
 		return PkDspyErrorBadParams;
 	}
 	else{
-		GePrint("Got bitmap");
+		GePrint("Got bitmap"_s);
 	}
 
 
 	for (int i = 0; i < formatcount; i++){
-		GePrint(format[i].name);
+		GePrint((String)format[i].name);
 		format[i].type = PkDspyUnsigned8;
 	}
 
@@ -69,7 +69,7 @@ PtDspyError BmpDspyImageData(PtDspyImageHandle image,
 	int ymax_plus_one,
 	int entrysize,
 	const unsigned char*data){
-	GePrint("Bucket");
+	GePrint("Bucket"_s);
 	BaseBitmap* bmp = (BaseBitmap*)image;
 
 	for (int x = xmin; x < xmax_plus_one; x++){
@@ -82,6 +82,6 @@ PtDspyError BmpDspyImageData(PtDspyImageHandle image,
 }
 
 PtDspyError BmpDspyImageClose(PtDspyImageHandle image){
-	GePrint("DspyImageClose");
+	GePrint("DspyImageClose"_s);
 	return PkDspyErrorNone;
 }

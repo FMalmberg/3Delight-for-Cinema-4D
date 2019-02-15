@@ -1,6 +1,7 @@
 #include "c4d.h"
 #include "IDs.h"
 #include "odisplay.h"
+#include "newobj.h"
 
 class Display : public ObjectData{
 public:
@@ -18,7 +19,7 @@ Bool Display::Init(GeListNode* node){
 	BaseObject		*op   = (BaseObject*)node;
 	BaseContainer *data = op->GetDataInstance();
 	
-	data->SetString(FILENAME,"frame#5f.#d");
+	data->SetString(FILENAME,"frame#5f.#d"_s);
 	data->SetInt32(DRIVER, DRIVER_TIFF);
 
 	data->SetInt32(DEPTH,DEPTH_16);
@@ -26,11 +27,7 @@ Bool Display::Init(GeListNode* node){
 	return true;
 }
 
-
-
-
-
 Bool RegisterDisplay(void)
 {
-	return RegisterObjectPlugin(ID_DISPLAY,"DL_Output",OBJECT_GENERATOR,Display::Alloc,"Odisplay",AutoBitmap("Display.tif"),0);
+	return RegisterObjectPlugin(ID_DISPLAY,"DL_Output"_s,OBJECT_GENERATOR,Display::Alloc,"Odisplay"_s,AutoBitmap("Display.tif"_s),0);
 }

@@ -4,12 +4,50 @@
 #include "PluginManager.h"
 #include "IDs.h"
 #include "nsi.hpp"
-#include "vprendersettings.h"
+#include "myres.h"
 #include <vector>
 #include <stdint.h>
 #include <string>
-#include <sstream>      // std::stringstream, std::stringbuf
+#include <sstream>      
+#include <algorithm>
+#include "../../core.framework/source/maxon/stringencoding.h"
+#include <math.h>
+
+// std::stringstream, std::stringbuf
 using namespace std;
+
+void NSIErrorHandlerC4D(void *userdata, int level, int code, const char *message)
+{
+	const char *pre = (const char *)userdata;
+	std::string buffer("3Delight");
+
+	if (pre)
+	{
+		buffer += " (" + std::string(pre) + "): ";
+	}
+	else
+		buffer += ": ";
+
+	buffer += message;
+
+	switch (level)
+	{
+	case NSIErrMessage:
+		ApplicationOutput(buffer.c_str());
+		break;
+	case NSIErrInfo:
+		ApplicationOutput(buffer.c_str());
+		break;
+	case NSIErrWarning:
+		ApplicationOutput(buffer.c_str());
+		break;
+	default:
+	case NSIErrError:
+		ApplicationOutput(buffer.c_str());
+		break;
+	}
+}
+
 
 void StoppedCallback(
 	void* stoppedcallbackdata,
@@ -82,56 +120,6 @@ void SceneParser::SetAOVExport(bool export_aovs){
 	ExportAOVs=export_aovs;
 }
 
-/*void SceneParser::Initialize(BaseDocument* doc, NSIContext_t context_handle, long frame, RENDER_MODE mode, BaseContainer render_settings){
-	if (!doc){ return; }
-	render_doc = doc;
-
-	NSI::Context context(context_handle);
-	DL_settings = render_settings;
-
-	//Motion sampling settings
-	bool useMotionBlur = DL_settings.GetBool(DL_USE_MOTION_BLUR);
-	long motionSamples = DL_settings.GetInt32(DL_MOTION_SAMPLES, 2);
-	if (!useMotionBlur){ motionSamples = 1; }
-
-	//Change: Get this from the camera instead!
-	float ShutterAngle = DL_settings.GetFloat(DL_SHUTTER_ANGLE);
-	long fps = doc->GetFps();
-	float shutterOpen_t = float(frame) / float(fps);
-	float shutterClose_t = float(frame + ShutterAngle) / float(fps);
-
-	SetMotionSamples(motionSamples);
-	SetShutter(shutterOpen_t, shutterClose_t);
-
-	AnimateDoc(doc, shutterOpen);
-
-	//Create nodes and transforms
-	transforms.clear();
-	TraverseScene(render_doc->GetFirstObject(), render_doc, ".root");
-
-	//Create hooks
-	hooks = PM.GetHooks();
-	for (long i = 0; i<hooks.size(); i++){
-		hooks[i]->CreateNSINodes(doc, this);
-	}
-
-	//Make connections
-	for (long i = 0; i<nodes.size(); i++){
-		DL_Translator* translator = nodes[i].GetTranslator();
-		if (translator){
-			translator->ConnectNSINodes(nodes[i].GetC4DNode(doc), doc, this);
-		}
-	}
-
-	for (long i = 0; i<hooks.size(); i++){
-		hooks[i]->ConnectNSINodes(doc, this);
-	}
-
-	if (mode == FINAL_RENDER){
-		SampleFrameInterval();
-	}
-
-}*/
 
 bool SceneParser::Parse(BaseDocument* doc, long frame){
 	if (!doc){ return false; }
@@ -141,6 +129,7 @@ bool SceneParser::Parse(BaseDocument* doc, long frame){
 	RenderData* rd = doc->GetActiveRenderData();
 	BaseContainer* render_data = rd->GetDataInstance();
 	BaseVideoPost* vp = rd->GetFirstVideoPost();
+	
 
 	bool has_vp = false;
 	while (vp != NULL && !has_vp){
@@ -149,56 +138,32 @@ bool SceneParser::Parse(BaseDocument* doc, long frame){
 			vp = vp->GetNext();
 		}
 	}
+	
+
 
 	settings = NULL;
 	if (has_vp){ settings = vp->GetDataInstance(); }
 	if (settings == NULL){ return false; }
 
-	bool streamout = (settings->GetInt32(DL_RENDERMODE) == DL_MODE_STREAM);
-	string stream_path("");
-	string context_type("render");
-	if (streamout){
-		context_type = "apistream";
-		Filename streamfile = settings->GetFilename(DL_OUTPUTFILE);
-		if (!streamfile.GetString().Content()){
-			bool ok = streamfile.FileSelect(FILESELECTTYPE_ANYTHING, FILESELECT_SAVE, "Save File", "nsi");
-			if (!ok){ return false; }
-		}
-		streamfile.SetSuffix("nsi");
-		stream_path = StringToStdString(streamfile.GetString());
-	}
 
-
-
-	//NSI::Context ctx;
-
-
-	/*((
-		NSI::StringArg("type","apistream"),
-		NSI::StringArg("streamformat","nsi"),
-		NSI::StringArg("streamfilename",stream_path)
-		));*/
-
-	/*if(streamout){
-		context_handle=stream_ctx.Handle();
-		direct_ctx.End();
-		}
-		else{
-		context_handle=direct_ctx.Handle();
-		stream_ctx.End();
-		}*/
 
 	NSI::Context context;
 
-	if (streamout){
-	context.Begin(((
-		NSI::StringArg("type", context_type),
-		NSI::StringArg("streamformat", "nsi"),
-		NSI::StringArg("streamfilename", stream_path)
-		)));
-	}
-	else{
-		context.Begin();
+	NSIErrorHandler_t eh = NSIErrorHandlerC4D;
+
+	NSIParam_t param[1];
+	param[0].name = "errorhandler";
+	param[0].data = &eh;
+	param[0].type = NSITypePointer; param[0].count = 1;
+	param[0].flags = 0; param[0].arraylength = 0;
+	
+	if(settings->GetString(DL_ISCLICKED) == "Render")
+	context.Begin(NSI::PointerArg("errorhandler", NSIErrorHandlerC4D));
+
+	else if (settings->GetString(DL_ISCLICKED) == "Export") {
+		String flnm = settings->GetFilename(DL_FOLDER_OUTPUT).GetString();
+		std::string exported = flnm.GetCStringCopy();
+		context.Begin(NSI::StringArg("streamfilename", exported.c_str()));
 	}
 
 	context_handle = context.Handle();
@@ -270,7 +235,7 @@ bool SceneParser::Parse(BaseDocument* doc, long frame){
 
 	hooks.clear();
 	transforms.clear();
-
+	 
 
 	int renderstatus=-1;
 
@@ -285,41 +250,18 @@ bool SceneParser::Parse(BaseDocument* doc, long frame){
 		NSI::StringArg("action", "wait")
 		));
 
-	/*GePrint("Status: " + String::IntToString(renderstatus) + " vs " + String::IntToString(NSIRenderAborted));
-	if (renderstatus == NSIRenderCompleted){
-		GePrint("Render completed");
-	}
-	else if (renderstatus == NSIRenderAborted){
-		GePrint("Render aborted");
-	}*/
 	context_handle=NSI_BAD_CONTEXT;
 	stage=NONE;
 	//return (progress>99.9); 
 	return (renderstatus == NSIRenderCompleted);
 }
 
-//void Initialize(BaseDocument* doc, long frame, RENDER_MODE mode, BaseContainer settings);
 
 
 void SceneParser::SetRenderMode(RENDER_MODE mode){
 	rendermode = mode;
 }
 
-/*void SceneParser::InteractiveUpdate(){
-	if (!render_doc){ return; }
-	SampleMotion(1, render_doc);
-}*/
-
-/*void SceneParser::SampleFrameInterval(){
-	if (!render_doc){ return; }
-
-	for (long i = 0; i<nMotionSamples; i++){
-		if (i != 0){
-			AnimateDoc(render_doc, motionSampleTimes[i]);
-		}
-		SampleMotion(i, render_doc);
-	}
-}*/
 
 void SceneParser::SetMotionSamples(int samples){
 	nMotionSamples=samples;
@@ -377,7 +319,8 @@ std::string SceneParser::GetIDString(BaseList2D* node){
 	const Char* mem;
 	node->FindUniqueID(MAXON_CREATOR_ID, mem,  memsize);
 	String ID_STR;
-	ID_STR.SetCString(mem,memsize);
+	ApplicationOutput(ID_STR);
+	ID_STR.SetCString(mem,memsize, STRINGENCODING::UTF8);
 	std::string result=StringToStdString(ID_STR);
 	return result;
 }
@@ -434,7 +377,7 @@ void SceneParser::SampleMotion(long s, BaseDocument* doc){
 
 void SceneParser::AnimateDoc(BaseDocument* doc,double t){
 	doc->SetTime(BaseTime(t));
-	doc->ExecutePasses(0,true,true,true, BUILDFLAGS_EXTERNALRENDERER);
+	doc->ExecutePasses(0,true,true,true, BUILDFLAGS::EXTERNALRENDERER);
 }
 
 void SceneParser::TraverseShaders(BaseShader* shader, BaseDocument* doc){
@@ -445,6 +388,7 @@ void SceneParser::TraverseShaders(BaseShader* shader, BaseDocument* doc){
 	DL_Translator* translator = n.GetTranslator();
 	if (translator){
 		nodes.push_back(n);
+		ApplicationOutput(shader->GetName());
 		translator->CreateNSINodes("", shader, doc, this);
 	}
 
@@ -470,12 +414,12 @@ void SceneParser::TraverseScene(BaseObject* obj, BaseDocument* doc,std::string p
 
 	if(obj_visible){
 		Node n(obj);
+
 		DL_Translator* translator=n.GetTranslator();
 		if(translator){
 			nodes.push_back(n);
 			translator->CreateNSINodes(transform_handle.c_str(), obj, doc, this);
 		}
-		
 	}
 
 	//Handle tags

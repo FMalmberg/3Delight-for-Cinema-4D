@@ -28,6 +28,6 @@ Bool DL_CameraTag::Init(GeListNode *node)
 
 Bool RegisterDL_CameraTag(void)
 {
-	return RegisterTagPlugin(ID_DL_CAMERATAG, "DL_CameraProperties", TAG_VISIBLE, DL_CameraTag::Alloc, "tcamera", AutoBitmap("filmcamera.tif"), 0);
+	return RegisterTagPlugin(ID_DL_CAMERATAG, "DL_CameraProperties"_s, TAG_VISIBLE, DL_CameraTag::Alloc, "tcamera"_s, AutoBitmap("filmcamera.tif"_s), 0);
 }
 
