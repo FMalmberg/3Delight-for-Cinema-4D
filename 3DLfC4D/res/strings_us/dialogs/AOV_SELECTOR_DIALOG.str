@@ -1,0 +1,12 @@
+// C4D-DialogResource
+
+DIALOGSTRINGS AOV_SELECTOR_DIALOG
+{
+	SHADING "Shading Components";
+	AUXILIARY "Auxiliary Variables";
+	
+	TDLG "AOV Selector";
+	OKBUTTON "OK";
+	CANCELBUTTON "CANCEL";
+	HOLD_PRESSED "Hold CTRL pressed for multiple selection";
+}

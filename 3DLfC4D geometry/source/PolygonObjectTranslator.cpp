@@ -36,13 +36,25 @@ PolygonObject* GetMeshFromNode(GeListNode* C4DNode){
 
 	//By default, we assume that the node is a polygon object and perform a direct cast
 	PolygonObject* mesh = (PolygonObject*)C4DNode; 
-
+	
+	String type = (String::IntToString(obj->GetType()));
+	ApplicationOutput(type);
 	//If the object is an alembic generator, we get the polygon mesh from the cache instead
 	if (obj->GetType() == Oalembicgenerator){ 
 		BaseObject* cache = obj->GetCache();
 		if (cache == NULL){ return NULL;}
 		if (cache->GetType() != Opolygon){ return NULL; }
 		mesh = (PolygonObject*)cache;
+	}
+
+	if (obj->GetType() != Opolygon && obj->GetType() != Oalembicgenerator) {
+		ModelingCommandData mcd;
+		mcd.op = obj;
+		mcd.doc = obj->GetDocument();
+		if (!SendModelingCommand(MCOMMAND_CURRENTSTATETOOBJECT, mcd)) return nullptr;
+		ModelingCommandData mcd2;
+		mcd2.op = static_cast<BaseObject*>(mcd.result->GetIndex(0));
+		mesh = static_cast<PolygonObject*>(mcd2.op);
 	}
 	return mesh;
 }

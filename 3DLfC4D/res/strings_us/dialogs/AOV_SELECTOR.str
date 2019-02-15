@@ -1,0 +1,15 @@
+// C4D-DialogResource
+
+DIALOGSTRINGS AOV_SELECTOR
+{
+	TDLG "AOV Selector";
+	DL_IMAGE_LAYER_TXT "Image Layer (AOV)";
+	OUTPUT "Output";
+	ADDTEXT "Add...";
+	REMOVETEXT "Remove";
+	DUPLICATETEXT "Duplicate";
+	VIEWTEXT "View...";
+	AOV_OUTPUT1 "First Output";
+	AOV_OUTPUT2 "Second Output";
+	AOV_OUTPUT3 "Third Output";
+}

@@ -1,0 +1,190 @@
+STRINGTABLE myres
+{
+	myres			"3 Delight Renderer";
+
+	DL_TEXT_CHECKER  "chk";
+	DL_RENDER_LAYER			"Render Layer";
+	DL_MASTER_LAYER  "masterLayer";
+	DL_LAYER_1		"layer1";
+	DL_LAYER_2		"layer2";
+
+	DL_GROUP_COMMON			"Common";
+	DL_CUSTOM_AOV_LAYER "";
+	DL_GROUP_3DELIGHT			"3Delight";
+	DL_ACTIVE_RENDER_SETTINGS			"Active Render Settings";
+	DL_RENDER_SETTINGS_1		"dlRenderSettings_1";
+	DL_RENDER_SETTINGS_2		"dlRenderSettings_2";
+	DL_CREATE_RENDER_SETTINGS  "Render";
+	DL_EXPORT_RENDER_SETTINGS  "Export to NSI File";
+	DL_WELCOME		"Welcome to 3Delight";
+	DL_ISCLICKED "";
+	DL_FOLDER_OUTPUT "";
+	DL_DEFAULT_IMAGE_BITDEPTH "";
+
+	DL_GROUP_QUALITY "Quality";
+	DL_TEXTEDIT  "";
+	DL_SHADING_SAMPLES "Shading Samples";
+	DL_PIXEL_SAMPLES  "Pixel Samples";
+	DL_VOLUME_SAMPLES "Volume Samples";
+	DL_PIXEL_FILTER "Pixel Filter";
+	DL_GAUSSIAN  "gausian";
+	DL_BLACKMAN_HARRIS  "blackman-harris";
+	DL_BOX  "box";
+	DL_MITCHELL "mitchell";
+	DL_CATMULL_ROM "catmull-rom";
+	DL_SINC "sinc";
+	DL_TRIANGLE "triangle";
+	DL_ComboBox "";
+	
+	
+	
+	DL_FILTER_WIDTH "Filter Width";
+	DL_MOTION_BLUR "Motion Blur";
+	DL_MAX_DIFFUSE_DEPTH	"Max Diffuse Depth";
+	DL_MAX_REFLECTION_DEPTH	"Max Reflection Depth";
+	DL_MAX_REFRACTION_DEPTH	"Max Refraction Depth";
+	DL_MAX_HAIR_DEPTH	"Max Specular Depth";
+	DL_MAX_DISTANCE	"Max Distance";
+	DL_MOTION_TEXT_DIALOG "Dialog";
+
+	DL_SCENE_ELEMENTS "Scene Elements";
+	DL_CAMERA_VIEW 		"Camera";
+	DL_CAMERA_NONE      "<none>";
+	DL_CAMERA_FRONTSHAPE  "frontShape";
+	DL_CAMERA_PERPSHAPE   "perspShape";
+	DL_CAMERA_SIDESHAPE   "sideShape";
+	DL_CAMERA_TOPSIDE     "topShape";
+	DL_ENVIRONMENT_VIEW  "Environment";
+	DL_ENVIRONMENT_NONE  "<none>";
+	DL_ENVIRONMENT_SHAPE1   "dlEnvironmentShape1";
+	DL_ENVIRONMENT_SHAPE2	"dlEnvironmentShape2";
+	DL_ENVIRONMENT_SHAPE3	"dlEnvironmentShape3";
+	DL_ATMOSPHERE_VIEW 		"Atmosphere";
+	DL_ATMOSPHERE_NONE		"<none>";
+	DL_ATMOSPHERE_SHAPE1	"dlAtmosphere1";
+	DL_OBJECTS_TO_RENDER_VIEW  "Objects To Render";
+	DL_OBJECTS_TO_RENDER_ALL   "<all visible objects";
+	DL_LIGHTS_TO_RENDER_VIEW   "Lights To Render";
+	DL_LIGHTS_TO_RENDER_ALL	   "all visible lights>";
+
+	DL_GROUP_FRAME_RANGE  "Frame Range";
+	DL_FRAME_RANGE_MAX  "";
+	DL_FRAME_RANGE_CHECK  "							  		";
+	DL_FRAME_RANGE    "Frame Range";
+	DL_FRAME_INCREMENT   "Increment     ";	
+	DL_FRAME_INCREMENT_MAX "";
+
+	DL_GROUP_IMAGES_AND_CROP  "IMAGE Resolution and Crop";
+	DL_USE_RENDER_IMAGE_SIZE  "Use Render Settings' Image Size";
+	DL_IMAGE_CROP_CHECK "";
+	DL_CROP_MIN_FROM   "Crop Min";
+	DL_CROP_MIN_TO   "";
+	DL_CROP_MAX_FROM   "Crop Max";
+	DL_CROP_MAX_TO     "";
+
+	DL_GROUP_IMAGE_LAYERS  "Image layers";
+	DL_DEFAULT_IMAGE_FILENAME  "Default Image Filename";
+	DL_DEFAULT_IMAGE_FORMAT  "Default Image Format";
+	DL_FORMAT_TIFF  "TIFF";
+	DL_FORMAT_OPEN_EXR   "OpenEXR";
+	DL_FORMAT_OPEN_EXR_DEEP		"OpenEXR(deep)";
+	DL_FORMAT_JPEG	 "JPEG";
+	DL_FORMAT_PNG	 "PNG";
+	
+	
+	DL_DEFAULT_IMAGE_OUTPUT  "";
+	DL_DEFAULT_IMAGE_OUTPUT_TIFF  "";
+	DL_DEFAULT_IMAGE_OUTPUT_JPG  "";
+	DL_DEFAULT_IMAGE_OUTPUT_PNG  "";
+	
+	
+	DL_EIGHT_BIT	"8-bit";
+	DL_SIXTEEN_BIT  "16-bit";
+	DL_SIXTEEN_BIT_FLOAT  "16-bit float";
+	DL_THIRTYTWO_BIT  "32-bit float";
+	
+	
+	DL_SAVE_IDS_AS_CRYPTOMATTE  "Save IDs as Cryptomatte";
+	DL_BATCH_OUTPUT_MODE	"Batch Output Mode";
+	DL_ENABLE_AS_SELECTED   "Enable file output as selected";
+	DL_ENABLE_ALL	"Enable all file output and selected JPEG";
+	DL_INTERACTIVE_OUTPUT_MODE	 "Interactive Output Mode";	
+	DL_IMAGE_LAYER_AOV   "Image Layer (AOV)";
+	IMAGE_01_ON "Image 1";
+	IMAGE_02_ON "Image 2";
+	IMAGE_03_ON "Image 3";
+	IMAGE_04_ON "Image 4";
+	IMAGE_01_OFF "Image 11";
+	IMAGE_02_OFF "Image 12";
+	IMAGE_03_FF "Image 13";
+	IMAGE_04_OFF "Image 14";
+	GV_ABS_INPUT "ABSINPUT";
+	GV_ABS_OUTPUT  "ABSOUTPUT";
+
+
+	DL_ENABLE_AS_SELECTED_INTERACTIVE   "Enable file output as selected";
+	DL_ENABLE_ONLY_FOR_SELECTED "Enable file output only for selected layer";
+	DL_DISABLE_FILE_OUTPUT 		"Disable File Output";
+
+	DL_GROUP_OVERRIDES  "Overrides";
+	DL_ENABLE_INTERACTIVE_PREVIEW	"Enable Interactive Previewwing with Speed Boost";    
+	DL_DISABLE_MOTION_BLUR   "Disable Motion Blur";
+	DL_DISABLE_DEPTH_OF_FIELD   "Disable Depth of Field";
+	DL_DISABLE_DISPLACEMENT  "Disable Displacement";
+	DL_DISABLE_SUBSURFACE  "Disable Subsurface";
+	DL_RESOLUTION   "Resolution";
+	DL_FULL   "Full";
+	DL_HALF   "Half";
+	DL_QUARTER  "Quarter";
+	DL_EIGHTH   "EIGHTH";   
+	DL_SAMPLING  "Sampling";
+	DL_ONE_PERCENT  "1%";
+	DL_FOUR_PERCENT  "4%";
+	DL_TEN_PERCENT   "10%";
+	DL_TWENTYFIVE_PERCENT   "25%";
+	DL_HUNDRED_PERCENT  "100%";
+	DL_GROUP_EXTRA_ATTRIBUTES   "Extra Attributes";
+	DL_PIXEL_ASPECT_RATIO	"Pixel Aspect Ration";
+
+	DL_GROUP_QUALITY			"Quality";
+	DL_SHADINGRATE			"Shading rate";
+	DL_PIXELSAMPLES			"Pixel samples";
+	DL_PIXELFILTER			"Pixel filter";
+	DL_FILTERWIDTH			"Filter width";
+	DL_FILTER_BOX 			"Box";
+	DL_FILTER_TRIANGLE		"Triangle";
+	DL_FILTER_CATMULL_ROM		"Catmull-Rom";
+	DL_FILTER_MITCHELL		"Mitchell";
+	DL_FILTER_BLACKMANN_HARRIS	"Blackmann-Harris";
+	DL_FILTER_BESSEL		"Bessel";
+	DL_FILTER_SINC 			"Sinc";
+	DL_FILTER_GAUSSIAN		"Gaussian";
+
+	DL_GROUP_CAMERA			"Camera";
+	DL_USE_MOTION_BLUR		"Render motion blur";
+	DL_MOTION_SAMPLES 		"Motion samples";
+	DL_TRANSFORMATION_SAMPLES	"Transformation samples";
+	DL_DEFORMATION_SAMPLES	"Deformation samples";
+	DL_SHUTTER_ANGLE			"Shutter angle";
+	DL_SHUTTER_OPENING_EFFICIENCY		"Shutter opening efficiency";
+	DL_SHUTTER_CLOSING_EFFICIENCY		"Shutter closing efficiency";
+
+	DL_GROUP_OUTPUT			"Output";
+	DL_RENDERMODE			"Render mode";
+	DL_MODE_DIRECT			"Render";
+	DL_MODE_STREAM			"Export NSI stream";
+	DL_SHOW_IMAGE			"Show in iDisplay";
+	DL_SAVE_IMAGE			"";
+	DL_OUTPUTFILE			"NSI Stream Path";
+	DL_RIBOUT			"RIB out";
+
+	DL_GROUP_RAYTRACING		"Illumination";
+	DL_MAX_SAMPLES			"Max Samples";
+	DL_MIN_SAMPLES			"Min Samples";
+	DL_SHADING_SAMPLES		"Shading Samples";
+	
+	DL_TRACE_BIAS			"Ray Bias";
+	DL_RAYCACHE				"Use Raycache";
+	DL_GROUP_LWF			"Color management";
+	DL_GAMMA				"Monitor gamma";
+}
