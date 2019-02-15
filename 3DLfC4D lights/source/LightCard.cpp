@@ -1,6 +1,9 @@
 #include "c4d.h"
+#include "c4d_symbols.h"
 #include "IDs.h"
 #include "olightcard.h"
+
+
 
 class LightCard : public ObjectData{
 public:
@@ -32,7 +35,7 @@ Bool LightCard::Init(GeListNode* node){
 
 
 DRAWRESULT LightCard::Draw(BaseObject* op, DRAWPASS drawpass, BaseDraw* bd, BaseDrawHelp* bh){
-	if (drawpass==DRAWPASS_OBJECT)
+	if (drawpass==DRAWPASS::OBJECT)
 	{ 
 		BaseContainer *data = op->GetDataInstance(); 
 		float width=data->GetFloat(LIGHTCARD_WIDTH);
@@ -98,25 +101,25 @@ void LightCard::GetHandle(BaseObject* op, Int32 i, HandleInfo& info){
 	if(i==0){
 		info.position = Vector(-width/2.0,0,0);
 		info.direction = Vector(-1.0,0,0);
-		info.type=HANDLECONSTRAINTTYPE_LINEAR;
+		info.type=HANDLECONSTRAINTTYPE::LINEAR;
 		//return (Vector(-width/2.0,0,0));
 	}
 	else if(i==1){
 		info.position = Vector(width/2.0,0,0);
 		info.direction = Vector(1.0,0,0);
-		info.type=HANDLECONSTRAINTTYPE_LINEAR;
+		info.type=HANDLECONSTRAINTTYPE::LINEAR;
 		//return (Vector(width/2.0,0,0));
 	}
 	else if(i==2){
 		info.position = Vector(0,-height/2.0,0);
 		info.direction = Vector(0,-1.0,0);
-		info.type=HANDLECONSTRAINTTYPE_LINEAR;
+		info.type=HANDLECONSTRAINTTYPE::LINEAR;
 		//return (Vector(0,-height/2.0,0));
 	}
 	else if(i==3){
 		info.position = Vector(0,height/2.0,0);
 		info.direction = Vector(0,1.0,0);
-		info.type=HANDLECONSTRAINTTYPE_LINEAR;
+		info.type=HANDLECONSTRAINTTYPE::LINEAR;
 		//return (Vector(0,height/2.0,0));
 	}
 }
@@ -141,5 +144,5 @@ void LightCard::SetHandle(BaseObject* op, Int32 i, Vector p,const HandleInfo& in
 
 Bool RegisterLightCard(void)
 {
-	return RegisterObjectPlugin(ID_LIGHTCARD,"DL_Arealight",OBJECT_GENERATOR,LightCard::Alloc,"Olightcard",AutoBitmap("Lightcard.tif"),0);
+	return RegisterObjectPlugin(ID_LIGHTCARD,"DL_Arealight"_s,OBJECT_GENERATOR,LightCard::Alloc,"Olightcard"_s,AutoBitmap("Lightcard.tif"_s),0);
 }

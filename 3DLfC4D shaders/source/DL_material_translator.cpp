@@ -11,7 +11,13 @@ void DL_material_translator::CreateNSINodes(const char* ParentTransformHandle, G
 
 	//Create an attributes node
 	attributes_handle = string(parser->GetUniqueName("transform_attributes"));
+	ApplicationOutput("Attribute @ ", attributes_handle.c_str());
 	ctx.Create(attributes_handle, "attributes");
+	/*string transform_handle = string(ParentTransformHandle);
+	ApplicationOutput("TransformHandle @", transform_handle);
+	ctx.Connect(attributes_handle, "", transform_handle, "geometryattributes");*/
+	ctx.Connect(attributes_handle, "", ".root", "geometryattributes");
+
 
 	BaseMaterial* material = (BaseMaterial*)C4DNode;
 	BaseContainer* data = material->GetDataInstance();
@@ -36,6 +42,8 @@ void DL_material_translator::ConnectNSINodes(GeListNode* C4DNode, BaseDocument* 
 	if (surface_shader){
 		string surface_handle = string(parser->GetAssociatedHandle(surface_shader));
 		if (surface_handle != ""){
+			ApplicationOutput("Value @ ", surface_handle.c_str());
+			ApplicationOutput("Attribute @ ", attributes_handle.c_str());
 			//Create root shader node
 			string root_handle = string(parser->GetUniqueName("root_surface"));
 			ctx.Create(root_handle, "shader");

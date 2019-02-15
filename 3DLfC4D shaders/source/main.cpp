@@ -46,19 +46,20 @@ Bool PluginMessage(Int32 id, void *data)
 	switch (id)
 	{
 	case C4DPL_INIT_SYS:
-		if (!resource.Init()) return FALSE; // don't start plugin without resource
+		if (!g_resource.Init()) return FALSE; // don't start plugin without resource
 		return TRUE;
 		break;
 
 	case DL_LOAD_PLUGINS:
 		DL_PluginManager* pm = (DL_PluginManager*)data;
 		pm->RegisterHook(AllocateHook<ShaderSettingsHook>);
-		pm->RegisterTranslator(ID_DELIGHTMATERIAL, AllocateTranslator<DL_material_translator>);
 		pm->RegisterTranslator(ID_STANDARDSHADER, AllocateTranslator<StandardShaderTranslator>);
 		pm->RegisterTranslator(ID_TEXTURESHADER, AllocateTranslator<TextureShaderTranslator>);
 		pm->RegisterTranslator(ID_GLASSSHADER, AllocateTranslator<GlassShaderTranslator>);
 		pm->RegisterTranslator(ID_NORMALDISPLACEMENTSHADER, AllocateTranslator<NormalDisplacementTranslator>);
 		pm->RegisterTranslator(ID_RANGESHADER, AllocateTranslator<RangeTranslator>);
+		pm->RegisterTranslator(ID_DELIGHTMATERIAL, AllocateTranslator<DL_material_translator>);
+
 		//pm->RegisterTranslator(ID_TEXTURESHADER, AllocateTranslator<TextureShaderTranslator>);
 		pm->RegisterTranslator(Xbitmap, AllocateTranslator<TextureTranslator>);
 		pm->RegisterTranslator(Ttexture, AllocateTranslator<TextureTagTranslator>);

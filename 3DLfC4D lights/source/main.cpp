@@ -33,7 +33,7 @@ Bool PluginMessage(Int32 id, void *data)
 	switch (id)
 	{
 	case C4DPL_INIT_SYS:
-		if (!resource.Init()) return FALSE; // don't start plugin without resource
+		if (!g_resource.Init()) return FALSE; // don't start plugin without resource
 		return TRUE;
 		break;
 

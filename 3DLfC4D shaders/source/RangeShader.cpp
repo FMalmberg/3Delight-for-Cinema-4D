@@ -34,5 +34,5 @@ Vector RangeShader::Output(BaseShader* sh, ChannelData* sd)
 
 Bool RegisterRangeShader(void)
 {
-	return RegisterShaderPlugin(ID_RANGESHADER, "DL_RangeShader", 0, RangeShader::Alloc, "Xrange", 0);
+	return RegisterShaderPlugin(ID_RANGESHADER, "DL_RangeShader"_s, 0, RangeShader::Alloc, "Xrange"_s, 0);
 }

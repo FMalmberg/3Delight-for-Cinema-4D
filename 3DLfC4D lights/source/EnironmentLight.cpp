@@ -4,7 +4,7 @@
 
 class EnvironmentLight : public ObjectData{
 public:
-	static NodeData *Alloc(void) { return NewObjClear(EnvironmentLight); }
+	static NodeData *Alloc(void) { return NewObj(EnvironmentLight) iferr_ignore("Instance not created"); }
 	virtual Bool Init(GeListNode* node);
 	//virtual Bool Draw(BaseObject* op, DRAWPASS drawpass, BaseDraw* bd, BaseDrawHelp* bh);
 	//virtual BaseObject* GetVirtualObjects(PluginObject *op, HierarchyHelp *hh);
@@ -19,8 +19,6 @@ Bool EnvironmentLight::Init(GeListNode* node){
 	data->SetFloat(ENVIRONMENT_INTENSITY,1.0);
 	data->SetFloat(ENVIRONMENT_EXPOSURE,0.0);
 	data->SetVector(ENVIRONMENT_TINT,Vector(1,1,1));
-	data->SetInt32(ENVIRONMENT_TEXTURE_COLORSPACE, ENVIRONMENT_TEXTURE_COLORSPACE_LINEAR);
-
 	/*data->SetFloat(LIGHTCARD_WIDTH,200.0);
 	data->SetFloat(LIGHTCARD_HEIGHT,200.0);
 
@@ -49,5 +47,5 @@ Bool EnvironmentLight::Init(GeListNode* node){
 
 Bool RegisterEnvironmentLight(void)
 {
-	return RegisterObjectPlugin(ID_ENVIRONMENTLIGHT,"DL_Environment",OBJECT_GENERATOR,EnvironmentLight::Alloc,"Oenvironmentlight",AutoBitmap("Envlight.tif"),0);
+	return RegisterObjectPlugin(ID_ENVIRONMENTLIGHT,"DL_Environment"_s,OBJECT_GENERATOR,EnvironmentLight::Alloc,"Oenvironmentlight"_s,AutoBitmap("Envlight.tif"_s),0);
 }
