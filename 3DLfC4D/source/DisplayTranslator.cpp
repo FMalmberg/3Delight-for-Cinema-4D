@@ -60,7 +60,7 @@ void DisplayTranslator::CreateNSINodes(const char* ParentTransformHandle, GeList
 
 	driver_handle=string(parser->GetUniqueName("outputdriver"));
 
-	String file=data->GetString(FILENAME,"frame");
+	String file=data->GetString(FILENAME,"frame"_s);
 	Filename filepath=data->GetFilename(PATH,"");
 	filepath=filepath+Filename("/"+file);
 

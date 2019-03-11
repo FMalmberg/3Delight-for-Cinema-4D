@@ -50,7 +50,7 @@ INITRENDERRESULT DL_Material::InitRender(BaseMaterial* mat, const InitRenderStru
 {
 	BaseContainer* data = mat->GetDataInstance();
 	//color = data->GetVector(SIMPLEMATERIAL_COLOR);
-	return INITRENDERRESULT_OK;
+	return INITRENDERRESULT::OK;
 }
 
 /*static void SimpleIllumModel(VolumeData* sd, RayLightCache* rlc, void* dat)
@@ -268,5 +268,5 @@ Bool RegisterDLMaterial(void)
 	// add a preview scene that can only be selected in the Simple Material's preview
 	//AddUserPreviewScene(GeGetPluginResourcePath() + String("scene") + String("Stairs.c4d"), ID_SIMPLEMAT, nullptr);
 	//GePrint("Register 3Delight material");
-	return RegisterMaterialPlugin(ID_DELIGHTMATERIAL, "3Delight material", 0, DL_Material::Alloc, "Mdelightmaterial", 0);
+	return RegisterMaterialPlugin(ID_DELIGHTMATERIAL, "3Delight material"_s, 0, DL_Material::Alloc, "Mdelightmaterial"_s, 0);
 }

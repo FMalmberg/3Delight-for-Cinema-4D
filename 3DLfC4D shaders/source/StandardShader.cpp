@@ -63,5 +63,5 @@ Bool RegisterStandardShader(void)
 {
 	//GePrint("Register standard shader");
 	// be sure to use a unique ID obtained from www.plugincafe.com
-	return RegisterShaderPlugin(ID_STANDARDSHADER, "DL_StandardSurface", 0, StandardShader::Alloc, "Xstandardshader", 0);
+	return RegisterShaderPlugin(ID_STANDARDSHADER, "DL_StandardSurface"_s, 0, StandardShader::Alloc, "Xstandardshader"_s, 0);
 }

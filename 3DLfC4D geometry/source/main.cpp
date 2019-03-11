@@ -2,7 +2,7 @@
 #include <string.h>
 #include "DL_API.h"
 #include "PolygonObjectTranslator.h"
-#include "AlembicTranslator.h"
+#include "BaseObjectTranslator.h"
 
 Bool PluginStart(void)
 {
@@ -20,7 +20,7 @@ Bool PluginMessage(Int32 id, void *data)
 	switch (id)
 	{
 	case C4DPL_INIT_SYS:
-		if (!resource.Init()) return FALSE; // don't start plugin without resource
+		if (!g_resource.Init()) return FALSE; // don't start plugin without resource
 		return TRUE;
 		break;
 
@@ -29,6 +29,10 @@ Bool PluginMessage(Int32 id, void *data)
 
 		pm->RegisterTranslator(Opolygon, AllocateTranslator<PolygonObjectTranslator>);
 		pm->RegisterTranslator(Oalembicgenerator, AllocateTranslator<PolygonObjectTranslator>);
+		pm->RegisterTranslator(Ocube, AllocateTranslator<PolygonObjectTranslator>);
+		pm->RegisterTranslator(Ocylinder, AllocateTranslator<PolygonObjectTranslator>);
+		pm->RegisterTranslator(Osphere, AllocateTranslator<PolygonObjectTranslator>);
+
 		break;
 
 	}

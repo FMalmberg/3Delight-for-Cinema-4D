@@ -1,6 +1,5 @@
 #include "TextureTranslator.h"
 #include "otexture.h"
-#include "ri.h"
 #include "DL_TypeConversions.h"
 #include "nsi.hpp"
 

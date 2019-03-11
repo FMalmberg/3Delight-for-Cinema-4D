@@ -4,7 +4,6 @@
 #include "DL_TypeConversions.h"
 #include "DL_Utilities.h"
 #include "nsi.hpp"
-#include "ri.h"
 
 void GlassShaderTranslator::CreateNSINodes(const char* ParentTransformHandle, GeListNode* C4DNode, BaseDocument* doc, DL_SceneParser* parser){
 	NSI::Context ctx(parser->GetContext());
@@ -13,7 +12,7 @@ void GlassShaderTranslator::CreateNSINodes(const char* ParentTransformHandle, Ge
 	shader_handle = string(parser->GetUniqueName("glass_material"));
 	ctx.Create(shader_handle, "shader");
 
-	BaseObject* obj = (BaseObject*)C4DNode;
+	BaseList2D* obj = (BaseList2D*)C4DNode;
 	BaseContainer* data = obj->GetDataInstance();
 
 	//Shader file path
@@ -21,19 +20,19 @@ void GlassShaderTranslator::CreateNSINodes(const char* ParentTransformHandle, Ge
 	vector<char> c_shaderpath = StringToChars(shaderpath.GetString());
 
 	Vector reflection_color = toLinear(data->GetVector(REFLECTION_COLOR), doc);
-	RtColor reflect_col;
+	float reflect_col[3];
 	reflect_col[0] = reflection_color.x;
 	reflect_col[1] = reflection_color.y;
 	reflect_col[2] = reflection_color.z;
 
 	Vector refraction_color = toLinear(data->GetVector(REFRACTION_COLOR), doc);
-	RtColor refract_col;
+	float refract_col[3];
 	refract_col[0] = refraction_color.x;
 	refract_col[1] = refraction_color.y;
 	refract_col[2] = refraction_color.z;
 
 	Vector tint = toLinear(data->GetVector(TINT), doc);
-	RtColor tint_col;
+	float tint_col[3];
 	tint_col[0] = tint.x;
 	tint_col[1] = tint.y;
 	tint_col[2] = tint.z;
@@ -57,7 +56,8 @@ void GlassShaderTranslator::CreateNSINodes(const char* ParentTransformHandle, Ge
 		NSI::IntegerArg("use_refraction", use_refraction)
 		));
 
-	parser->SetAssociatedHandle((BaseList2D*)C4DNode, shader_handle.c_str());
+	const char* hndl = shader_handle.c_str();
+	parser->SetAssociatedHandle((BaseList2D*)C4DNode, hndl);
 }
 
 void GlassShaderTranslator::ConnectNSINodes(GeListNode* C4DNode, BaseDocument* doc, DL_SceneParser* parser){

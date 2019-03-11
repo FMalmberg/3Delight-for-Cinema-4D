@@ -2,7 +2,6 @@
 #include "xtextureshader.h"
 #include "DL_TypeConversions.h"
 #include "nsi.hpp"
-#include "ri.h"
 
 void TextureShaderTranslator::CreateNSINodes(const char* ParentTransformHandle, GeListNode* C4DNode, BaseDocument* doc, DL_SceneParser* parser){
 	NSI::Context ctx(parser->GetContext());

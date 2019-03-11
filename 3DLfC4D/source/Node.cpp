@@ -37,6 +37,7 @@ Node::Node(BaseList2D* listnode){
 	
 	TranslatorDeleter d;
 	translator=DL_TranslatorPtr(PM.GetTranslator(listnode->GetType()), d);
+	ApplicationOutput(String::IntToString(listnode->GetType()));
 }
 
 

@@ -27,5 +27,5 @@ Vector TextureShader::Output(BaseShader* sh, ChannelData* sd)
 
 Bool RegisterTextureShader(void)
 {
-	return RegisterShaderPlugin(ID_TEXTURESHADER, "DL_Texture", 0, TextureShader::Alloc, "Xtextureshader", 0);
+	return RegisterShaderPlugin(ID_TEXTURESHADER, "DL_Texture"_s, 0, TextureShader::Alloc, "Xtextureshader"_s, 0);
 }

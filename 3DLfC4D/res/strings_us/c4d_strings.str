@@ -3,6 +3,14 @@
 
 STRINGTABLE
 {
+	DL_PIXEL_FILTER "Pixel Filter";
+	DL_GAUSSIAN  "gausian";
+	DL_BLACKMAN_HARRIS  "blackman-harris";
+	DL_BOX  "box";
+	DL_MITCHELL "mitchell";
+	DL_CATMULL_ROM "catmull-rom";
+	DL_SINC "sinc";
+	DL_TRIANGLE "triangle";
   IDS_GRADIENTTITLE "Power Gradient";
   IDS_TYPE "Type";
   IDS_U "U";

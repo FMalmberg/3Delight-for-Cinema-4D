@@ -63,5 +63,5 @@ Bool RenderSequence::Execute(BaseDocument* doc){
 
 
 Bool RegisterRenderSequence(void){
-	return RegisterCommandPlugin(ID_RENDERSEQUENCE, "Render animation", 0, AutoBitmap("filmcamera.tif"), String(), NewObjClear(RenderSequence));
+	return RegisterCommandPlugin(ID_RENDERSEQUENCE, "Render animation"_s, 0, AutoBitmap("filmcamera.tif"_s), String(), NewObjClear(RenderSequence));
 }

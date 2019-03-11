@@ -1,5 +1,5 @@
 #include "CameraHook.h"
-#include "vprendersettings.h"
+#include "myres.h"
 //#include "ri.h"
 #pragma warning(disable : 4265)
 #include "nsi.hpp"
@@ -66,7 +66,7 @@ void CameraHook::CreateNSINodes(BaseDocument* doc, DL_SceneParser* parser){
 	BaseDraw* bd=doc->GetActiveBaseDraw();
 	camera=(CameraObject*)bd->GetSceneCamera(doc);
 
-	int pixel_samples=DL_Settings->GetInt32(DL_PIXELSAMPLES,16);
+	int pixel_samples=DL_Settings->GetInt32(DL_PIXEL_SAMPLES,16);
 	
 
 	ctx.SetAttribute("scene_camera",(
@@ -87,7 +87,7 @@ void CameraHook::CreateNSINodes(BaseDocument* doc, DL_SceneParser* parser){
 void CameraHook::SampleMotion(double t, long i,  BaseDocument* document, DL_SceneParser* parser){
 	Float aperture=camera->GetAperture();
 	Float focus=camera->GetFocus();
-	float horizontal_fov=Deg(2*ATan(0.5*aperture/focus));
+	float horizontal_fov=RadToDeg(2*ATan(0.5*aperture/focus));
 
 	float focal_length_cm = focus / 10;
 	
@@ -100,9 +100,9 @@ void CameraHook::SampleMotion(double t, long i,  BaseDocument* document, DL_Scen
 	Matrix m=camera->GetMg();
 	
 	Matrix flip; 
-	flip.v1=Vector(1,0,0);
-	flip.v2=Vector(0,1,0);
-	flip.v3=Vector(0,0,-1);
+	flip.sqmat.v1=Vector(1,0,0);
+	flip.sqmat.v2=Vector(0,1,0);
+	flip.sqmat.v3=Vector(0,0,-1);
 	m=(m*flip);
 
 	vector<double> v=MatrixToNSIMatrix(m);

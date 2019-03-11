@@ -27,7 +27,7 @@ Bool PointLight::Init(GeListNode* node){
 
 
 DRAWRESULT PointLight::Draw(BaseObject* op, DRAWPASS drawpass, BaseDraw* bd, BaseDrawHelp* bh){
-	if (drawpass==DRAWPASS_OBJECT)
+	if (drawpass==DRAWPASS::OBJECT)
 	{ 
 		BaseContainer *data = op->GetDataInstance();
 		float radius = data->GetFloat(POINTLIGHT_RADIUS);
@@ -40,16 +40,16 @@ DRAWRESULT PointLight::Draw(BaseObject* op, DRAWPASS drawpass, BaseDraw* bd, Bas
 		Matrix m_circle;
 		m_circle.off = Vector64(0, 0, 0);
 
-		m_circle.v1 = Vector64(radius, 0, 0);
-		m_circle.v2 = Vector64(0, radius, 0);
+		m_circle.sqmat.v1 = Vector64(radius, 0, 0);
+		m_circle.sqmat.v2 = Vector64(0, radius, 0);
 		bd->DrawCircle(m_circle);
 
-		m_circle.v1 = Vector64(radius, 0, 0);
-		m_circle.v2 = Vector64(0, 0, radius);
+		m_circle.sqmat.v1 = Vector64(radius, 0, 0);
+		m_circle.sqmat.v2 = Vector64(0, 0, radius);
 		bd->DrawCircle(m_circle);
 
-		m_circle.v1 = Vector64(0, radius, 0);
-		m_circle.v2 = Vector64(0, 0, radius);
+		m_circle.sqmat.v1 = Vector64(0, radius, 0);
+		m_circle.sqmat.v2 = Vector64(0, 0, radius);
 		bd->DrawCircle(m_circle);
 	}
 	
@@ -69,7 +69,7 @@ void PointLight::GetHandle(BaseObject* op, Int32 i, HandleInfo& info){
 	if(i==0){
 		info.position = Vector(radius,0,0);
 		info.direction = Vector(1.0,0,0);
-		info.type=HANDLECONSTRAINTTYPE_LINEAR;
+		info.type=HANDLECONSTRAINTTYPE::LINEAR;
 	}
 }
 
@@ -85,5 +85,5 @@ void PointLight::SetHandle(BaseObject* op, Int32 i, Vector p,const HandleInfo& i
 
 Bool RegisterPointLight(void)
 {
-	return RegisterObjectPlugin(ID_POINTLIGHT,"DL_Pointlight",OBJECT_GENERATOR,PointLight::Alloc,"Opointlight",AutoBitmap("Lightcard.tif"),0);
+	return RegisterObjectPlugin(ID_POINTLIGHT,"DL_Pointlight"_s,OBJECT_GENERATOR,PointLight::Alloc,"Opointlight"_s,AutoBitmap("Lightcard.tif"_s),0);
 }

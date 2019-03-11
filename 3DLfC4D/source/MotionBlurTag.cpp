@@ -8,7 +8,7 @@ class DL_MotionBlurTag : public TagData
 public:
 	virtual Bool Init(GeListNode *node);
 
-	static NodeData *Alloc(void) { return NewObjClear(DL_MotionBlurTag); }
+	static NodeData *Alloc(void) { return NewObjPtr(DL_MotionBlurTag); }
 };
 
 Bool DL_MotionBlurTag::Init(GeListNode *node)
@@ -23,6 +23,6 @@ Bool DL_MotionBlurTag::Init(GeListNode *node)
 
 Bool RegisterDL_MotionBlurTag(void)
 {
-	return RegisterTagPlugin(ID_DL_MOTIONBLURTAG, "DL_MotionblurTag", TAG_VISIBLE, DL_MotionBlurTag::Alloc, "tmotionsamples", AutoBitmap("motionblur.tif"), 0);
+	return RegisterTagPlugin(ID_DL_MOTIONBLURTAG, "DL_MotionblurTag"_s, TAG_VISIBLE, DL_MotionBlurTag::Alloc, "tmotionsamples"_s, AutoBitmap("motionblur.tif"_s), 0);
 }
 

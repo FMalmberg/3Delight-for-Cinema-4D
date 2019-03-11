@@ -33,5 +33,5 @@ Vector NormalDisplacementShader::Output(BaseShader* sh, ChannelData* sd)
 
 Bool RegisterNormalDisplacementShader(void)
 {
-	return RegisterShaderPlugin(ID_NORMALDISPLACEMENTSHADER, "DL_NormalDisplacement", 0, NormalDisplacementShader::Alloc, "Xnormaldisplacementshader", 0);
+	return RegisterShaderPlugin(ID_NORMALDISPLACEMENTSHADER, "DL_NormalDisplacement"_s, 0, NormalDisplacementShader::Alloc, "Xnormaldisplacementshader"_s, 0);
 }

@@ -4,14 +4,21 @@
 #include "DL_TypeConversions.h"
 #include "DL_Utilities.h"
 #include "nsi.hpp"
-#include "ri.h"
+
 
 void StandardShaderTranslator::CreateNSINodes(const char* ParentTransformHandle, GeListNode* C4DNode, BaseDocument* doc, DL_SceneParser* parser){
 	NSI::Context ctx(parser->GetContext());
 
+	string attributes_handle = string(parser->GetUniqueName("root_attributes"));
+	ctx.Create(attributes_handle, "attributes");
+	ctx.Connect(attributes_handle, "", ".root", "geometryattributes");
+
+
 	//Create the shader node
 	shader_handle = string(parser->GetUniqueName("standard_material"));
 	ctx.Create(shader_handle, "shader");
+	ctx.Connect(shader_handle, "", attributes_handle, "surfaceshader");
+
 
 	BaseObject* obj = (BaseObject*)C4DNode;
 	BaseContainer* data = obj->GetDataInstance();
@@ -25,14 +32,15 @@ void StandardShaderTranslator::CreateNSINodes(const char* ParentTransformHandle,
 	int coating_on_int = 0;
 	if (coating_on){ coating_on_int = 1; }
 
+
 	Vector coating_color = toLinear(data->GetVector(COATING_COLOR), doc);
-	RtColor coat_col;
+	float coat_col[3];
 	coat_col[0] = coating_color.x;
 	coat_col[1] = coating_color.y;
 	coat_col[2] = coating_color.z;
 
 	Vector coating_transmittance = toLinear(data->GetVector(COATING_TRANSMITTANCE), doc);
-	RtColor coat_trans;
+	float coat_trans[3];
 	coat_trans[0] = coating_transmittance.x;
 	coat_trans[1] = coating_transmittance.y;
 	coat_trans[2] = coating_transmittance.z;
@@ -45,7 +53,7 @@ void StandardShaderTranslator::CreateNSINodes(const char* ParentTransformHandle,
 	float diffuse_intensity = data->GetFloat(DIFFUSE_WEIGHT);
 	Vector diffuse_color = toLinear(data->GetVector(DIFFUSE_COLOR), doc);
 
-	RtColor diff_col;
+	float diff_col[3];
 	diff_col[0] = diffuse_color.x;
 	diff_col[1] = diffuse_color.y;
 	diff_col[2] = diffuse_color.z;
@@ -57,7 +65,7 @@ void StandardShaderTranslator::CreateNSINodes(const char* ParentTransformHandle,
 
 
 	Vector specular_color = toLinear(data->GetVector(SPECULAR_COLOR), doc);
-	RtColor spec_col;
+	float spec_col[3];
 	spec_col[0] = specular_color.x;
 	spec_col[1] = specular_color.y;
 	spec_col[2] = specular_color.z;
@@ -65,7 +73,7 @@ void StandardShaderTranslator::CreateNSINodes(const char* ParentTransformHandle,
 	float specular_anisotropy = data->GetFloat(SPECULAR_ANISOTROPY, 0);
 	//GePrint("Anisotropy: " + String::FloatToString(specular_anisotropy));
 	Vector anisotropy_direction = data->GetVector(SPECULAR_ANISOTROPY_DIRECTION);
-	RtColor aniso_dir;
+	float aniso_dir[3];
 	aniso_dir[0] = 0.5*(anisotropy_direction.x+1);
 	aniso_dir[1] = 0.5*(anisotropy_direction.y+1);
 	aniso_dir[2] = 0.5*(anisotropy_direction.z+1);
@@ -84,7 +92,7 @@ void StandardShaderTranslator::CreateNSINodes(const char* ParentTransformHandle,
 
 
 	Vector emission_color = toLinear(data->GetVector(EMISSION_COLOR), doc);
-	RtColor emi_col;
+	float emi_col[3];
 	emi_col[0] = emission_color.x;
 	emi_col[1] = emission_color.y;
 	emi_col[2] = emission_color.z;

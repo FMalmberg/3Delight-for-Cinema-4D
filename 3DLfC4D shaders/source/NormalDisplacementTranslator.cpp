@@ -6,7 +6,7 @@
 #include "nsi.hpp"
 
 void NormalDisplacementTranslator::CreateNSINodes(const char* ParentTransformHandle, GeListNode* C4DNode, BaseDocument* doc, DL_SceneParser* parser){
-	GePrint("Displacement");
+	GePrint("Displacement"_s);
 	
 	NSI::Context ctx(parser->GetContext());
 
