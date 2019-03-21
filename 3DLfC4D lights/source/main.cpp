@@ -8,6 +8,7 @@
 #include "EnvironmentLightTranslator.h"
 #include "PointLightTranslator.h"
 #include "IDs.h"
+#include "c4dLightTranslator.h"
 
 Bool RegisterLightCard(void);
 Bool RegisterEnvironmentLight(void);
@@ -42,6 +43,8 @@ Bool PluginMessage(Int32 id, void *data)
 		pm->RegisterTranslator(ID_LIGHTCARD, AllocateTranslator<LightCardTranslator>);
 		pm->RegisterTranslator(ID_POINTLIGHT, AllocateTranslator<PointLightTranslator>);
 		pm->RegisterTranslator(ID_ENVIRONMENTLIGHT, AllocateTranslator<EnvironmentLightTranslator>);
+		pm->RegisterTranslator(Olight, AllocateTranslator<c4dLightTranslator>);
+
 		//pm->RegisterTranslator(Opolygon, AllocateTranslator<PolygonObjectTranslator>);
 		break;
 
