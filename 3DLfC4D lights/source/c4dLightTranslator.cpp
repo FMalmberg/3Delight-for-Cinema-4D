@@ -279,11 +279,12 @@ void c4dLightTranslator::CreateNSINodes(
 			Matrix m = camera->GetMg();
 			Vector x = m.off;
 			vector<double> matrix = MatrixToNSIMatrix(m);
-			double size = matrix[12];
-			double c4dDefault = 600;
+			double size = matrix[12]; //Get the current scale value of c4d camera.
+			double c4dDefault_cam = 600;
 			double increase_ratio = 10;
-			double finalSize = double(size / (size*(c4dDefault / size * increase_ratio)));
-			ApplicationOutput("Output Size @ @",size,finalSize);
+			double finalSize = double(size / (size*(c4dDefault_cam / size * increase_ratio)));
+			//Keep length of x and y in proportional to the camera and the 
+			//length of z direction will be the same length as the z direction of line in c4d.
 
 			double scale[16]
 			{
