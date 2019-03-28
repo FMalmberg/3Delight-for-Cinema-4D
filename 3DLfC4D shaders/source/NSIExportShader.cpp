@@ -96,7 +96,7 @@ void NSI_Export_Shader::ConnectNSINodes(GeListNode* C4DNode, BaseDocument* doc, 
 			continue;
 
 		std::string link_shader = parser->GetAssociatedHandle(shader);
-		ctx.Connect(link_shader, "", m_shader_handle, osl_parameter_name);
+		ctx.Connect(link_shader, "output", m_shader_handle, osl_parameter_name);
 		
 		#ifdef VERBOSE
 			ApplicationOutput("ShaderParent @ Parameter ID @, Shader @", m_shader_handle.c_str(), Id, link_shader.c_str());

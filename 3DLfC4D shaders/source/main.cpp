@@ -4,7 +4,6 @@
 #include <string.h>
 
 #include "DL_API.h"
-
 #include "ShaderSettingsHook.h"
 #include "TextureTagTranslator.h"
 #include "TextureTranslator.h"

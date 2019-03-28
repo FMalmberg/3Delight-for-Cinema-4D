@@ -88,7 +88,7 @@ void NSI_Export_Material::ConnectNSINodes(GeListNode* C4DNode, BaseDocument* doc
 	GeData* data = nullptr;
 	BrowseContainer browse(material_container);
 
-	ctx.Connect(m_material_handle, "",m_material_attributes, "surfaceshader");
+	ctx.Connect(m_material_handle, "output",m_material_attributes, "surfaceshader");
 	while (browse.GetNext(&id, &data))
 	{
 		if (data->GetType() != DA_ALIASLINK)
