@@ -88,7 +88,7 @@ void NSI_Export_Material::ConnectNSINodes(GeListNode* C4DNode, BaseDocument* doc
 	GeData* data = nullptr;
 	BrowseContainer browse(material_container);
 
-	ctx.Connect(m_material_handle, "output",m_material_attributes, "surfaceshader");
+	ctx.Connect(m_material_handle, "",m_material_attributes, "surfaceshader");
 	while (browse.GetNext(&id, &data))
 	{
 		if (data->GetType() != DA_ALIASLINK)
@@ -99,8 +99,12 @@ void NSI_Export_Material::ConnectNSINodes(GeListNode* C4DNode, BaseDocument* doc
 			continue;
 
 		std::string osl_parameter_name = "_" + std::to_string(id);
+		std::string use_shader = "shader" + osl_parameter_name; //pass this parameter to osl to check if shader is loaded or not.
 		std::string link_shader = parser->GetAssociatedHandle(shader);
-		ctx.Connect(link_shader, "", m_material_handle, osl_parameter_name);
+		vector<float> col = { 1,1,1 };
+		ctx.SetAttribute(m_material_handle, NSI::ColorArg(osl_parameter_name, &col[0]));
+		ctx.SetAttribute(m_material_handle, NSI::IntegerArg(use_shader,1));
+		ctx.Connect(link_shader, "Cout", m_material_handle, osl_parameter_name);
 		
 		#ifdef VERBOSE
 			ApplicationOutput("Material @ Parameter ID @, Shader @", m_material_handle.c_str(), id, link_shader.c_str());

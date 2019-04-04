@@ -1,0 +1,116 @@
+/*
+    -This function does the material/texture mixing of the MainShader. It is used in many categories of the shader.
+	-When shader-material mix_mode is subtraction we have to clamp the color's values to 0 so it will not be negative
+	-and for the substraction the mixing_strength affects only the material's color 
+	 whereas in the other it affects the textures color 
+*/
+
+color getTexture(int mix_mode,color shader,float mix_strength,float brightness,color colors)
+{
+	color color_result=1;
+	
+	if(mix_mode==0) //Normal
+		{
+			color texture = shader*mix_strength;
+			color material = colors*brightness*(1-mix_strength);
+			color_result = texture+material;		
+		}
+		else if(mix_mode==1)  //Addition
+		{
+			color texture = shader*mix_strength;
+			color material = colors*brightness;
+			color_result = texture+material;	
+		}
+		else if(mix_mode==2) //Substraction
+		{
+			color texture = shader;
+			color material = colors*brightness*mix_strength;
+			color_result = clamp( texture-material, 0, 1 );
+		}
+		else if(mix_mode==3)  //Multiplication
+		{
+			color texture = shader*mix_strength;
+			color material = colors*brightness;
+			color_result = texture*material;	
+		}
+		
+	return color_result;
+}
+
+shader Main_Shader(	
+
+	//The color section
+	int _2000=0,				//MATERIAL_USE_COLOR
+	color _2100=1,    			//MATERIAL_COLOR_COLOR 
+	float _2101=1,    			//MATERIAL_COLOR_BRIGHTNESS
+	color _8000=1,     		    //MATERIAL_COLOR_SHADER                  Returns true if a shader is connected to color channel
+	int shader_8000=0,			//										 Checks if a shader is used by the color channel
+	float _2102=1,    			//MATERIAL_COLOR_TEXTURESTRENGTH.		 Will be active if a MATERIAL_COLOR_SHADER exists (is selected for use)
+	int _2103=0,      			//MATERIAL_COLOR_TEXTUREMIXING.          Will be active if a MATERIAL_COLOR_SHADER exists (is selected for use)	
+	int _2110=0,       		    //MATERIAL_COLOR_MODEL
+	float _1136=0,	 		    //MATERIAL_COLOR_DIFFUSEFALLOFF
+	float _1138=1,	  			//MATERIAL_COLOR_DIFFUSELEVEL			 Defines the general diffuse brightness that is reflected for the Oren-Nayer model
+	float _1135=1,	 			//MATERIAL_COLOR_ROUGHNESS	This value also applies only to the Oren-Nayer model
+	
+	color color_color = _2100,
+	float color_brightness = _2101,
+	color color_shader = _8000,
+	float color_mix_strength = _2102,
+	int color_mix_mode = _2103,
+	int color_model = _2110,
+	float color_diffuse_fallooff = _1136,
+	float color_diffuse_level = _1138,
+	float color_roughness = _1135,
+	
+	
+	//Diffusion section
+	int _2001=0,				//MATERIAL_USE_DIFFUSION
+	float _2200=1, 				//MATERIAL_DIFFUSION_BRIGHTNESS
+	int _1002=0,					//MATERIAL_DIFFUSION_AFFECT_LUMINANCE
+	int _1000=1,					//MATERIAL_DIFFUSION_AFFECT_SPECULAR
+	int _1001=1,					//MATERIAL_DIFFUSION_AFFECT_REFLECTION
+	color _8001=1,				//MATERIAL_DIFFUSION_SHADER
+	int shader_8001=0,     		    //						                  Returns true if a shader is connected to Diffusion channel
+	float _2201=1,    			//MATERIAL_DIFFUSION_TEXTURESTRENGTH.		 Will be active if a MATERIAL_DIFFUSION_SHADER exists (is selected for use)
+	int _2202=0,      			//MATERIAL_DIFFUSION_TEXTUREMIXING.          Will be active if a MATERIAL_DIFFUSION_SHADER exists (is selected for use)	
+	
+	float diffusion_brightness = _2200,
+	int diffusion_affect_luminance = _1002,
+	int diffusion_affect_specular = _1000,
+	int diffusion_affect_reflection = _1001,
+	color diffusion_shader = _8001,
+	float diffusion_mix_strength = _2201,
+	int diffusion_mix_mode = _2202
+	)
+	
+	
+	
+{
+	//Color Section Channel
+	
+	color color_result =color_color*color_brightness;
+	
+	if(shader_8000 == 1) //if a shader texture is used in color channel
+	{
+		color_result=getTexture(color_mix_mode,color_shader,color_mix_strength,color_brightness,color_color);
+	}
+	
+		
+	
+		
+	//Diffuse Section Channel
+	color diffusion_result =color_color*diffusion_brightness;
+	
+	if(shader_8001 == 1) //if a shader texture is used in diffuse channel
+	{
+		diffusion_result = getTexture(diffusion_mix_mode,diffusion_shader,diffusion_mix_strength,diffusion_brightness,color_color);
+	}
+
+	
+	Ci=diffuse(N*diffusion_result)*color_result;
+
+	if(color_model==1) //Oren_Nayar
+		Ci=color_result*oren_nayar(N*diffusion_result,color_roughness)*color_diffuse_level;
+	
+}
+

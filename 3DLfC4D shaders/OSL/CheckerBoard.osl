@@ -1,0 +1,30 @@
+//OSL shader for pattern
+
+shader CheckerBoard
+(
+    float _1002 = 1 			   [[  string description = "scale factor for x coordinate" ]],
+    float _1003 = 1 			   [[  string description = "scale factor for y coordinate" ]],
+    color _1000 = color(0, 0, 0)   [[  string description = "color of even squares" ]],
+    color _1001 = color(1, 1, 1)   [[  string description = "color of odd squares" ]],
+        
+    output color Cout = 0          [[  string description = "Output color",]]
+
+  )
+{
+	float st[2];
+	if( getattribute("st", st) == 0 )
+	{
+		/* No texture coordinates on object, use uv just to have something there */
+		st[0] = u;
+		st[1] = v;
+	}
+	float s = st[0];
+    float t = st[1];
+    float cs = fmod(2*s * _1003, 2);
+    float ct = fmod(2*t * _1002, 2);
+    if ((int(cs) ^ int(ct)) == 0)
+       Cout =_1000;
+    else
+       Cout =_1001;
+	   
+}
