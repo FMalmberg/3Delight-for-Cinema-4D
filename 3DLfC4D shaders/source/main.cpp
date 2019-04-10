@@ -4,6 +4,7 @@
 #include <string.h>
 
 #include "DL_API.h"
+
 #include "ShaderSettingsHook.h"
 #include "TextureTagTranslator.h"
 #include "TextureTranslator.h"
@@ -15,21 +16,51 @@
 #include "RangeTranslator.h"
 #include "../../3DLfC4D shaders/project/NSIExportShader.h";
 #include "../../3DLfC4D shaders/project/NSIExportMaterial.h";
+#include "../../3DLfC4D shaders/project/DlPrincipled_translator.h";
 
 
 #include "IDs.h"
+void MySearchMenuResource(BaseContainer* bc)
+{
+	if (!bc) return;
+	BrowseContainer browse(bc);
+	Int32 id = 0;
+	GeData * dat = nullptr;
 
+	while (browse.GetNext(&id, &dat))
+	{
+		if (id == MENURESOURCE_SUBMENU || id == MENURESOURCE_STRING)
+		{
+			MySearchMenuResource(dat->GetContainer());
+		}
+		else if (id == MENURESOURCE_COMMAND)
+		{
+			if (dat->GetString() == String("IDM_MNEU"))
+			{
+				BaseContainer sc;
+				sc.InsData(MENURESOURCE_SUBTITLE, String("3Delight Shader"));
+				sc.InsData(MENURESOURCE_COMMAND, String("PLUGIN_CMD_123123123"));
+
+				bc->InsDataAfter(MENURESOURCE_STRING, sc, dat);
+			}
+		}
+	}
+}
 
 Bool RegisterDLMaterial(void);
+Bool RegisterDLPrincipled(void);
 Bool RegisterStandardShader(void);
 Bool RegisterGlassShader(void);
 Bool RegisterNormalDisplacementShader(void);
 Bool RegisterRangeShader(void);
+Bool Register_DlPrincipled_Object(void);
 //Bool RegisterTextureShader(void);
 
 Bool PluginStart(void)
 {
 	if (!RegisterDLMaterial()) return FALSE;
+	if (!Register_DlPrincipled_Object()) return FALSE;
+	if (!RegisterDLPrincipled()) return FALSE;
 	if (!RegisterStandardShader()) return FALSE;
 	if(!RegisterGlassShader()) return FALSE;
 	if (!RegisterNormalDisplacementShader()) return FALSE;
@@ -53,6 +84,7 @@ Bool PluginMessage(Int32 id, void *data)
 		break;
 
 	case DL_LOAD_PLUGINS:
+	{
 		DL_PluginManager* pm = (DL_PluginManager*)data;
 		pm->RegisterHook(AllocateHook<ShaderSettingsHook>);
 		pm->RegisterTranslator(ID_STANDARDSHADER, AllocateTranslator<StandardShaderTranslator>);
@@ -61,6 +93,7 @@ Bool PluginMessage(Int32 id, void *data)
 		pm->RegisterTranslator(ID_NORMALDISPLACEMENTSHADER, AllocateTranslator<NormalDisplacementTranslator>);
 		pm->RegisterTranslator(ID_RANGESHADER, AllocateTranslator<RangeTranslator>);
 		pm->RegisterTranslator(Mmaterial, AllocateTranslator<NSI_Export_Material>);
+		pm->RegisterTranslator(DL_PRINCIPLED, AllocateTranslator<Delight_Principled>);
 		pm->RegisterTranslator(Xcheckerboard, AllocateTranslator<NSI_Export_Shader>);
 		pm->RegisterTranslator(Xtiles, AllocateTranslator<NSI_Export_Shader>);
 		pm->RegisterTranslator(Xstar, AllocateTranslator<NSI_Export_Shader>);
@@ -117,10 +150,17 @@ Bool PluginMessage(Int32 id, void *data)
 		pm->RegisterTranslator(Xbitmap, AllocateTranslator<TextureTranslator>);
 		pm->RegisterTranslator(Ttexture, AllocateTranslator<TextureTagTranslator>);
 		pm->RegisterTranslator(ID_DELIGHTMATERIAL, AllocateTranslator<DL_material_translator>);
-
-
 		break;
 
+	}
+
+	case C4DPL_BUILDMENU:
+	{
+		BaseContainer* bc = GetMenuResource("M_MATERIAL_MANAGER"_s);
+		if (!bc) return FALSE;
+		MySearchMenuResource(bc);
+		break;
+	}
 	}
 	return FALSE;
 }
