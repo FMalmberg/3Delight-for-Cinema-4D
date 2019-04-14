@@ -14,9 +14,11 @@
 #include "GlassShaderTranslator.h"
 #include "NormalDisplacementTranslator.h"
 #include "RangeTranslator.h"
-#include "../../3DLfC4D shaders/project/NSIExportShader.h";
-#include "../../3DLfC4D shaders/project/NSIExportMaterial.h";
-#include "../../3DLfC4D shaders/project/DlPrincipled_translator.h";
+#include "NSIExportShader.h";
+#include "NSIExportMaterial.h";
+#include "NSIExportBitmap.h";
+#include "DlPrincipled_translator.h";
+#include "DLGlass_Translator.h";
 
 
 #include "IDs.h"
@@ -49,6 +51,7 @@ void MySearchMenuResource(BaseContainer* bc)
 
 Bool RegisterDLMaterial(void);
 Bool RegisterDLPrincipled(void);
+Bool RegisterDLGlass(void);
 Bool RegisterStandardShader(void);
 Bool RegisterGlassShader(void);
 Bool RegisterNormalDisplacementShader(void);
@@ -61,6 +64,7 @@ Bool PluginStart(void)
 	if (!RegisterDLMaterial()) return FALSE;
 	if (!Register_DlPrincipled_Object()) return FALSE;
 	if (!RegisterDLPrincipled()) return FALSE;
+	if (!RegisterDLGlass()) return FALSE;
 	if (!RegisterStandardShader()) return FALSE;
 	if(!RegisterGlassShader()) return FALSE;
 	if (!RegisterNormalDisplacementShader()) return FALSE;
@@ -94,6 +98,7 @@ Bool PluginMessage(Int32 id, void *data)
 		pm->RegisterTranslator(ID_RANGESHADER, AllocateTranslator<RangeTranslator>);
 		pm->RegisterTranslator(Mmaterial, AllocateTranslator<NSI_Export_Material>);
 		pm->RegisterTranslator(DL_PRINCIPLED, AllocateTranslator<Delight_Principled>);
+		pm->RegisterTranslator(DL_GLASS, AllocateTranslator<Delight_Glass>);
 		pm->RegisterTranslator(Xcheckerboard, AllocateTranslator<NSI_Export_Shader>);
 		pm->RegisterTranslator(Xtiles, AllocateTranslator<NSI_Export_Shader>);
 		pm->RegisterTranslator(Xstar, AllocateTranslator<NSI_Export_Shader>);
@@ -147,7 +152,7 @@ Bool PluginMessage(Int32 id, void *data)
 		pm->RegisterTranslator(Xthinfilm, AllocateTranslator<NSI_Export_Shader>);
 
 		//pm->RegisterTranslator(ID_TEXTURESHADER, AllocateTranslator<TextureShaderTranslator>);
-		pm->RegisterTranslator(Xbitmap, AllocateTranslator<TextureTranslator>);
+		pm->RegisterTranslator(Xbitmap, AllocateTranslator<NSI_Export_Bitmap>);
 		pm->RegisterTranslator(Ttexture, AllocateTranslator<TextureTagTranslator>);
 		pm->RegisterTranslator(ID_DELIGHTMATERIAL, AllocateTranslator<DL_material_translator>);
 		break;

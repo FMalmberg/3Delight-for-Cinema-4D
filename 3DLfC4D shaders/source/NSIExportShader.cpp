@@ -33,10 +33,8 @@ void NSI_Export_Shader::CreateNSINodes(const char* ParentTransformHandle, GeList
 	GeData* data = nullptr;
 	BaseContainer* shader_container = shader->GetDataInstance();
 	BrowseContainer browse(shader_container);
-
 	NSI::ArgumentList args;
-	std::string color_space;
-	std::string meta;
+
 	while (browse.GetNext(&Id,&data))
 	{
 		std::string osl_parameter_name = "_" + std::to_string(Id);
@@ -44,21 +42,6 @@ void NSI_Export_Shader::CreateNSINodes(const char* ParentTransformHandle, GeList
 		{
 			case DA_LONG:
 			{
-				if (Id == BITMAPSHADER_COLORPROFILE)
-				{
-					if (data->GetInt32() == BITMAPSHADER_COLORPROFILE_EMBEDDED)
-						color_space = "auto";
-					
-					else if (data->GetInt32() == BITMAPSHADER_COLORPROFILE_LINEAR)
-						color_space = "linear";
-					
-					else if (data->GetInt32() == BITMAPSHADER_COLORPROFILE_SRGB)
-						color_space = "srgb";
-
-					else if (data->GetInt32() == BITMAPSHADER_COLORPROFILE_CUSTOM)
-						color_space = "none";
-				}
-
 				Int32 value = data->GetInt32();
 				args.Add(new NSI::IntegerArg(osl_parameter_name, value));
 				break;
