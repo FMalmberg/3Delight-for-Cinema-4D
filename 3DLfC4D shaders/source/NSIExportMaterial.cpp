@@ -5,19 +5,20 @@
 #include "c4d_symbols.h"
 #include "NSIExportMaterial.h"
 #include <assert.h>
+#include <map>
 
 /*
 	NSI_Export_Material Translater class is the class for exporting C4D standard materials
-	to NSI materials. This class with it's functions will only be executed as many times 
+	to NSI materials. This class with it's functions will only be executed as many times
 	as the number of materials created. So one time for each material.
 
-	CreateNSINodes() function will create the NSI shader for the current material 
-	with a unique name each time there is a new material and connect it with the 
+	CreateNSINodes() function will create the NSI shader for the current material
+	with a unique name each time there is a new material and connect it with the
 	OSL shader containing all the materials attributes
 
-	ConnectNSINodes() will check for the materials' textures if there is used any 
+	ConnectNSINodes() will check for the materials' textures if there is used any
 	shader on that specific material or not. if there is we find which of the
-	materials' parameter has used that shader and then use nsiConnect to connect 
+	materials' parameter has used that shader and then use nsiConnect to connect
 	that shader with it's material and parameter
 */
 void NSI_Export_Material::CreateNSINodes(const char* ParentTransformHandle, GeListNode* C4DNode, BaseDocument* doc, DL_SceneParser* parser)
@@ -30,9 +31,12 @@ void NSI_Export_Material::CreateNSINodes(const char* ParentTransformHandle, GeLi
 
 	BaseMaterial* material = (BaseMaterial*)C4DNode;
 	BaseContainer* material_container = material->GetDataInstance();
-
+	vector<char> c_shaderpath;
 	Filename shaderpath = Filename(GeGetPluginPath() + Filename("OSL") + Filename("Main_Shader.oso"));
-	vector<char> c_shaderpath = StringToChars(shaderpath.GetString());
+	if (m_ids_to_names.size() > 0)
+		c_shaderpath = StringToChars(m_ids_to_names[0].second.c_str());
+	else
+		c_shaderpath = StringToChars(shaderpath.GetString());
 
 	Int32   id;
 	GeData* data = nullptr;
@@ -41,9 +45,13 @@ void NSI_Export_Material::CreateNSINodes(const char* ParentTransformHandle, GeLi
 	NSI::ArgumentList args;
 	ctx.SetAttribute(m_material_handle, NSI::StringArg("shaderfilename", std::string(&c_shaderpath[0])));
 
+	std::string osl_parameter_name;
 	while (browse.GetNext(&id, &data))		// loop through the values
 	{
-		std::string osl_parameter_name = "_" + std::to_string(id);
+		if (m_ids_to_names.count(id) == 1)
+			osl_parameter_name = m_ids_to_names[id].second;
+		else
+			osl_parameter_name = "_" + std::to_string(id);
 		switch (data->GetType())
 		{
 		case DA_LONG: //Integer data type
@@ -88,7 +96,7 @@ void NSI_Export_Material::ConnectNSINodes(GeListNode* C4DNode, BaseDocument* doc
 	GeData* data = nullptr;
 	BrowseContainer browse(material_container);
 
-	ctx.Connect(m_material_handle, "",m_material_attributes, "surfaceshader");
+	ctx.Connect(m_material_handle, "", m_material_attributes, "surfaceshader");
 	while (browse.GetNext(&id, &data))
 	{
 		if (data->GetType() != DA_ALIASLINK)
@@ -97,17 +105,29 @@ void NSI_Export_Material::ConnectNSINodes(GeListNode* C4DNode, BaseDocument* doc
 		BaseList2D* shader = data->GetLink(doc);
 		if (!shader)
 			continue;
+		std::string osl_parameter_name;
+		std::string osl_source_attr;
+		if (m_ids_to_names.count(id) == 1)
+		{
+			osl_parameter_name = m_ids_to_names[id].second;
+			osl_source_attr = m_ids_to_names[id].first;
+		}
+		else
+		{
+			osl_parameter_name = "_" + std::to_string(id);
+			std::string osl_parameter_name = "_" + std::to_string(id);
+			std::string use_shader = "shader" + osl_parameter_name; //pass this parameter to osl to check if shader is loaded or not.
+			vector<float> col = { 1,1,1 };
+			ctx.SetAttribute(m_material_handle, NSI::ColorArg(osl_parameter_name, &col[0]));
+			ctx.SetAttribute(m_material_handle, NSI::IntegerArg(use_shader, 1));
+			osl_source_attr = "Cout";
 
-		std::string osl_parameter_name = "_" + std::to_string(id);
-		std::string use_shader = "shader" + osl_parameter_name; //pass this parameter to osl to check if shader is loaded or not.
+		}
 		std::string link_shader = parser->GetAssociatedHandle(shader);
-		vector<float> col = { 1,1,1 };
-		ctx.SetAttribute(m_material_handle, NSI::ColorArg(osl_parameter_name, &col[0]));
-		ctx.SetAttribute(m_material_handle, NSI::IntegerArg(use_shader,1));
-		ctx.Connect(link_shader, "Cout", m_material_handle, osl_parameter_name);
-		
-		#ifdef VERBOSE
-			ApplicationOutput("Material @ Parameter ID @, Shader @", m_material_handle.c_str(), id, link_shader.c_str());
-		#endif // VERBOSE
+		ctx.Connect(link_shader, osl_source_attr, m_material_handle, osl_parameter_name);
+
+#ifdef VERBOSE
+		ApplicationOutput("Material @ Parameter ID @, Shader @", m_material_handle.c_str(), id, link_shader.c_str());
+#endif // VERBOSE
 	}
 }

@@ -25,7 +25,6 @@ void NSI_Export_Shader::CreateNSINodes(const char* ParentTransformHandle, GeList
 	BaseShader* shader = (BaseShader*)C4DNode;
 	m_shader_handle = parser->GetUniqueName(shader->GetTypeName().GetCStringCopy());
 	ctx.Create(m_shader_handle, "shader");
-	 
 	Filename shaderpath = Filename(GeGetPluginPath() + Filename("OSL") + Filename(shader->GetTypeName().GetCStringCopy()));
 	vector<char> c_shaderpath = StringToChars(shaderpath.GetString());
 	ctx.SetAttribute(m_shader_handle, NSI::StringArg("shaderfilename", std::string(&c_shaderpath[0])));
@@ -36,6 +35,8 @@ void NSI_Export_Shader::CreateNSINodes(const char* ParentTransformHandle, GeList
 	BrowseContainer browse(shader_container);
 
 	NSI::ArgumentList args;
+	std::string color_space;
+	std::string meta;
 	while (browse.GetNext(&Id,&data))
 	{
 		std::string osl_parameter_name = "_" + std::to_string(Id);
@@ -43,6 +44,21 @@ void NSI_Export_Shader::CreateNSINodes(const char* ParentTransformHandle, GeList
 		{
 			case DA_LONG:
 			{
+				if (Id == BITMAPSHADER_COLORPROFILE)
+				{
+					if (data->GetInt32() == BITMAPSHADER_COLORPROFILE_EMBEDDED)
+						color_space = "auto";
+					
+					else if (data->GetInt32() == BITMAPSHADER_COLORPROFILE_LINEAR)
+						color_space = "linear";
+					
+					else if (data->GetInt32() == BITMAPSHADER_COLORPROFILE_SRGB)
+						color_space = "srgb";
+
+					else if (data->GetInt32() == BITMAPSHADER_COLORPROFILE_CUSTOM)
+						color_space = "none";
+				}
+
 				Int32 value = data->GetInt32();
 				args.Add(new NSI::IntegerArg(osl_parameter_name, value));
 				break;
@@ -63,12 +79,23 @@ void NSI_Export_Shader::CreateNSINodes(const char* ParentTransformHandle, GeList
 				break;
 			}
 
+			case DA_FILENAME: //Filename. For texture mapping
+			{
+				Filename texturefile = data->GetFilename();
+				Filename texturefile_path;
+				GenerateTexturePath(doc->GetDocumentPath(), texturefile, Filename(), &texturefile_path);
+				string texturename = StringToStdString(texturefile_path.GetString());
+				args.Add(new NSI::StringArg(osl_parameter_name, texturename));
+			}
+
 		default:
 			break;
 		}
 
 	};
+	
 	ctx.SetAttribute(m_shader_handle, args);
+
 	parser->SetAssociatedHandle((BaseList2D*)C4DNode, m_shader_handle.c_str());
 }
 
@@ -96,7 +123,7 @@ void NSI_Export_Shader::ConnectNSINodes(GeListNode* C4DNode, BaseDocument* doc, 
 			continue;
 
 		std::string link_shader = parser->GetAssociatedHandle(shader);
-		ctx.Connect(link_shader, "output", m_shader_handle, osl_parameter_name);
+		ctx.Connect(link_shader, "", m_shader_handle, osl_parameter_name);
 		
 		#ifdef VERBOSE
 			ApplicationOutput("ShaderParent @ Parameter ID @, Shader @", m_shader_handle.c_str(), Id, link_shader.c_str());
