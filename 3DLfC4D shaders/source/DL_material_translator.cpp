@@ -6,18 +6,12 @@
 #include <vector>
 using namespace std;
 
-void DL_material_translator::CreateNSINodes(const char* ParentTransformHandle, GeListNode* C4DNode, BaseDocument* doc, DL_SceneParser* parser){
+void DL_material_translator::CreateNSINodes(const char* ParentTransformHandle, GeListNode* C4DNode, BaseDocument* doc, DL_SceneParser* parser) {
 	NSI::Context ctx(parser->GetContext());
 
 	//Create an attributes node
 	attributes_handle = string(parser->GetUniqueName("transform_attributes"));
-	ApplicationOutput("Attribute @ ", attributes_handle.c_str());
 	ctx.Create(attributes_handle, "attributes");
-	/*string transform_handle = string(ParentTransformHandle);
-	ApplicationOutput("TransformHandle @", transform_handle);
-	ctx.Connect(attributes_handle, "", transform_handle, "geometryattributes");*/
-	ctx.Connect(attributes_handle, "", ".root", "geometryattributes");
-
 
 	BaseMaterial* material = (BaseMaterial*)C4DNode;
 	BaseContainer* data = material->GetDataInstance();
@@ -25,13 +19,13 @@ void DL_material_translator::CreateNSINodes(const char* ParentTransformHandle, G
 	float displacement_bound = data->GetFloat(DISPLACEMENT_BOUND, 0);
 
 	ctx.SetAttribute(attributes_handle, (
-	NSI::FloatArg("displacementbound", displacement_bound)
-	));
+		NSI::FloatArg("displacementbound", displacement_bound)
+		));
 
 	parser->SetAssociatedHandle(material, attributes_handle.c_str());
 }
 
-void DL_material_translator::ConnectNSINodes(GeListNode* C4DNode, BaseDocument* doc, DL_SceneParser* parser){
+void DL_material_translator::ConnectNSINodes(GeListNode* C4DNode, BaseDocument* doc, DL_SceneParser* parser) {
 	NSI::Context ctx(parser->GetContext());
 
 	BaseMaterial * material = (BaseMaterial*)C4DNode;
@@ -39,11 +33,9 @@ void DL_material_translator::ConnectNSINodes(GeListNode* C4DNode, BaseDocument* 
 	BaseContainer* data = material->GetDataInstance();
 	
 	BaseList2D* surface_shader = data->GetLink(SURFACE_LINK, doc);
-	if (surface_shader){
+	if (surface_shader) {
 		string surface_handle = string(parser->GetAssociatedHandle(surface_shader));
-		if (surface_handle != ""){
-			ApplicationOutput("Value @ ", surface_handle.c_str());
-			ApplicationOutput("Attribute @ ", attributes_handle.c_str());
+		if (surface_handle != "") {
 			//Create root shader node
 			string root_handle = string(parser->GetUniqueName("root_surface"));
 			ctx.Create(root_handle, "shader");
@@ -55,16 +47,16 @@ void DL_material_translator::ConnectNSINodes(GeListNode* C4DNode, BaseDocument* 
 			ctx.SetAttribute(root_handle, (
 				NSI::StringArg("shaderfilename", std::string(&c_shaderpath[0]))
 				));
-			
+
 			ctx.Connect(surface_handle, "bsdf_out", root_handle, "cl_in");
 			ctx.Connect(root_handle, "", attributes_handle, "surfaceshader");
 		}
 	}
 
 	BaseList2D* displacement_shader = data->GetLink(DISPLACEMENT_LINK, doc);
-	if (displacement_shader){
+	if (displacement_shader) {
 		string displacement_handle = string(parser->GetAssociatedHandle(displacement_shader));
-		if (displacement_handle != ""){
+		if (displacement_handle != "") {
 			ctx.Connect(displacement_handle, "", attributes_handle, "displacementshader");
 		}
 	}

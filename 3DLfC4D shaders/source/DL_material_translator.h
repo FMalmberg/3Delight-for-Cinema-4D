@@ -11,6 +11,7 @@ public:
 
 private:
 	std::string attributes_handle;
+	int ps = 0;
 	//std::string displacement_handle;
 	//virtual void RegisterShaders(BaseTag* node, BaseDocument* doc, DL_SceneParser* parser);
 	//virtual void EmitBegin(BaseTag* node, BaseDocument* doc, DL_SceneParser* parser);
