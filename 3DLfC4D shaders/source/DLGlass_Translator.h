@@ -4,7 +4,6 @@
 #include "DL_HookPlugin.h"
 #include "c4d.h"
 #include <string>
-#include "dl_glass.h"
 #include <map>
 #include "NSIExportMaterial.h"
 

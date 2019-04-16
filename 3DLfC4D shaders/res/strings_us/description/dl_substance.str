@@ -1,0 +1,33 @@
+STRINGTABLE dl_substance
+{
+	dl_substance "Substance Shader";
+	
+	SUBSTANCE_PAGE "Substance";
+	SUBSTANCE "Substance";
+	SUBSTANCE_COLOR "Color";
+	SUBSTANCE_COLOR_SHADER "Texture";
+	SUBSTANCE_ROUGHNESS "Roughness";
+	SUBSTANCE_ROUGHNESS_SHADER "Texture";
+	SUBSTANCE_SPECULAR_LEVEL "Specular Level";
+	SUBSTANCE_SPECULAR_LEVEL_SHADER "Texture";
+	SUBSTANCE_METALLIC "Metallic";
+	SUBSTANCE_METALLIC_SHADER "Texture";
+	SUBSTANCE_OPACITY "Opacity";
+	SUBSTANCE_OPACITY_SHADER "Texture";
+
+	EMISSIVE_PAGE "Emissive";
+	EMISSIVE "Emissive";
+	EMISSIVE_COLOR "Color";
+	EMISSIVE_COLOR_SHADER "Texture";
+	EMISSIVE_INTENSITY "Intensity";
+	
+	BUMP_PAGE "Normal Map / Bump";
+	BUMP "Bump";
+	BUMP_TYPE "Type";
+	BUMP_MAP "Bump Map";
+	NORMAL_MAP_DIRECTX "Normal Map (DirectX)";
+	NORMAL_MAP_OPENGL "Normal Map (OpenGL)";
+	DISPLACEMENT_0 "Displacement (0.0 centered)";
+	DISPLACEMENT_5 "Displacement (0.5 centered)";
+	BUMP_INTENSITY "Intensity";	
+}

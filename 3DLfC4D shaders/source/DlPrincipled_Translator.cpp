@@ -4,6 +4,7 @@
 #include "nsi.hpp"
 #include "c4d_symbols.h"
 #include "DlPrincipled_translator.h"
+#include "dl_principled.h"
 #include <assert.h>
 #include <utility>
 

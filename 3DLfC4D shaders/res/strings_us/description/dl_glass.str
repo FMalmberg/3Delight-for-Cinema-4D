@@ -1,0 +1,50 @@
+STRINGTABLE dl_glass
+{
+	dl_glass "Glass Shader";
+	
+	REFLECTION_PAGE "Reflection";
+	REFLECTION "Reflection";
+	REFLECTION_COLOR "Color";
+	REFLECTION_COLOR_SHADER "Texture";
+	REFLECTION_ROUGHNESS "Roughness";
+	REFLECTION_ROUGHNESS_SHADER "Texture";
+	REFLECTION_IOR "IOR";
+	REFLECTION_IOR_SHADER "Texture";
+	REFLECTION_THIN_FILM "Thin Film";
+	REFLECTION_FILM_THICKNESS "Film Thickness";
+	REFLECTION_FILM_THICKNESS_SHADER "Texture";
+	REFLECTION_FILM_IOR "Film IOR";
+	REFLECTION_FILM_IOR_SHADER "Texture";
+	
+	REFRACTION_PAGE "Refraction";
+	REFRACTION "Base";
+	REFRACTION_COLOR "Color";
+	REFRACTION_COLOR_SHADER "Texture";
+	REFRACTION_ROUGHNESS "Roughness";
+	REFRACTION_ROUGHNESS_SHADER "Texture";
+	REFRACTION_IOR "IOR";
+	REFRACTION_IOR_SHADER "Texture";
+	
+	VOLUMETRIC_PAGE "Volumetric";
+	Volumetric "Volumetric";
+	Volumetric_ENABLE "Enable";
+	Volumetric_DENSITY "Density";
+	VOLUMETRIC_SCATTERING "Scattering";
+	VOLUMETRIC_TRANSPARENCY "Transparency";
+	
+	INCADESCENCE_PAGE "Incadescence";
+	INCADESCENCE "Incadescence";
+	INCADESCENCE_COLOR "Color";
+	INCADESCENCE_COLOR_SHADER "Texture";
+	INCADESCENCE_INTENSITY "Intensity";
+	
+	BUMP_PAGE "Normal Map / Bump";
+	BUMP "Bump";
+	BUMP_TYPE "Type";
+	BUMP_MAP "Bump Map";
+	NORMAL_MAP_DIRECTX "Normal Map (DirectX)";
+	NORMAL_MAP_OPENGL "Normal Map (OpenGL)";
+	DISPLACEMENT_0 "Displacement (0.0 centered)";
+	DISPLACEMENT_5 "Displacement (0.5 centered)";
+	BUMP_INTENSITY "Intensity";	
+}

@@ -1,0 +1,37 @@
+STRINGTABLE dl_skin
+{
+	dl_skin "Skin Shader";
+	
+	SKIN_PAGE "Skin";
+	SKIN "Skin";
+	SKIN_COLOR "Color";
+	SKIN_COLOR_SHADER "Texture";
+	SKIN_ROUGHNESS "Roughness";
+	SKIN_ROUGHNESS_SHADER "Texture";
+	SKIN_SPECULAR_LEVEL "Specular Level";
+	SKIN_SPECULAR_LEVEL_SHADER "Texture";
+	
+	SUBSURFACE_PAGE "Subsurface";
+	SUBSURFACE "Subsurface";
+	SUBSURFACE_COLOR "Color";
+	SUBSURFACE_COLOR_SHADER "Texture";
+	SUBSURFACE_SCALE "Scale";
+	SUBSURFACE_SCALE_SHADER "Texture";
+	SUBSURFACE_IOR "IOR";
+	SUBSURFACE_IOR_SHADER "Texture";
+	
+	BUMP_PAGE "Normal Map / Bump";
+	BUMP "Bump";
+	BUMP_TYPE "Type";
+	BUMP_MAP "Bump Map";
+	NORMAL_MAP_DIRECTX "Normal Map (DirectX)";
+	NORMAL_MAP_OPENGL "Normal Map (OpenGL)";
+	DISPLACEMENT_0 "Displacement (0.0 centered)";
+	DISPLACEMENT_5 "Displacement (0.5 centered)";
+	BUMP_INTENSITY "Intensity";
+	BUMP_LAYERS_AFFECTED "Layers Affected";
+	AFFECT_BOTH_LAYERS "Both Layers";
+	AFFECT_COATING_LAYER "Coating Layer";
+	AFFECT_BASE_LAYER "Base Layer";
+	
+}

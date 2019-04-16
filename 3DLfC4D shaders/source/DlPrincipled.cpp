@@ -30,6 +30,7 @@ public:
 	virtual Bool GetDEnabling(GeListNode *node, const DescID &id, const GeData &t_data,
 		DESCFLAGS_ENABLE flags, const BaseContainer *itemdesc);
 	virtual Bool Message(GeListNode *node, Int32 type, void *data);
+	virtual	void CalcSurface(BaseMaterial* mat, VolumeData* vd);
 	static NodeData* Alloc(void) { return NewObjClear(DL_Principled);}
 
 };
@@ -173,7 +174,16 @@ INITRENDERRESULT DL_Principled::InitRender(BaseMaterial* mat, const InitRenderSt
 }
 
 
+void DL_Principled::CalcSurface(BaseMaterial* mat, VolumeData* vd)
+{
+
+	Vector diff, spec;
+	vd->IlluminanceSimple(&diff, &spec, 0, 0, 0);
+
+	vd->col = 0.8*diff;
+}
+
 Bool RegisterDLPrincipled(void)
 {
-	return RegisterMaterialPlugin(DL_PRINCIPLED, "DL_Principled"_s, PLUGINFLAG_HIDE, DL_Principled::Alloc, "Dl_principled"_s, 0);
+	return RegisterMaterialPlugin(DL_PRINCIPLED, "DL_Principled"_s,PLUGINFLAG_HIDE, DL_Principled::Alloc, "Dl_principled"_s, 0);
 }

@@ -4,6 +4,7 @@
 #include "nsi.hpp"
 #include "c4d_symbols.h"
 #include "DLGlass_Translator.h"
+#include "dl_glass.h"
 #include <assert.h>
 #include <utility>
 

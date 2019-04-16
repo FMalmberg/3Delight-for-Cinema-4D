@@ -3,20 +3,6 @@
 #include "IDs.h"
 #include "dl_glass.h"
 
-/*
-	Dl_Principled class is inhertied from MaterialData which
-	is a class for creating a material plugin in this case 3Delight
-	Principled material.
-
-	Init() function is used to initialize the material's UI
-	In this function we define the default valuse for each
-	attribute that is part of the currently registered material
-
-	GetDEnabling() function is used to unable or disable current
-	attributes that we want based on different criteria again decided by us
-
-	RegisterMaterialPlugin() function is used to register a material plugin.
-*/
 class DL_Glass : public MaterialData
 {
 	INSTANCEOF(DL_Material, MaterialData)
@@ -30,6 +16,7 @@ public:
 	virtual Bool GetDEnabling(GeListNode *node, const DescID &id, const GeData &t_data,
 		DESCFLAGS_ENABLE flags, const BaseContainer *itemdesc);
 	virtual Bool Message(GeListNode *node, Int32 type, void *data);
+	virtual	void CalcSurface(BaseMaterial* mat, VolumeData* vd);
 	static NodeData* Alloc(void) { return NewObjClear(DL_Glass); }
 
 };
@@ -146,7 +133,16 @@ INITRENDERRESULT DL_Glass::InitRender(BaseMaterial* mat, const InitRenderStruct&
 }
 
 
+void DL_Glass::CalcSurface(BaseMaterial* mat, VolumeData* vd)
+{
+
+	Vector diff, spec;
+	vd->IlluminanceSimple(&diff, &spec, 0, 0, 0);
+
+	vd->col = 0.8*diff;
+}
+
 Bool RegisterDLGlass(void)
 {
-	return RegisterMaterialPlugin(DL_GLASS, "DL_Glass"_s, 0, DL_Glass::Alloc, "Dl_glass"_s, 0);
+	return RegisterMaterialPlugin(DL_GLASS, "DL_Glass"_s, PLUGINFLAG_HIDE, DL_Glass::Alloc, "Dl_glass"_s, 0);
 }

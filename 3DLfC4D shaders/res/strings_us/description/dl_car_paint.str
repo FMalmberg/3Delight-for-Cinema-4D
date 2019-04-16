@@ -1,0 +1,54 @@
+STRINGTABLE dl_car_paint
+{
+	dl_car_paint "Car Paint Shader";
+	
+	COATING_PAGE "Coating";
+	COATING_LAYER "Coating";
+	COATING_LAYER_THICKNESS "Thickness";
+	COATING_LAYER_THICKNESS_SHADER "Texture";
+	COATING_LAYER_COLOR "Color";
+	COATING_LAYER_COLOR_SHADER "Texture";
+	COATING_LAYER_ROUGHNESS "Roughness";
+	COATING_LAYER_ROUGHNESS_SHADER "Texture";
+	COATING_LAYER_SPECULAR_LEVEL "Specular Level";
+	COATING_LAYER_SPECULAR_LEVEL_SHADER "Texture";
+	
+	FLAKES_PAGE "Flakes";
+	FLAKES "Flakes";
+	FLAKES_DENSITY "Density";
+	FLAKES_DENSITY_SHADER "Texture";
+	FLAKES_COLOR "Color";
+	FLAKES_COLOR_SHADER "Texture";
+	FLAKES_ROUGHNESS "Roughness";
+	FLAKES_ROUGHNESS_SHADER "Texture";
+	FLAKES_SCALE "Scale";
+	FLAKES_SCALE_SHADER "Texture";	
+	FLAKES_RANDOMNESS "Randomness";
+	FLAKES_RANDOMNESS_SHADER "Texture";	
+	
+	BASE_PAGE "Base";
+	BASE_LAYER "Base";
+	BASE_LAYER_COLOR "Color";
+	BASE_LAYER_COLOR_SHADER "Texture";
+	BASE_LAYER_ROUGHNESS "Roughness";
+	BASE_LAYER_ROUGHNESS_SHADER "Texture";
+	BASE_LAYER_SPECULAR_LEVEL "Specular Level";
+	BASE_LAYER_SPECULAR_LEVEL_SHADER "Texture";
+	BASE_LAYER_METALLIC "Metallic";
+	BASE_LAYER_METALLIC_SHADER "Texture";
+	
+	BUMP_PAGE "Normal Map / Bump";
+	BUMP "Bump";
+	BUMP_TYPE "Type";
+	BUMP_MAP "Bump Map";
+	NORMAL_MAP_DIRECTX "Normal Map (DirectX)";
+	NORMAL_MAP_OPENGL "Normal Map (OpenGL)";
+	DISPLACEMENT_0 "Displacement (0.0 centered)";
+	DISPLACEMENT_5 "Displacement (0.5 centered)";
+	BUMP_INTENSITY "Intensity";
+	BUMP_LAYERS_AFFECTED "Layers Affected";
+	AFFECT_BOTH_LAYERS "Both Layers";
+	AFFECT_COATING_LAYER "Coating Layer";
+	AFFECT_BASE_LAYER "Base Layer";
+	
+}
