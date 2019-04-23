@@ -23,6 +23,7 @@ STRINGTABLE dl_skin
 	BUMP_PAGE "Normal Map / Bump";
 	BUMP "Bump";
 	BUMP_TYPE "Type";
+	BUMP_VALUE "Value";
 	BUMP_MAP "Bump Map";
 	NORMAL_MAP_DIRECTX "Normal Map (DirectX)";
 	NORMAL_MAP_OPENGL "Normal Map (OpenGL)";

@@ -1,7 +1,8 @@
 STRINGTABLE dl_substance
 {
 	dl_substance "Substance Shader";
-	
+	MAIN_GROUP "Substance";
+	MAIN_GROUP_PAGE "Substance";
 	SUBSTANCE_PAGE "Substance";
 	SUBSTANCE "Substance";
 	SUBSTANCE_COLOR "Color";
@@ -16,18 +17,33 @@ STRINGTABLE dl_substance
 	SUBSTANCE_OPACITY_SHADER "Texture";
 
 	EMISSIVE_PAGE "Emissive";
-	EMISSIVE "Emissive";
-	EMISSIVE_COLOR "Color";
+	EMISSIVE "Emission";
+	EMISSIVE_COLOR "Emission";
 	EMISSIVE_COLOR_SHADER "Texture";
 	EMISSIVE_INTENSITY "Intensity";
 	
 	BUMP_PAGE "Normal Map / Bump";
 	BUMP "Bump";
 	BUMP_TYPE "Type";
+	BUMP_VALUE "Value";
 	BUMP_MAP "Bump Map";
 	NORMAL_MAP_DIRECTX "Normal Map (DirectX)";
 	NORMAL_MAP_OPENGL "Normal Map (OpenGL)";
 	DISPLACEMENT_0 "Displacement (0.0 centered)";
 	DISPLACEMENT_5 "Displacement (0.5 centered)";
-	BUMP_INTENSITY "Intensity";	
+	BUMP_INTENSITY "Intensity";
+
+	ASSIGNTEXTURE "Textures Assignment";
+	ASSIGNTEXTURE_PAGE "Textures Assignment";
+	ASSIGN_TEXTURES "Assign Textures...";
+	ROW1 "Select one texture in the File Selector";
+	ROW2 "to build a network of properly";
+	ROW3 "configured nodes.";
+	EMPTY "";
+	EMPTY1 "";
+	EMPTY2 "";
+	EMPTYSPACE "";
+	EMPTYSPACE2 "";
+	EMPTYSPACE3 "";
+	EMPTYSPACE4 "";
 }

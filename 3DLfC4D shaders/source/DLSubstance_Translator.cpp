@@ -30,6 +30,7 @@ Delight_Substance::Delight_Substance()
 	m_ids_to_names[EMISSIVE_INTENSITY] = pair("", "emissive_intensity");
 
 	m_ids_to_names[BUMP_TYPE] = pair("", "disp_normal_bump_type");
+	m_ids_to_names[BUMP_VALUE] = pair("Cout", "disp_normal_bump_value");
 	m_ids_to_names[BUMP_INTENSITY] = pair("", "disp_normal_bump_intensity");
 }
 
