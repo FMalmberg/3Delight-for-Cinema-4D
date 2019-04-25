@@ -28,5 +28,7 @@ void ShaderSettingsHook::CreateNSINodes(BaseDocument* doc, DL_SceneParser* parse
 		));
 }
 
-void ShaderSettingsHook::ConnectNSINodes(BaseDocument* doc, DL_SceneParser* parser){
+void ShaderSettingsHook::ConnectNSINodes(BaseDocument* doc, DL_SceneParser* parser)
+{
+
 }

@@ -1,0 +1,76 @@
+OpenShadingLanguage 1.00
+# Compiled by oslc 1.11.0dev
+# options: -q -o ../../win64-x64-release-free/osl/glassInterior.oso
+shader glassInterior
+param	int	volumetric_enable	0		%meta{string,page,"Volumetric"} %meta{string,label,"Enable"} %meta{string,widget,"checkBox"}  %read{0,0} %write{2147483647,-1}
+param	float	volumetric_density	1		%meta{string,page,"Volumetric"} %meta{string,label,"Density"}  %read{15,16} %write{2147483647,-1}
+param	color	volumetric_scattering_color	0 0 0		%meta{string,page,"Volumetric"} %meta{string,label,"Scattering"}  %read{6,6} %write{2147483647,-1}
+param	color	volumetric_transparency_color	1 1 1		%meta{string,page,"Volumetric"} %meta{string,label,"Transparency"}  %read{10,10} %write{2147483647,-1}
+global	closure color	Ci	%read{2147483647,-1} %write{2,21}
+local	color	albedo	%read{13,13} %write{7,7}
+local	color	transparency	%read{12,12} %write{11,11}
+local	color	extinction	%read{13,14} %write{12,12}
+local	color	scattering_c	%read{14,18} %write{13,15}
+local	color	absorption_c	%read{16,20} %write{14,16}
+const	int	$const1	0		%read{0,2} %write{2147483647,-1}
+temp	int	$tmp1	%read{1,1} %write{0,0}
+const	float	$const2	0		%read{4,8} %write{2147483647,-1}
+temp	color	$tmp2	%read{7,7} %write{4,4}
+temp	color	$tmp3	%read{7,7} %write{6,6}
+const	float	$const4	1		%read{5,12} %write{2147483647,-1}
+temp	color	$tmp4	%read{6,6} %write{5,5}
+temp	color	$tmp5	%read{11,11} %write{8,8}
+temp	color	$tmp6	%read{11,11} %write{10,10}
+temp	color	$tmp7	%read{10,10} %write{9,9}
+temp	closure color	$tmp8	%read{18,18} %write{17,17}
+const	string	$const5	"isotropic"		%read{17,17} %write{2147483647,-1}
+temp	closure color	$tmp9	%read{21,21} %write{18,18}
+temp	closure color	$tmp10	%read{20,20} %write{19,19}
+const	string	$const6	"absorption"		%read{19,19} %write{2147483647,-1}
+temp	closure color	$tmp11	%read{21,21} %write{20,20}
+code ___main___
+# glassInterior.osl:24
+# 	if( volumetric_enable == 0 )
+	eq		$tmp1 volumetric_enable $const1 	%filename{"glassInterior.osl"} %line{24} %argrw{"wrr"}
+	if		$tmp1 4 4 	%argrw{"r"}
+# glassInterior.osl:26
+# 		Ci = 0;
+	assign		Ci $const1 	%line{26} %argrw{"wr"}
+# glassInterior.osl:27
+# 		return;
+	exit	%line{27}
+# glassInterior.osl:30
+# 	color albedo = max( 0, min( 1, volumetric_scattering_color ) );
+	assign		$tmp2 $const2 	%line{30} %argrw{"wr"}
+	assign		$tmp4 $const4 	%argrw{"wr"}
+	min		$tmp3 $tmp4 volumetric_scattering_color 	%argrw{"wrr"}
+	max		albedo $tmp2 $tmp3 	%argrw{"wrr"}
+# glassInterior.osl:31
+# 	color transparency = max( 0, min( 1, volumetric_transparency_color ) );
+	assign		$tmp5 $const2 	%line{31} %argrw{"wr"}
+	assign		$tmp7 $const4 	%argrw{"wr"}
+	min		$tmp6 $tmp7 volumetric_transparency_color 	%argrw{"wrr"}
+	max		transparency $tmp5 $tmp6 	%argrw{"wrr"}
+# glassInterior.osl:34
+# 	color extinction = 1 - transparency;
+	sub		extinction $const4 transparency 	%line{34} %argrw{"wrr"}
+# glassInterior.osl:35
+# 	color scattering_c = albedo * extinction;
+	mul		scattering_c albedo extinction 	%line{35} %argrw{"wrr"}
+# glassInterior.osl:36
+# 	color absorption_c = extinction - scattering_c;
+	sub		absorption_c extinction scattering_c 	%line{36} %argrw{"wrr"}
+# glassInterior.osl:38
+# 	scattering_c *= volumetric_density;
+	mul		scattering_c scattering_c volumetric_density 	%line{38} %argrw{"wrr"}
+# glassInterior.osl:39
+# 	absorption_c *= volumetric_density;
+	mul		absorption_c absorption_c volumetric_density 	%line{39} %argrw{"wrr"}
+# glassInterior.osl:41
+# 	Ci = scattering_c * isotropic() + absorption_c * absorption();
+	closure		$tmp8 $const5 	%line{41} %argrw{"wr"}
+	mul		$tmp9 $tmp8 scattering_c 	%argrw{"wrr"}
+	closure		$tmp10 $const6 	%argrw{"wr"}
+	mul		$tmp11 $tmp10 absorption_c 	%argrw{"wrr"}
+	add		Ci $tmp9 $tmp11 	%argrw{"wrr"}
+	end

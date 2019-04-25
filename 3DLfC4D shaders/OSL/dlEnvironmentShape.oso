@@ -1,0 +1,32 @@
+OpenShadingLanguage 1.00
+# Compiled by oslc 1.11.0dev
+# options: -q -o ..\build\win64-x64-release-free\2016.5\..\osl\dlEnvironmentShape.oso -I../../osl_shaders
+surface dlEnvironmentShape	%meta{string[1],tags,"surface"} 
+param	color	i_texture	0.5 0.5 0.5		%meta{string,label,"Texture"} %meta{string,attribute,"texture"}  %read{1,1} %write{2147483647,-1}
+param	float	intensity	1		%meta{string,label,"Intensity"} %meta{float,slidermin,0} %meta{float,slidermax,10}  %read{1,1} %write{2147483647,-1}
+param	float	exposure	0		%meta{string,label,"Exposure"} %meta{string,maya_attribute,"_3delight_light_exposure"} %meta{float,slidermin,0} %meta{float,slidermax,10}  %read{2,2} %write{2147483647,-1}
+param	color	tint	1 1 1		%meta{string,label,"Tint"}  %read{4,4} %write{2147483647,-1}
+param	int	mapping	0		%meta{string,label,"Mapping"} %meta{string,widget,"mapper"} %meta{string,options,"Spherical (latlong):0|Angular:1"}  %read{2147483647,-1} %write{2147483647,-1}
+global	closure color	Ci	%read{2147483647,-1} %write{7,7}
+temp	closure color	$tmp1	%read{5,5} %write{0,0}
+const	string	$const1	"emission"		%read{0,0} %write{2147483647,-1}
+temp	color	$tmp2	%read{3,3} %write{1,1}
+temp	float	$tmp3	%read{3,3} %write{2,2}
+const	float	$const3	2		%read{2,2} %write{2147483647,-1}
+temp	color	$tmp4	%read{4,4} %write{3,3}
+temp	color	$tmp5	%read{5,5} %write{4,4}
+temp	closure color	$tmp6	%read{7,7} %write{5,5}
+temp	closure color	$tmp7	%read{7,7} %write{6,6}
+const	string	$const4	"transparent"		%read{6,6} %write{2147483647,-1}
+code ___main___
+# W:/r2d2\src\osl_shaders\dlEnvironment.osl:34
+# 	Ci = i_texture * intensity * pow(2,exposure) * tint * emission() + transparent();
+	closure		$tmp1 $const1 	%filename{"W:/r2d2\src\osl_shaders\dlEnvironment.osl"} %line{34} %argrw{"wr"}
+	mul		$tmp2 i_texture intensity 	%argrw{"wrr"}
+	pow		$tmp3 $const3 exposure 	%argrw{"wrr"}
+	mul		$tmp4 $tmp2 $tmp3 	%argrw{"wrr"}
+	mul		$tmp5 $tmp4 tint 	%argrw{"wrr"}
+	mul		$tmp6 $tmp1 $tmp5 	%argrw{"wrr"}
+	closure		$tmp7 $const4 	%argrw{"wr"}
+	add		Ci $tmp6 $tmp7 	%argrw{"wrr"}
+	end

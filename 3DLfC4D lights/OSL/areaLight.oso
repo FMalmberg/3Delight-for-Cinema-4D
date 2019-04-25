@@ -1,0 +1,246 @@
+OpenShadingLanguage 1.00
+# Compiled by oslc 1.10.0dev
+# options: -q -o ..\build\win64-x64-release-free\2016.5\..\osl\areaLight.oso -I../../osl_shaders
+surface areaLight	%meta{string[1],tags,"light"} 
+param	color	i_color	1 1 1		%meta{string,label,"Color"} %meta{string,attribute,"color"}  %read{16,16} %write{2147483647,-1}
+param	float	intensity	1		%meta{string,label,"Intensity"} %meta{float,slidermin,0} %meta{float,slidermax,10}  %read{16,16} %write{2147483647,-1}
+param	float	exposure	0		%meta{string,label,"Exposure"} %meta{string,maya_attribute,"_3delight_light_exposure"} %meta{float,slidermin,0} %meta{float,slidermax,10}  %read{17,17} %write{2147483647,-1}
+param	float	spread	1		%meta{string,label,"Spread"} %meta{string,maya_attribute,"_3delight_light_spread"} %meta{float,slidermin,0} %meta{float,slidermax,1} %meta{float,min,0} %meta{float,max,1}  %read{78,78} %write{2147483647,-1}
+param	int	decayRate	2		%meta{string,label,"Decay Rate"} %meta{string,widget,"mapper"} %meta{string,options,"No Decay:0|Linear:1|Quadratic:2|Cubic:3"}  %read{57,66} %write{2147483647,-1}
+param	int	twosided	0		%meta{string,maya_attribute,"_3delight_arealight_twosided"} %meta{string,label,"Two Sided"} %meta{string,widget,"checkBox"}  %read{6,6} %write{2147483647,-1}
+param	int	normalize_area	0		%meta{string,maya_attribute,"_3delight_normalize_arealight_intensity"} %meta{string,label,"Normalize Intensity by Area"} %meta{string,widget,"checkBox"}  %read{71,71} %write{2147483647,-1}
+param	int	contributions	1		%meta{string,page,"Contributions"} %meta{string,label,"Enable"} %meta{string,widget,"null"}  %read{19,19} %write{2147483647,-1}
+param	float	diffuse_contribution	1		%meta{string,maya_attribute,"_3delight_diffuseContribution"} %meta{string,page,"Contributions"} %meta{string,label,"Diffuse"} %meta{float,slidermin,0} %meta{float,slidermax,3} %meta{float,min,0} %meta{string,lock_left,"contributions"} %meta{string,lock_op,"notEqualTo"} %meta{int,lock_right,1}  %read{21,28} %write{2147483647,-1}
+param	float	specular_contribution	1		%meta{string,maya_attribute,"_3delight_specularContribution"} %meta{string,page,"Contributions"} %meta{string,label,"Specular"} %meta{float,slidermin,0} %meta{float,slidermax,3} %meta{float,min,0} %meta{string,lock_left,"contributions"} %meta{string,lock_op,"notEqualTo"} %meta{int,lock_right,1}  %read{37,44} %write{2147483647,-1}
+param	float	hair_contribution	1		%meta{string,maya_attribute,"_3delight_hairContribution"} %meta{string,page,"Contributions"} %meta{string,label,"Hair"} %meta{float,slidermin,0} %meta{float,slidermax,3} %meta{float,min,0} %meta{string,lock_left,"contributions"} %meta{string,lock_op,"notEqualTo"} %meta{int,lock_right,1}  %read{29,36} %write{2147483647,-1}
+param	float	volume_contribution	1		%meta{string,maya_attribute,"_3delight_volumeContribution"} %meta{string,page,"Contributions"} %meta{string,label,"Volume"} %meta{float,slidermin,0} %meta{float,slidermax,3} %meta{float,min,0} %meta{string,lock_left,"contributions"} %meta{string,lock_op,"notEqualTo"} %meta{int,lock_right,1}  %read{45,52} %write{2147483647,-1}
+param	color	filter	1 1 1		%meta{string,widget,"null"}  %read{75,75} %write{2147483647,-1}
+oparam	closure color	out			%read{2147483647,-1} %write{14,88}
+global	vector	I	%read{59,68} %write{2147483647,-1}
+global	closure color	Ci	%read{5,88} %write{0,87}
+local	float	___349_x	%read{80,84} %write{79,83}
+local	color	result	%read{28,86} %write{18,75}
+const	int	$const1	0		%read{0,57} %write{2147483647,-1}
+temp	int	$tmp1	%read{2,2} %write{1,1}
+const	string	$const2	"camera"		%read{1,1} %write{2147483647,-1}
+temp	int	$tmp2	%read{3,3} %write{2,2}
+temp	closure color	$tmp3	%read{5,5} %write{4,4}
+const	string	$const3	"transparent"		%read{4,13} %write{2147483647,-1}
+temp	int	$tmp4	%read{7,7} %write{6,6}
+temp	int	$tmp5	%read{8,12} %write{7,11}
+temp	int	$tmp6	%read{10,10} %write{9,9}
+temp	int	$tmp7	%read{11,11} %write{10,10}
+temp	color	$tmp8	%read{18,18} %write{16,16}
+temp	float	$tmp9	%read{18,18} %write{17,17}
+const	float	$const5	2		%read{17,17} %write{2147483647,-1}
+const	int	$const6	1		%read{19,71} %write{2147483647,-1}
+temp	int	$tmp10	%read{20,20} %write{19,19}
+const	float	$const7	1		%read{21,84} %write{2147483647,-1}
+temp	int	$tmp11	%read{22,22} %write{21,21}
+temp	int	$tmp12	%read{23,27} %write{22,26}
+temp	int	$tmp13	%read{25,25} %write{24,24}
+const	string	$const8	"diffuse"		%read{24,24} %write{2147483647,-1}
+temp	int	$tmp14	%read{26,26} %write{25,25}
+temp	int	$tmp15	%read{30,30} %write{29,29}
+temp	int	$tmp16	%read{31,35} %write{30,34}
+temp	int	$tmp17	%read{33,33} %write{32,32}
+const	string	$const9	"hair"		%read{32,32} %write{2147483647,-1}
+temp	int	$tmp18	%read{34,34} %write{33,33}
+temp	int	$tmp19	%read{38,38} %write{37,37}
+temp	int	$tmp20	%read{39,43} %write{38,42}
+temp	int	$tmp21	%read{41,41} %write{40,40}
+const	string	$const10	"specular"		%read{40,40} %write{2147483647,-1}
+temp	int	$tmp22	%read{42,42} %write{41,41}
+temp	int	$tmp23	%read{46,46} %write{45,45}
+temp	int	$tmp24	%read{47,51} %write{46,50}
+temp	int	$tmp25	%read{49,49} %write{48,48}
+const	string	$const11	"volume"		%read{48,48} %write{2147483647,-1}
+temp	int	$tmp26	%read{50,50} %write{49,49}
+const	float	$const12	0		%read{53,79} %write{2147483647,-1}
+temp	int	$tmp27	%read{54,54} %write{53,53}
+temp	int	$tmp28	%read{58,58} %write{57,57}
+temp	float	$tmp29	%read{60,60} %write{59,59}
+temp	int	$tmp30	%read{62,62} %write{61,61}
+temp	float	$tmp31	%read{65,65} %write{64,64}
+temp	float	$tmp32	%read{64,64} %write{63,63}
+const	int	$const13	3		%read{66,66} %write{2147483647,-1}
+temp	int	$tmp33	%read{67,67} %write{66,66}
+temp	float	$tmp34	%read{70,70} %write{69,69}
+temp	float	$tmp35	%read{69,69} %write{68,68}
+temp	int	$tmp36	%read{72,72} %write{71,71}
+temp	float	$tmp37	%read{74,74} %write{73,73}
+temp	closure color	$tmp38	%read{86,86} %write{85,85}
+const	string	$const14	"focus"		%read{85,85} %write{2147483647,-1}
+temp	float	$tmp39	%read{85,85} %write{84,84}
+const	string	$const15	"spread_to_focus"		%read{76,76} %write{2147483647,-1}
+const	string	$const16	"clamp"		%read{77,77} %write{2147483647,-1}
+temp	float	$tmp40	%read{79,79} %write{78,78}
+const	float	$const17	9.9999997e-06		%read{81,83} %write{2147483647,-1}
+temp	int	$tmp41	%read{82,82} %write{81,81}
+const	string	$const18	"emission"		%read{85,85} %write{2147483647,-1}
+temp	closure color	$tmp42	%read{87,87} %write{86,86}
+code ___main___
+# ../../osl_shaders/areaLight.osl:113
+# 	Ci = 0;
+	assign		Ci $const1 	%filename{"../../osl_shaders/areaLight.osl"} %line{113} %argrw{"wr"}
+# ../../osl_shaders/areaLight.osl:116
+# 	if( !raytype("camera") )
+	raytype		$tmp1 $const2 	%line{116} %argrw{"wr"}
+	eq		$tmp2 $tmp1 $const1 	%argrw{"wrr"}
+	if		$tmp2 6 6 	%argrw{"r"}
+# ../../osl_shaders/areaLight.osl:118
+# 		Ci += transparent();
+	closure		$tmp3 $const3 	%line{118} %argrw{"wr"}
+	add		Ci Ci $tmp3 	%argrw{"wrr"}
+# ../../osl_shaders/areaLight.osl:121
+# 	if( twosided==0 && backfacing() )
+	eq		$tmp4 twosided $const1 	%line{121} %argrw{"wrr"}
+	neq		$tmp5 $tmp4 $const1 	%argrw{"wrr"}
+	if		$tmp5 12 12 	%argrw{"r"}
+	backfacing	$tmp6 	%argrw{"w"}
+	neq		$tmp7 $tmp6 $const1 	%argrw{"wrr"}
+	assign		$tmp5 $tmp7 	%argrw{"wr"}
+	if		$tmp5 16 16 	%argrw{"r"}
+# ../../osl_shaders/areaLight.osl:123
+# 		out = Ci = transparent();
+	closure		Ci $const3 	%line{123} %argrw{"wr"}
+	assign		out Ci 	%argrw{"wr"}
+# ../../osl_shaders/areaLight.osl:124
+# 		return;
+	exit	%line{124}
+# ../../osl_shaders/areaLight.osl:127
+# 	color result = i_color * intensity * pow(2, exposure);
+	mul		$tmp8 i_color intensity 	%line{127} %argrw{"wrr"}
+	pow		$tmp9 $const5 exposure 	%argrw{"wrr"}
+	mul		result $tmp8 $tmp9 	%argrw{"wrr"}
+# ../../osl_shaders/areaLight.osl:133
+# 	if( contributions == 1 )
+	eq		$tmp10 contributions $const6 	%line{133} %argrw{"wrr"}
+	if		$tmp10 53 53 	%argrw{"r"}
+# ../../osl_shaders/areaLight.osl:135
+# 		if( diffuse_contribution!=1.0 && raytype("diffuse") )
+	neq		$tmp11 diffuse_contribution $const7 	%line{135} %argrw{"wrr"}
+	neq		$tmp12 $tmp11 $const1 	%argrw{"wrr"}
+	if		$tmp12 27 27 	%argrw{"r"}
+	raytype		$tmp13 $const8 	%argrw{"wr"}
+	neq		$tmp14 $tmp13 $const1 	%argrw{"wrr"}
+	assign		$tmp12 $tmp14 	%argrw{"wr"}
+	if		$tmp12 29 53 	%argrw{"r"}
+# ../../osl_shaders/areaLight.osl:136
+# 			result *= diffuse_contribution;
+	mul		result result diffuse_contribution 	%line{136} %argrw{"wrr"}
+# ../../osl_shaders/areaLight.osl:137
+# 		else if( hair_contribution!=1.0 && raytype("hair") )
+	neq		$tmp15 hair_contribution $const7 	%line{137} %argrw{"wrr"}
+	neq		$tmp16 $tmp15 $const1 	%argrw{"wrr"}
+	if		$tmp16 35 35 	%argrw{"r"}
+	raytype		$tmp17 $const9 	%argrw{"wr"}
+	neq		$tmp18 $tmp17 $const1 	%argrw{"wrr"}
+	assign		$tmp16 $tmp18 	%argrw{"wr"}
+	if		$tmp16 37 53 	%argrw{"r"}
+# ../../osl_shaders/areaLight.osl:138
+# 			result *= hair_contribution;
+	mul		result result hair_contribution 	%line{138} %argrw{"wrr"}
+# ../../osl_shaders/areaLight.osl:139
+# 		else if( specular_contribution!=1.0 && raytype("specular") )
+	neq		$tmp19 specular_contribution $const7 	%line{139} %argrw{"wrr"}
+	neq		$tmp20 $tmp19 $const1 	%argrw{"wrr"}
+	if		$tmp20 43 43 	%argrw{"r"}
+	raytype		$tmp21 $const10 	%argrw{"wr"}
+	neq		$tmp22 $tmp21 $const1 	%argrw{"wrr"}
+	assign		$tmp20 $tmp22 	%argrw{"wr"}
+	if		$tmp20 45 53 	%argrw{"r"}
+# ../../osl_shaders/areaLight.osl:140
+# 			result *= specular_contribution;
+	mul		result result specular_contribution 	%line{140} %argrw{"wrr"}
+# ../../osl_shaders/areaLight.osl:141
+# 		else if( volume_contribution!=1.0 && raytype("volume") )
+	neq		$tmp23 volume_contribution $const7 	%line{141} %argrw{"wrr"}
+	neq		$tmp24 $tmp23 $const1 	%argrw{"wrr"}
+	if		$tmp24 51 51 	%argrw{"r"}
+	raytype		$tmp25 $const11 	%argrw{"wr"}
+	neq		$tmp26 $tmp25 $const1 	%argrw{"wrr"}
+	assign		$tmp24 $tmp26 	%argrw{"wr"}
+	if		$tmp24 53 53 	%argrw{"r"}
+# ../../osl_shaders/areaLight.osl:142
+# 			result *= volume_contribution;
+	mul		result result volume_contribution 	%line{142} %argrw{"wrr"}
+# ../../osl_shaders/areaLight.osl:145
+# 	if( result == 0.0 )
+	eq		$tmp27 result $const12 	%line{145} %argrw{"wrr"}
+	if		$tmp27 57 57 	%argrw{"r"}
+# ../../osl_shaders/areaLight.osl:147
+# 		out = Ci;
+	assign		out Ci 	%line{147} %argrw{"wr"}
+# ../../osl_shaders/areaLight.osl:148
+# 		return;
+	exit	%line{148}
+# ../../osl_shaders/areaLight.osl:156
+# 	if( decayRate == 0 )
+	eq		$tmp28 decayRate $const1 	%line{156} %argrw{"wrr"}
+	if		$tmp28 61 71 	%argrw{"r"}
+# ../../osl_shaders/areaLight.osl:158
+# 		result *= dot(I,I);
+	dot		$tmp29 I I 	%line{158} %argrw{"wrr"}
+	mul		result result $tmp29 	%argrw{"wrr"}
+# ../../osl_shaders/areaLight.osl:160
+# 	else if( decayRate == 1 )
+	eq		$tmp30 decayRate $const6 	%line{160} %argrw{"wrr"}
+	if		$tmp30 66 71 	%argrw{"r"}
+# ../../osl_shaders/areaLight.osl:162
+# 		result *= sqrt(dot(I,I));
+	dot		$tmp32 I I 	%line{162} %argrw{"wrr"}
+	sqrt		$tmp31 $tmp32 	%argrw{"wr"}
+	mul		result result $tmp31 	%argrw{"wrr"}
+# ../../osl_shaders/areaLight.osl:164
+# 	else if( decayRate == 3 )
+	eq		$tmp33 decayRate $const13 	%line{164} %argrw{"wrr"}
+	if		$tmp33 71 71 	%argrw{"r"}
+# ../../osl_shaders/areaLight.osl:166
+# 		result /= sqrt(dot(I,I));
+	dot		$tmp35 I I 	%line{166} %argrw{"wrr"}
+	sqrt		$tmp34 $tmp35 	%argrw{"wr"}
+	div		result result $tmp34 	%argrw{"wrr"}
+# ../../osl_shaders/areaLight.osl:169
+# 	if( normalize_area == 1 )
+	eq		$tmp36 normalize_area $const6 	%line{169} %argrw{"wrr"}
+	if		$tmp36 75 75 	%argrw{"r"}
+# ../../osl_shaders/areaLight.osl:171
+# 		result /= surfacearea();
+	surfacearea	$tmp37 	%line{171} %argrw{"w"}
+	div		result result $tmp37 	%argrw{"wrr"}
+# ../../osl_shaders/areaLight.osl:174
+# 	result *= filter;
+	mul		result result filter 	%line{174} %argrw{"wrr"}
+# ../../osl_shaders/areaLight.osl:176
+# 	Ci += result * emission( "focus", spread_to_focus(spread) );
+	functioncall	$const15 85 	%line{176} %argrw{"r"}
+# X:/r2d2\src\osl_shaders\utils.h:260
+# 	float x = clamp(spread, 0.0, 1.0);
+	functioncall	$const16 80 	%filename{"X:/r2d2\src\osl_shaders\utils.h"} %line{260} %argrw{"r"}
+# X:/r2d2\src\3delight\win64-x64-release-free\osl\stdosl.h:163
+# float  clamp (float x, float minval, float maxval) { return max(min(x,maxval),minval); }
+	min		$tmp40 spread $const7 	%filename{"X:/r2d2\src\3delight\win64-x64-release-free\osl\stdosl.h"} %line{163} %argrw{"wrr"}
+	max		___349_x $tmp40 $const12 	%argrw{"wrr"}
+# X:/r2d2\src\osl_shaders\utils.h:261
+# 	x *= x;
+	mul		___349_x ___349_x ___349_x 	%filename{"X:/r2d2\src\osl_shaders\utils.h"} %line{261} %argrw{"wrr"}
+# X:/r2d2\src\osl_shaders\utils.h:264
+# 	if( x<1e-5)
+	lt		$tmp41 ___349_x $const17 	%line{264} %argrw{"wrr"}
+	if		$tmp41 84 84 	%argrw{"r"}
+# X:/r2d2\src\osl_shaders\utils.h:265
+# 		x=1e-5;
+	assign		___349_x $const17 	%line{265} %argrw{"wr"}
+# X:/r2d2\src\osl_shaders\utils.h:267
+# 	return 1 / x;
+	div		$tmp39 $const7 ___349_x 	%line{267} %argrw{"wrr"}
+# ../../osl_shaders/areaLight.osl:176
+# 	Ci += result * emission( "focus", spread_to_focus(spread) );
+	closure		$tmp38 $const18 $const14 $tmp39 	%filename{"../../osl_shaders/areaLight.osl"} %line{176} %argrw{"wrrr"}
+	mul		$tmp42 $tmp38 result 	%argrw{"wrr"}
+	add		Ci Ci $tmp42 	%argrw{"wrr"}
+# ../../osl_shaders/areaLight.osl:178
+# 	out = Ci;
+	assign		out Ci 	%line{178} %argrw{"wr"}
+	end

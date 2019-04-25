@@ -1,0 +1,328 @@
+OpenShadingLanguage 1.00
+# Compiled by oslc 1.11.0dev
+# options: 
+shader Main_Shader
+param	int	_2000	0		%read{2147483647,-1} %write{2147483647,-1}
+param	color	_2100	1 1 1		%read{0,0} %write{2147483647,-1}
+param	float	_2101	1		%read{1,1} %write{2147483647,-1}
+param	color	_8000	1 1 1		%read{2,2} %write{2147483647,-1}
+param	int	shader_8000	0		%read{17,17} %write{2147483647,-1}
+param	float	_2102	1		%read{3,3} %write{2147483647,-1}
+param	int	_2103	0		%read{4,4} %write{2147483647,-1}
+param	int	_2110	0		%read{5,5} %write{2147483647,-1}
+param	float	_1136	0		%read{6,6} %write{2147483647,-1}
+param	float	_1138	1		%read{7,7} %write{2147483647,-1}
+param	float	_1135	1		%read{8,8} %write{2147483647,-1}
+param	color	color_color	0 0 0		%read{16,81} %write{0,0} %initexpr
+param	float	color_brightness	0		%read{16,47} %write{1,1} %initexpr
+param	color	color_shader	0 0 0		%read{23,46} %write{2,2} %initexpr
+param	float	color_mix_strength	0		%read{23,46} %write{3,3} %initexpr
+param	int	color_mix_mode	0		%read{21,44} %write{4,4} %initexpr
+param	int	color_model	0		%read{86,86} %write{5,5} %initexpr
+param	float	color_diffuse_fallooff	0		%read{2147483647,-1} %write{6,6} %initexpr
+param	float	color_diffuse_level	0		%read{91,91} %write{7,7} %initexpr
+param	float	color_roughness	0		%read{89,89} %write{8,8} %initexpr
+param	int	_2001	0		%read{2147483647,-1} %write{2147483647,-1}
+param	float	_2200	1		%read{9,9} %write{2147483647,-1}
+param	int	_1002	0		%read{10,10} %write{2147483647,-1}
+param	int	_1000	1		%read{11,11} %write{2147483647,-1}
+param	int	_1001	1		%read{12,12} %write{2147483647,-1}
+param	color	_8001	1 1 1		%read{13,13} %write{2147483647,-1}
+param	int	shader_8001	0		%read{51,51} %write{2147483647,-1}
+param	float	_2201	1		%read{14,14} %write{2147483647,-1}
+param	int	_2202	0		%read{15,15} %write{2147483647,-1}
+param	float	diffusion_brightness	0		%read{50,81} %write{9,9} %initexpr
+param	int	diffusion_affect_luminance	0		%read{2147483647,-1} %write{10,10} %initexpr
+param	int	diffusion_affect_specular	0		%read{2147483647,-1} %write{11,11} %initexpr
+param	int	diffusion_affect_reflection	0		%read{2147483647,-1} %write{12,12} %initexpr
+param	color	diffusion_shader	0 0 0		%read{57,80} %write{13,13} %initexpr
+param	float	diffusion_mix_strength	0		%read{57,80} %write{14,14} %initexpr
+param	int	diffusion_mix_mode	0		%read{55,78} %write{15,15} %initexpr
+global	normal	N	%read{84,88} %write{2147483647,-1}
+global	closure color	Ci	%read{2147483647,-1} %write{85,91}
+local	color	___321_color_result	%read{49,83} %write{20,82}
+local	color	___322_texture	%read{27,61} %write{23,57}
+local	color	___322_material	%read{27,61} %write{26,60}
+local	color	___323_texture	%read{32,66} %write{30,64}
+local	color	___323_material	%read{32,66} %write{31,65}
+local	color	___324_texture	%read{38,72} %write{35,69}
+local	color	___324_material	%read{38,72} %write{37,71}
+local	color	___325_texture	%read{48,82} %write{46,80}
+local	color	___325_material	%read{48,82} %write{47,81}
+local	color	color_result	%read{85,90} %write{16,49}
+local	color	diffusion_result	%read{88,88} %write{50,83}
+const	int	$const1	1		%read{17,86} %write{2147483647,-1}
+temp	int	$tmp1	%read{18,18} %write{17,17}
+const	string	$const2	"getTexture"		%read{19,53} %write{2147483647,-1}
+const	int	$const3	0		%read{21,55} %write{2147483647,-1}
+temp	int	$tmp2	%read{22,22} %write{21,21}
+temp	color	$tmp3	%read{26,26} %write{24,24}
+temp	float	$tmp4	%read{26,26} %write{25,25}
+const	float	$const4	1		%read{25,74} %write{2147483647,-1}
+temp	int	$tmp5	%read{29,29} %write{28,28}
+const	int	$const5	2		%read{33,67} %write{2147483647,-1}
+temp	int	$tmp6	%read{34,34} %write{33,33}
+temp	color	$tmp7	%read{37,37} %write{36,36}
+temp	color	$tmp8	%read{42,42} %write{38,38}
+const	float	$const6	0		%read{39,73} %write{2147483647,-1}
+temp	color	$tmp9	%read{43,43} %write{39,39}
+temp	color	$tmp10	%read{42,42} %write{40,40}
+const	string	$const7	"clamp"		%read{41,75} %write{2147483647,-1}
+temp	color	$tmp11	%read{43,43} %write{42,42}
+const	int	$const8	3		%read{44,78} %write{2147483647,-1}
+temp	int	$tmp12	%read{45,45} %write{44,44}
+temp	int	$tmp13	%read{52,52} %write{51,51}
+temp	int	$tmp14	%read{56,56} %write{55,55}
+temp	color	$tmp15	%read{60,60} %write{58,58}
+temp	float	$tmp16	%read{60,60} %write{59,59}
+temp	int	$tmp17	%read{63,63} %write{62,62}
+temp	int	$tmp18	%read{68,68} %write{67,67}
+temp	color	$tmp19	%read{71,71} %write{70,70}
+temp	color	$tmp20	%read{76,76} %write{72,72}
+temp	color	$tmp21	%read{77,77} %write{73,73}
+temp	color	$tmp22	%read{76,76} %write{74,74}
+temp	color	$tmp23	%read{77,77} %write{76,76}
+temp	int	$tmp24	%read{79,79} %write{78,78}
+temp	closure color	$tmp25	%read{85,85} %write{84,84}
+const	string	$const9	"diffuse"		%read{84,84} %write{2147483647,-1}
+temp	int	$tmp26	%read{87,87} %write{86,86}
+temp	closure color	$tmp27	%read{90,90} %write{89,89}
+temp	normal	$tmp28	%read{89,89} %write{88,88}
+const	string	$const10	"oren_nayar"		%read{89,89} %write{2147483647,-1}
+temp	closure color	$tmp29	%read{91,91} %write{90,90}
+code color_color
+# Main_Shader.osl:55
+# 	color color_color = _2100,
+	assign		color_color _2100 	%filename{"Main_Shader.osl"} %line{55} %argrw{"wr"}
+code color_brightness
+# Main_Shader.osl:56
+# 	float color_brightness = _2101,
+	assign		color_brightness _2101 	%filename{"Main_Shader.osl"} %line{56} %argrw{"wr"}
+code color_shader
+# Main_Shader.osl:57
+# 	color color_shader = _8000,
+	assign		color_shader _8000 	%filename{"Main_Shader.osl"} %line{57} %argrw{"wr"}
+code color_mix_strength
+# Main_Shader.osl:58
+# 	float color_mix_strength = _2102,
+	assign		color_mix_strength _2102 	%filename{"Main_Shader.osl"} %line{58} %argrw{"wr"}
+code color_mix_mode
+# Main_Shader.osl:59
+# 	int color_mix_mode = _2103,
+	assign		color_mix_mode _2103 	%filename{"Main_Shader.osl"} %line{59} %argrw{"wr"}
+code color_model
+# Main_Shader.osl:60
+# 	int color_model = _2110,
+	assign		color_model _2110 	%filename{"Main_Shader.osl"} %line{60} %argrw{"wr"}
+code color_diffuse_fallooff
+# Main_Shader.osl:61
+# 	float color_diffuse_fallooff = _1136,
+	assign		color_diffuse_fallooff _1136 	%filename{"Main_Shader.osl"} %line{61} %argrw{"wr"}
+code color_diffuse_level
+# Main_Shader.osl:62
+# 	float color_diffuse_level = _1138,
+	assign		color_diffuse_level _1138 	%filename{"Main_Shader.osl"} %line{62} %argrw{"wr"}
+code color_roughness
+# Main_Shader.osl:63
+# 	float color_roughness = _1135,
+	assign		color_roughness _1135 	%filename{"Main_Shader.osl"} %line{63} %argrw{"wr"}
+code diffusion_brightness
+# Main_Shader.osl:77
+# 	float diffusion_brightness = _2200,
+	assign		diffusion_brightness _2200 	%filename{"Main_Shader.osl"} %line{77} %argrw{"wr"}
+code diffusion_affect_luminance
+# Main_Shader.osl:78
+# 	int diffusion_affect_luminance = _1002,
+	assign		diffusion_affect_luminance _1002 	%filename{"Main_Shader.osl"} %line{78} %argrw{"wr"}
+code diffusion_affect_specular
+# Main_Shader.osl:79
+# 	int diffusion_affect_specular = _1000,
+	assign		diffusion_affect_specular _1000 	%filename{"Main_Shader.osl"} %line{79} %argrw{"wr"}
+code diffusion_affect_reflection
+# Main_Shader.osl:80
+# 	int diffusion_affect_reflection = _1001,
+	assign		diffusion_affect_reflection _1001 	%filename{"Main_Shader.osl"} %line{80} %argrw{"wr"}
+code diffusion_shader
+# Main_Shader.osl:81
+# 	color diffusion_shader = _8001,
+	assign		diffusion_shader _8001 	%filename{"Main_Shader.osl"} %line{81} %argrw{"wr"}
+code diffusion_mix_strength
+# Main_Shader.osl:82
+# 	float diffusion_mix_strength = _2201,
+	assign		diffusion_mix_strength _2201 	%filename{"Main_Shader.osl"} %line{82} %argrw{"wr"}
+code diffusion_mix_mode
+# Main_Shader.osl:83
+# 	int diffusion_mix_mode = _2202
+	assign		diffusion_mix_mode _2202 	%filename{"Main_Shader.osl"} %line{83} %argrw{"wr"}
+code ___main___
+# Main_Shader.osl:91
+# 	color color_result =color_color*color_brightness;
+	mul		color_result color_color color_brightness 	%filename{"Main_Shader.osl"} %line{91} %argrw{"wrr"}
+# Main_Shader.osl:93
+# 	if(shader_8000 == 1) //if a shader texture is used in color channel
+	eq		$tmp1 shader_8000 $const1 	%line{93} %argrw{"wrr"}
+	if		$tmp1 50 50 	%argrw{"r"}
+# Main_Shader.osl:95
+# 		color_result=getTexture(color_mix_mode,color_shader,color_mix_strength,color_brightness,color_color);
+	functioncall	$const2 50 	%line{95} %argrw{"r"}
+# Main_Shader.osl:10
+# 	color color_result=1;
+	assign		___321_color_result $const1 	%line{10} %argrw{"wr"}
+# Main_Shader.osl:12
+# 	if(mix_mode==0) //Normal
+	eq		$tmp2 color_mix_mode $const3 	%line{12} %argrw{"wrr"}
+	if		$tmp2 28 49 	%argrw{"r"}
+# Main_Shader.osl:14
+# 			color texture = shader*mix_strength;
+	mul		___322_texture color_shader color_mix_strength 	%line{14} %argrw{"wrr"}
+# Main_Shader.osl:15
+# 			color material = colors*brightness*(1-mix_strength);
+	mul		$tmp3 color_color color_brightness 	%line{15} %argrw{"wrr"}
+	sub		$tmp4 $const4 color_mix_strength 	%argrw{"wrr"}
+	mul		___322_material $tmp3 $tmp4 	%argrw{"wrr"}
+# Main_Shader.osl:16
+# 			color_result = texture+material;		
+	add		___321_color_result ___322_texture ___322_material 	%line{16} %argrw{"wrr"}
+# Main_Shader.osl:18
+# 		else if(mix_mode==1)  //Addition
+	eq		$tmp5 color_mix_mode $const1 	%line{18} %argrw{"wrr"}
+	if		$tmp5 33 49 	%argrw{"r"}
+# Main_Shader.osl:20
+# 			color texture = shader*mix_strength;
+	mul		___323_texture color_shader color_mix_strength 	%line{20} %argrw{"wrr"}
+# Main_Shader.osl:21
+# 			color material = colors*brightness;
+	mul		___323_material color_color color_brightness 	%line{21} %argrw{"wrr"}
+# Main_Shader.osl:22
+# 			color_result = texture+material;	
+	add		___321_color_result ___323_texture ___323_material 	%line{22} %argrw{"wrr"}
+# Main_Shader.osl:24
+# 		else if(mix_mode==2) //Substraction
+	eq		$tmp6 color_mix_mode $const5 	%line{24} %argrw{"wrr"}
+	if		$tmp6 44 49 	%argrw{"r"}
+# Main_Shader.osl:26
+# 			color texture = shader;
+	assign		___324_texture color_shader 	%line{26} %argrw{"wr"}
+# Main_Shader.osl:27
+# 			color material = colors*brightness*mix_strength;
+	mul		$tmp7 color_color color_brightness 	%line{27} %argrw{"wrr"}
+	mul		___324_material $tmp7 color_mix_strength 	%argrw{"wrr"}
+# Main_Shader.osl:28
+# 			color_result = clamp( texture-material, 0, 1 );
+	sub		$tmp8 ___324_texture ___324_material 	%line{28} %argrw{"wrr"}
+	assign		$tmp9 $const6 	%argrw{"wr"}
+	assign		$tmp10 $const4 	%argrw{"wr"}
+	functioncall	$const7 44 	%argrw{"r"}
+# C:/Program Files\3Delight\osl\stdosl.h:162
+# color  clamp (color x, color minval, color maxval) { return max(min(x,maxval),minval); }
+	min		$tmp11 $tmp8 $tmp10 	%filename{"C:/Program Files\3Delight\osl\stdosl.h"} %line{162} %argrw{"wrr"}
+	max		___321_color_result $tmp11 $tmp9 	%argrw{"wrr"}
+# Main_Shader.osl:30
+# 		else if(mix_mode==3)  //Multiplication
+	eq		$tmp12 color_mix_mode $const8 	%filename{"Main_Shader.osl"} %line{30} %argrw{"wrr"}
+	if		$tmp12 49 49 	%argrw{"r"}
+# Main_Shader.osl:32
+# 			color texture = shader*mix_strength;
+	mul		___325_texture color_shader color_mix_strength 	%line{32} %argrw{"wrr"}
+# Main_Shader.osl:33
+# 			color material = colors*brightness;
+	mul		___325_material color_color color_brightness 	%line{33} %argrw{"wrr"}
+# Main_Shader.osl:34
+# 			color_result = texture*material;	
+	mul		___321_color_result ___325_texture ___325_material 	%line{34} %argrw{"wrr"}
+# Main_Shader.osl:37
+# 	return color_result;
+	assign		color_result ___321_color_result 	%line{37} %argrw{"wr"}
+# Main_Shader.osl:102
+# 	color diffusion_result =color_color*diffusion_brightness;
+	mul		diffusion_result color_color diffusion_brightness 	%line{102} %argrw{"wrr"}
+# Main_Shader.osl:104
+# 	if(shader_8001 == 1) //if a shader texture is used in diffuse channel
+	eq		$tmp13 shader_8001 $const1 	%line{104} %argrw{"wrr"}
+	if		$tmp13 84 84 	%argrw{"r"}
+# Main_Shader.osl:106
+# 		diffusion_result = getTexture(diffusion_mix_mode,diffusion_shader,diffusion_mix_strength,diffusion_brightness,color_color);
+	functioncall	$const2 84 	%line{106} %argrw{"r"}
+# Main_Shader.osl:10
+# 	color color_result=1;
+	assign		___321_color_result $const1 	%line{10} %argrw{"wr"}
+# Main_Shader.osl:12
+# 	if(mix_mode==0) //Normal
+	eq		$tmp14 diffusion_mix_mode $const3 	%line{12} %argrw{"wrr"}
+	if		$tmp14 62 83 	%argrw{"r"}
+# Main_Shader.osl:14
+# 			color texture = shader*mix_strength;
+	mul		___322_texture diffusion_shader diffusion_mix_strength 	%line{14} %argrw{"wrr"}
+# Main_Shader.osl:15
+# 			color material = colors*brightness*(1-mix_strength);
+	mul		$tmp15 color_color diffusion_brightness 	%line{15} %argrw{"wrr"}
+	sub		$tmp16 $const4 diffusion_mix_strength 	%argrw{"wrr"}
+	mul		___322_material $tmp15 $tmp16 	%argrw{"wrr"}
+# Main_Shader.osl:16
+# 			color_result = texture+material;		
+	add		___321_color_result ___322_texture ___322_material 	%line{16} %argrw{"wrr"}
+# Main_Shader.osl:18
+# 		else if(mix_mode==1)  //Addition
+	eq		$tmp17 diffusion_mix_mode $const1 	%line{18} %argrw{"wrr"}
+	if		$tmp17 67 83 	%argrw{"r"}
+# Main_Shader.osl:20
+# 			color texture = shader*mix_strength;
+	mul		___323_texture diffusion_shader diffusion_mix_strength 	%line{20} %argrw{"wrr"}
+# Main_Shader.osl:21
+# 			color material = colors*brightness;
+	mul		___323_material color_color diffusion_brightness 	%line{21} %argrw{"wrr"}
+# Main_Shader.osl:22
+# 			color_result = texture+material;	
+	add		___321_color_result ___323_texture ___323_material 	%line{22} %argrw{"wrr"}
+# Main_Shader.osl:24
+# 		else if(mix_mode==2) //Substraction
+	eq		$tmp18 diffusion_mix_mode $const5 	%line{24} %argrw{"wrr"}
+	if		$tmp18 78 83 	%argrw{"r"}
+# Main_Shader.osl:26
+# 			color texture = shader;
+	assign		___324_texture diffusion_shader 	%line{26} %argrw{"wr"}
+# Main_Shader.osl:27
+# 			color material = colors*brightness*mix_strength;
+	mul		$tmp19 color_color diffusion_brightness 	%line{27} %argrw{"wrr"}
+	mul		___324_material $tmp19 diffusion_mix_strength 	%argrw{"wrr"}
+# Main_Shader.osl:28
+# 			color_result = clamp( texture-material, 0, 1 );
+	sub		$tmp20 ___324_texture ___324_material 	%line{28} %argrw{"wrr"}
+	assign		$tmp21 $const6 	%argrw{"wr"}
+	assign		$tmp22 $const4 	%argrw{"wr"}
+	functioncall	$const7 78 	%argrw{"r"}
+# C:/Program Files\3Delight\osl\stdosl.h:162
+# color  clamp (color x, color minval, color maxval) { return max(min(x,maxval),minval); }
+	min		$tmp23 $tmp20 $tmp22 	%filename{"C:/Program Files\3Delight\osl\stdosl.h"} %line{162} %argrw{"wrr"}
+	max		___321_color_result $tmp23 $tmp21 	%argrw{"wrr"}
+# Main_Shader.osl:30
+# 		else if(mix_mode==3)  //Multiplication
+	eq		$tmp24 diffusion_mix_mode $const8 	%filename{"Main_Shader.osl"} %line{30} %argrw{"wrr"}
+	if		$tmp24 83 83 	%argrw{"r"}
+# Main_Shader.osl:32
+# 			color texture = shader*mix_strength;
+	mul		___325_texture diffusion_shader diffusion_mix_strength 	%line{32} %argrw{"wrr"}
+# Main_Shader.osl:33
+# 			color material = colors*brightness;
+	mul		___325_material color_color diffusion_brightness 	%line{33} %argrw{"wrr"}
+# Main_Shader.osl:34
+# 			color_result = texture*material;	
+	mul		___321_color_result ___325_texture ___325_material 	%line{34} %argrw{"wrr"}
+# Main_Shader.osl:37
+# 	return color_result;
+	assign		diffusion_result ___321_color_result 	%line{37} %argrw{"wr"}
+# Main_Shader.osl:110
+# 	Ci=diffuse(N)*color_result;
+	closure		$tmp25 $const9 N 	%line{110} %argrw{"wrr"}
+	mul		Ci $tmp25 color_result 	%argrw{"wrr"}
+# Main_Shader.osl:112
+# 	if(color_model==1) //Oren_Nayar
+	eq		$tmp26 color_model $const1 	%line{112} %argrw{"wrr"}
+	if		$tmp26 92 92 	%argrw{"r"}
+# Main_Shader.osl:113
+# 		Ci=color_result*oren_nayar(N*diffusion_result,color_roughness)*color_diffuse_level;
+	mul		$tmp28 N diffusion_result 	%line{113} %argrw{"wrr"}
+	closure		$tmp27 $const10 $tmp28 color_roughness 	%argrw{"wrrr"}
+	mul		$tmp29 $tmp27 color_result 	%argrw{"wrr"}
+	mul		Ci $tmp29 color_diffuse_level 	%argrw{"wrr"}
+	end

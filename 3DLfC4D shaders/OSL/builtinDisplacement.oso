@@ -1,0 +1,82 @@
+OpenShadingLanguage 1.00
+# Compiled by oslc 1.11.0dev
+# options: -q -o ../../win64-x64-release-free/osl/builtinDisplacement.oso
+displacement builtinDisplacement
+param	float	displacement	0		%read{17,17} %write{2147483647,-1} %derivs
+param	float	scale	1		%read{16,16} %write{2147483647,-1} %derivs
+param	int	mode	3		%read{1,1} %write{2147483647,-1}
+global	point	P	%read{19,20} %write{19,19} %derivs
+global	normal	N	%read{12,21} %write{20,22} %derivs
+global	normal	Ng	%read{13,13} %write{2147483647,-1} %derivs
+local	string	normalization_space	%read{9,9} %write{0,0} %derivs
+local	float	offset	%read{17,17} %write{3,4} %derivs
+local	float	sN	%read{15,15} %write{11,11} %derivs
+local	normal	Nn	%read{14,15} %write{12,12} %derivs
+local	normal	Ngn	%read{14,14} %write{13,13} %derivs
+local	normal	Ndiff	%read{22,22} %write{14,14} %derivs
+const	string	$const1	"object"		%read{0,0} %write{2147483647,-1}
+const	int	$const2	3		%read{1,1} %write{2147483647,-1}
+temp	int	$tmp1	%read{2,2} %write{1,1}
+const	float	$const3	0		%read{3,3} %write{2147483647,-1}
+const	float	$const4	0.5		%read{4,4} %write{2147483647,-1}
+temp	float	$tmp2	%read{11,11} %write{10,10} %derivs
+temp	vector	$tmp3	%read{10,10} %write{9,9} %derivs
+temp	vector	$tmp4	%read{9,9} %write{7,7} %derivs
+const	float	$const6	1		%read{6,11} %write{2147483647,-1}
+temp	float	$tmp5	%read{6,6} %write{5,5} %derivs
+const	float	$const7	3		%read{5,5} %write{2147483647,-1}
+temp	float	$tmp6	%read{7,7} %write{6,6} %derivs
+const	string	$const8	"transform"		%read{8,8} %write{2147483647,-1}
+const	string	$const9	"common"		%read{9,9} %write{2147483647,-1}
+temp	normal	$tmp7	%read{16,16} %write{15,15} %derivs
+temp	normal	$tmp8	%read{18,18} %write{16,16} %derivs
+temp	float	$tmp9	%read{18,18} %write{17,17} %derivs
+temp	normal	$tmp10	%read{19,19} %write{18,18} %derivs
+temp	normal	$tmp11	%read{22,22} %write{21,21} %derivs
+code ___main___
+# builtinDisplacement.osl:13
+# 	string normalization_space = "object";
+	assign		normalization_space $const1 	%filename{"builtinDisplacement.osl"} %line{13} %argrw{"wr"}
+# builtinDisplacement.osl:15
+# 	float offset = mode == 3 ? 0.0 : 0.5;
+	eq		$tmp1 mode $const2 	%line{15} %argrw{"wrr"}
+	if		$tmp1 4 5 	%argrw{"r"}
+	assign		offset $const3 	%argrw{"wr"}
+	assign		offset $const4 	%argrw{"wr"}
+# builtinDisplacement.osl:23
+# 		transform(normalization_space, vector(1.0/sqrt(3.0))));
+	sqrt		$tmp5 $const7 	%line{23} %argrw{"wr"}
+	div		$tmp6 $const6 $tmp5 	%argrw{"wrr"}
+	assign		$tmp4 $tmp6 	%argrw{"wr"}
+	functioncall	$const8 10 	%argrw{"r"}
+# W:/r2d2\src\3delight\win64-x64-release-free\osl\stdosl.h:284
+# vector transform (string to, vector p) { return transform("common",to,p); }
+	transformv	$tmp3 $const9 normalization_space $tmp4 	%filename{"W:/r2d2\src\3delight\win64-x64-release-free\osl\stdosl.h"} %line{284} %argrw{"wrrr"}
+# builtinDisplacement.osl:22
+# 	float sN = 1 / length(
+	length		$tmp2 $tmp3 	%filename{"builtinDisplacement.osl"} %line{22} %argrw{"wr"}
+	div		sN $const6 $tmp2 	%argrw{"wrr"}
+# builtinDisplacement.osl:26
+# 	normal Nn = normalize(N);
+	normalize	Nn N 	%line{26} %argrw{"wr"}
+# builtinDisplacement.osl:27
+# 	normal Ngn = normalize(Ng);
+	normalize	Ngn Ng 	%line{27} %argrw{"wr"}
+# builtinDisplacement.osl:28
+# 	normal Ndiff = Nn - Ngn;
+	sub		Ndiff Nn Ngn 	%line{28} %argrw{"wrr"}
+# builtinDisplacement.osl:31
+# 	P += Nn * sN * scale * (displacement - offset);
+	mul		$tmp7 Nn sN 	%line{31} %argrw{"wrr"}
+	mul		$tmp8 $tmp7 scale 	%argrw{"wrr"}
+	sub		$tmp9 displacement offset 	%argrw{"wrr"}
+	mul		$tmp10 $tmp8 $tmp9 	%argrw{"wrr"}
+	add		P P $tmp10 	%argrw{"wrr"}
+# builtinDisplacement.osl:34
+# 	N = calculatenormal( P );
+	calculatenormal	N P 	%line{34} %argrw{"wr"} %argderivs{1}
+# builtinDisplacement.osl:35
+# 	N = normalize(N) + Ndiff;
+	normalize	$tmp11 N 	%line{35} %argrw{"wr"}
+	add		N $tmp11 Ndiff 	%argrw{"wrr"}
+	end

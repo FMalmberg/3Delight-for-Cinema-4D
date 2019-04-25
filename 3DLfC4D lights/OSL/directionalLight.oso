@@ -1,0 +1,152 @@
+OpenShadingLanguage 1.00
+# Compiled by oslc 1.10.0dev
+# options: -q -o ..\build\win64-x64-release-free\2016.5\..\osl\directionalLight.oso -I../../osl_shaders
+surface directionalLight	%meta{string[1],tags,"environment"} 
+param	color	i_color	1 1 1		%meta{string,label,"Color"} %meta{string,attribute,"color"}  %read{0,0} %write{2147483647,-1}
+param	float	intensity	1		%meta{string,label,"Intensity"} %meta{float,slidermin,0} %meta{float,slidermax,10}  %read{0,0} %write{2147483647,-1}
+param	float	exposure	0		%meta{string,label,"Exposure"} %meta{string,maya_attribute,"_3delight_light_exposure"} %meta{float,slidermin,-5} %meta{float,slidermax,10}  %read{1,1} %write{2147483647,-1}
+param	int	contributions	1		%meta{string,page,"Contributions"} %meta{string,label,"Enable"} %meta{string,widget,"null"}  %read{6,6} %write{2147483647,-1}
+param	float	diffuse_contribution	1		%meta{string,maya_attribute,"_3delight_diffuseContribution"} %meta{string,page,"Contributions"} %meta{string,label,"Diffuse"} %meta{float,slidermin,0} %meta{float,slidermax,3} %meta{float,min,0} %meta{string,lock_left,"contributions"} %meta{string,lock_op,"notEqualTo"} %meta{int,lock_right,1}  %read{10,17} %write{2147483647,-1}
+param	float	specular_contribution	1		%meta{string,maya_attribute,"_3delight_specularContribution"} %meta{string,page,"Contributions"} %meta{string,label,"Specular"} %meta{float,slidermin,0} %meta{float,slidermax,3} %meta{float,min,0} %meta{string,lock_left,"contributions"} %meta{string,lock_op,"notEqualTo"} %meta{int,lock_right,1}  %read{26,33} %write{2147483647,-1}
+param	float	hair_contribution	1		%meta{string,maya_attribute,"_3delight_hairContribution"} %meta{string,page,"Contributions"} %meta{string,label,"Hair"} %meta{float,slidermin,0} %meta{float,slidermax,3} %meta{float,min,0} %meta{string,lock_left,"contributions"} %meta{string,lock_op,"notEqualTo"} %meta{int,lock_right,1}  %read{18,25} %write{2147483647,-1}
+param	float	volume_contribution	1		%meta{string,maya_attribute,"_3delight_volumeContribution"} %meta{string,page,"Contributions"} %meta{string,label,"Volume"} %meta{float,slidermin,0} %meta{float,slidermax,3} %meta{float,min,0} %meta{string,lock_left,"contributions"} %meta{string,lock_op,"notEqualTo"} %meta{int,lock_right,1}  %read{34,41} %write{2147483647,-1}
+param	int	normalize_area	1		%meta{string,label,"Normalize Intensity by Area"} %meta{string,maya_attribute,"_3delight_normalize_arealight_intensity"} %meta{string,widget,"checkBox"}  %read{47,47} %write{2147483647,-1}
+oparam	closure color	out			%read{2147483647,-1} %write{45,57}
+global	closure color	Ci	%read{57,57} %write{44,56}
+local	color	result	%read{3,54} %write{2,52}
+local	float	___323_s	%read{50,52} %write{49,49}
+temp	color	$tmp1	%read{2,2} %write{0,0}
+temp	float	$tmp2	%read{2,2} %write{1,1}
+const	float	$const2	2		%read{1,1} %write{2147483647,-1}
+const	float	$const3	0		%read{3,42} %write{2147483647,-1}
+temp	int	$tmp3	%read{4,4} %write{3,3}
+temp	int	$tmp4	%read{5,9} %write{4,8}
+const	int	$const4	0		%read{4,50} %write{2147483647,-1}
+const	int	$const5	1		%read{6,47} %write{2147483647,-1}
+temp	int	$tmp5	%read{7,7} %write{6,6}
+temp	int	$tmp6	%read{8,8} %write{7,7}
+const	float	$const6	1		%read{10,34} %write{2147483647,-1}
+temp	int	$tmp7	%read{11,11} %write{10,10}
+temp	int	$tmp8	%read{12,16} %write{11,15}
+temp	int	$tmp9	%read{14,14} %write{13,13}
+const	string	$const7	"diffuse"		%read{13,13} %write{2147483647,-1}
+temp	int	$tmp10	%read{15,15} %write{14,14}
+temp	int	$tmp11	%read{19,19} %write{18,18}
+temp	int	$tmp12	%read{20,24} %write{19,23}
+temp	int	$tmp13	%read{22,22} %write{21,21}
+const	string	$const8	"hair"		%read{21,21} %write{2147483647,-1}
+temp	int	$tmp14	%read{23,23} %write{22,22}
+temp	int	$tmp15	%read{27,27} %write{26,26}
+temp	int	$tmp16	%read{28,32} %write{27,31}
+temp	int	$tmp17	%read{30,30} %write{29,29}
+const	string	$const9	"specular"		%read{29,29} %write{2147483647,-1}
+temp	int	$tmp18	%read{31,31} %write{30,30}
+temp	int	$tmp19	%read{35,35} %write{34,34}
+temp	int	$tmp20	%read{36,40} %write{35,39}
+temp	int	$tmp21	%read{38,38} %write{37,37}
+const	string	$const10	"volume"		%read{37,37} %write{2147483647,-1}
+temp	int	$tmp22	%read{39,39} %write{38,38}
+temp	int	$tmp23	%read{43,43} %write{42,42}
+temp	int	$tmp24	%read{48,48} %write{47,47}
+temp	int	$tmp25	%read{51,51} %write{50,50}
+temp	closure color	$tmp26	%read{54,54} %write{53,53}
+const	string	$const11	"emission"		%read{53,53} %write{2147483647,-1}
+temp	closure color	$tmp27	%read{56,56} %write{54,54}
+temp	closure color	$tmp28	%read{56,56} %write{55,55}
+const	string	$const12	"transparent"		%read{55,55} %write{2147483647,-1}
+code ___main___
+# X:/r2d2\src\osl_shaders\distantLight.osl:90
+# 	color result = i_color * intensity * pow(2, exposure );
+	mul		$tmp1 i_color intensity 	%filename{"X:/r2d2\src\osl_shaders\distantLight.osl"} %line{90} %argrw{"wrr"}
+	pow		$tmp2 $const2 exposure 	%argrw{"wrr"}
+	mul		result $tmp1 $tmp2 	%argrw{"wrr"}
+# X:/r2d2\src\osl_shaders\distantLight.osl:96
+# 	if( result!=0.0 && contributions == 1 )
+	neq		$tmp3 result $const3 	%line{96} %argrw{"wrr"}
+	neq		$tmp4 $tmp3 $const4 	%argrw{"wrr"}
+	if		$tmp4 9 9 	%argrw{"r"}
+	eq		$tmp5 contributions $const5 	%argrw{"wrr"}
+	neq		$tmp6 $tmp5 $const4 	%argrw{"wrr"}
+	assign		$tmp4 $tmp6 	%argrw{"wr"}
+	if		$tmp4 42 42 	%argrw{"r"}
+# X:/r2d2\src\osl_shaders\distantLight.osl:98
+# 		if( diffuse_contribution!=1.0 && raytype("diffuse") )
+	neq		$tmp7 diffuse_contribution $const6 	%line{98} %argrw{"wrr"}
+	neq		$tmp8 $tmp7 $const4 	%argrw{"wrr"}
+	if		$tmp8 16 16 	%argrw{"r"}
+	raytype		$tmp9 $const7 	%argrw{"wr"}
+	neq		$tmp10 $tmp9 $const4 	%argrw{"wrr"}
+	assign		$tmp8 $tmp10 	%argrw{"wr"}
+	if		$tmp8 18 42 	%argrw{"r"}
+# X:/r2d2\src\osl_shaders\distantLight.osl:99
+# 			result *= diffuse_contribution;
+	mul		result result diffuse_contribution 	%line{99} %argrw{"wrr"}
+# X:/r2d2\src\osl_shaders\distantLight.osl:100
+# 		else if( hair_contribution!=1.0 && raytype("hair") )
+	neq		$tmp11 hair_contribution $const6 	%line{100} %argrw{"wrr"}
+	neq		$tmp12 $tmp11 $const4 	%argrw{"wrr"}
+	if		$tmp12 24 24 	%argrw{"r"}
+	raytype		$tmp13 $const8 	%argrw{"wr"}
+	neq		$tmp14 $tmp13 $const4 	%argrw{"wrr"}
+	assign		$tmp12 $tmp14 	%argrw{"wr"}
+	if		$tmp12 26 42 	%argrw{"r"}
+# X:/r2d2\src\osl_shaders\distantLight.osl:101
+# 			result *= hair_contribution;
+	mul		result result hair_contribution 	%line{101} %argrw{"wrr"}
+# X:/r2d2\src\osl_shaders\distantLight.osl:102
+# 		else if( specular_contribution!=1.0 && raytype("specular") )
+	neq		$tmp15 specular_contribution $const6 	%line{102} %argrw{"wrr"}
+	neq		$tmp16 $tmp15 $const4 	%argrw{"wrr"}
+	if		$tmp16 32 32 	%argrw{"r"}
+	raytype		$tmp17 $const9 	%argrw{"wr"}
+	neq		$tmp18 $tmp17 $const4 	%argrw{"wrr"}
+	assign		$tmp16 $tmp18 	%argrw{"wr"}
+	if		$tmp16 34 42 	%argrw{"r"}
+# X:/r2d2\src\osl_shaders\distantLight.osl:103
+# 			result *= specular_contribution;
+	mul		result result specular_contribution 	%line{103} %argrw{"wrr"}
+# X:/r2d2\src\osl_shaders\distantLight.osl:104
+# 		else if( volume_contribution!=1.0 && raytype("volume") )
+	neq		$tmp19 volume_contribution $const6 	%line{104} %argrw{"wrr"}
+	neq		$tmp20 $tmp19 $const4 	%argrw{"wrr"}
+	if		$tmp20 40 40 	%argrw{"r"}
+	raytype		$tmp21 $const10 	%argrw{"wr"}
+	neq		$tmp22 $tmp21 $const4 	%argrw{"wrr"}
+	assign		$tmp20 $tmp22 	%argrw{"wr"}
+	if		$tmp20 42 42 	%argrw{"r"}
+# X:/r2d2\src\osl_shaders\distantLight.osl:105
+# 			result *= volume_contribution;
+	mul		result result volume_contribution 	%line{105} %argrw{"wrr"}
+# X:/r2d2\src\osl_shaders\distantLight.osl:108
+# 	if( result == 0.0 )
+	eq		$tmp23 result $const3 	%line{108} %argrw{"wrr"}
+	if		$tmp23 47 47 	%argrw{"r"}
+# X:/r2d2\src\osl_shaders\distantLight.osl:110
+# 		Ci = 0; out = 0;
+	assign		Ci $const4 	%line{110} %argrw{"wr"}
+	assign		out $const4 	%argrw{"wr"}
+# X:/r2d2\src\osl_shaders\distantLight.osl:111
+# 		return;
+	exit	%line{111}
+# X:/r2d2\src\osl_shaders\distantLight.osl:114
+# 	if( normalize_area == 1 )
+	eq		$tmp24 normalize_area $const5 	%line{114} %argrw{"wrr"}
+	if		$tmp24 53 53 	%argrw{"r"}
+# X:/r2d2\src\osl_shaders\distantLight.osl:116
+# 		float s = surfacearea();
+	surfacearea	___323_s 	%line{116} %argrw{"w"}
+# X:/r2d2\src\osl_shaders\distantLight.osl:117
+# 		if( s != 0 )
+	neq		$tmp25 ___323_s $const4 	%line{117} %argrw{"wrr"}
+	if		$tmp25 53 53 	%argrw{"r"}
+# X:/r2d2\src\osl_shaders\distantLight.osl:120
+# 			result /= s;
+	div		result result ___323_s 	%line{120} %argrw{"wrr"}
+# X:/r2d2\src\osl_shaders\distantLight.osl:124
+# 	out = Ci = result*emission() + transparent();
+	closure		$tmp26 $const11 	%line{124} %argrw{"wr"}
+	mul		$tmp27 $tmp26 result 	%argrw{"wrr"}
+	closure		$tmp28 $const12 	%argrw{"wr"}
+	add		Ci $tmp27 $tmp28 	%argrw{"wrr"}
+	assign		out Ci 	%argrw{"wr"}
+	end

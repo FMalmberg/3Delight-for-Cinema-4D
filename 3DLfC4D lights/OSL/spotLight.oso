@@ -1,0 +1,473 @@
+OpenShadingLanguage 1.00
+# Compiled by oslc 1.10.0dev
+# options: -q -o ..\build\win64-x64-release-free\2016.5\..\osl\spotLight.oso -I../../osl_shaders
+surface spotLight	%meta{string[1],tags,"light"} 
+param	color	i_color	1 1 1		%meta{string,label,"Color"} %meta{string,attribute,"color"}  %read{0,0} %write{2147483647,-1}
+param	float	intensity	1		%meta{string,label,"Intensity"} %meta{float,slidermin,0} %meta{float,slidermax,10}  %read{0,0} %write{2147483647,-1}
+param	float	exposure	0		%meta{string,label,"Exposure"} %meta{string,maya_attribute,"_3delight_light_exposure"} %meta{float,slidermin,-5} %meta{float,slidermax,10}  %read{159,159} %write{2147483647,-1}
+param	float	spread	1		%meta{string,label,"Spread"} %meta{string,maya_attribute,"_3delight_light_spread"} %meta{float,slidermin,0} %meta{float,slidermax,1} %meta{float,min,0} %meta{float,max,1}  %read{149,149} %write{2147483647,-1}
+param	int	decayRate	2		%meta{string,label,"Decay Rate"} %meta{string,widget,"mapper"} %meta{string,options,"No Decay:0|Linear:1|Quadratic:2|Cubic:3"}  %read{67,76} %write{2147483647,-1}
+param	float	coneAngle	40		%meta{string,label,"Cone Angle"} %meta{float,slidermin,1} %meta{float,slidermax,179} %meta{float,sliderexponent,0.69999999}  %read{46,46} %write{2147483647,-1}
+param	float	penumbraAngle	0		%meta{string,label,"Penumbra Angle"} %meta{float,slidermin,-10} %meta{float,slidermax,10}  %read{49,49} %write{2147483647,-1}
+param	float	dropoff	0		%meta{string,label,"Drop Off"} %meta{float,slidermin,0} %meta{float,slidermax,500} %meta{float,sliderexponent,0.5}  %read{59,61} %write{2147483647,-1}
+param	int	barnDoors	0		%meta{string,page,"Barn Doors"} %meta{string,label,"Barn Doors"} %meta{string,widget,"checkBox"}  %read{81,81} %write{2147483647,-1}
+param	float	leftBarnDoor	90		%meta{string,page,"Barn Doors"} %meta{string,label,"Left"} %meta{float,min,0} %meta{float,max,90} %meta{float,slidermin,0} %meta{float,slidermax,90} %meta{string,lock_left,"barnDoors"} %meta{string,lock_op,"notEqualTo"} %meta{int,lock_right,1}  %read{97,97} %write{2147483647,-1}
+param	float	rightBarnDoor	90		%meta{string,page,"Barn Doors"} %meta{string,label,"Right"} %meta{float,min,0} %meta{float,max,90} %meta{float,slidermin,0} %meta{float,slidermax,90} %meta{string,lock_left,"barnDoors"} %meta{string,lock_op,"notEqualTo"} %meta{int,lock_right,1}  %read{100,100} %write{2147483647,-1}
+param	float	topBarnDoor	90		%meta{string,page,"Barn Doors"} %meta{string,label,"Top"} %meta{float,min,0} %meta{float,max,90} %meta{float,slidermin,0} %meta{float,slidermax,90} %meta{string,lock_left,"barnDoors"} %meta{string,lock_op,"notEqualTo"} %meta{int,lock_right,1}  %read{94,94} %write{2147483647,-1}
+param	float	bottomBarnDoor	90		%meta{string,page,"Barn Doors"} %meta{string,label,"Bottom"} %meta{float,min,0} %meta{float,max,90} %meta{float,slidermin,0} %meta{float,slidermax,90} %meta{string,lock_left,"barnDoors"} %meta{string,lock_op,"notEqualTo"} %meta{int,lock_right,1}  %read{91,91} %write{2147483647,-1}
+param	int	contributions	1		%meta{string,page,"Contributions"} %meta{string,label,"Enable"} %meta{string,widget,"null"}  %read{2,2} %write{2147483647,-1}
+param	float	diffuse_contribution	1		%meta{string,maya_attribute,"_3delight_diffuseContribution"} %meta{string,page,"Contributions"} %meta{string,label,"Diffuse"} %meta{float,slidermin,0} %meta{float,slidermax,3} %meta{float,min,0} %meta{string,lock_left,"contributions"} %meta{string,lock_op,"notEqualTo"} %meta{int,lock_right,1}  %read{4,11} %write{2147483647,-1}
+param	float	specular_contribution	1		%meta{string,maya_attribute,"_3delight_specularContribution"} %meta{string,page,"Contributions"} %meta{string,label,"Specular"} %meta{float,slidermin,0} %meta{float,slidermax,3} %meta{float,min,0} %meta{string,lock_left,"contributions"} %meta{string,lock_op,"notEqualTo"} %meta{int,lock_right,1}  %read{20,27} %write{2147483647,-1}
+param	float	hair_contribution	1		%meta{string,maya_attribute,"_3delight_hairContribution"} %meta{string,page,"Contributions"} %meta{string,label,"Hair"} %meta{float,slidermin,0} %meta{float,slidermax,3} %meta{float,min,0} %meta{string,lock_left,"contributions"} %meta{string,lock_op,"notEqualTo"} %meta{int,lock_right,1}  %read{12,19} %write{2147483647,-1}
+param	float	volume_contribution	1		%meta{string,maya_attribute,"_3delight_volumeContribution"} %meta{string,page,"Contributions"} %meta{string,label,"Volume"} %meta{float,slidermin,0} %meta{float,slidermax,3} %meta{float,min,0} %meta{string,lock_left,"contributions"} %meta{string,lock_op,"notEqualTo"} %meta{int,lock_right,1}  %read{28,35} %write{2147483647,-1}
+param	color	filter	1 1 1		%meta{string,widget,"null"}  %read{146,146} %write{2147483647,-1}
+oparam	closure color	out			%read{162,162} %write{161,161}
+global	vector	I	%read{40,102} %write{2147483647,-1}
+global	normal	N	%read{42,42} %write{2147483647,-1}
+global	closure color	Ci	%read{2147483647,-1} %write{38,162}
+local	float	___349_x	%read{151,155} %write{150,154}
+local	color	result	%read{11,158} %write{1,146}
+local	float	cosangle	%read{57,62} %write{43,43}
+local	float	coneangle	%read{50,52} %write{46,46}
+local	float	penumbraangle	%read{53,138} %write{49,49}
+local	float	coslimit	%read{55,56} %write{51,51}
+local	float	cospen	%read{55,56} %write{54,54}
+local	float	low	%read{57,57} %write{55,55}
+local	float	high	%read{57,57} %write{56,56}
+local	float	___361_bottom	%read{112,117} %write{91,91}
+local	float	___361_top	%read{121,124} %write{94,94}
+local	float	___361_left	%read{127,132} %write{97,97}
+local	float	___361_right	%read{136,139} %write{100,100}
+local	vector	___361_Iobj	%read{104,109} %write{103,103}
+local	float	___361_anglex	%read{135,140} %write{107,107}
+local	float	___361_angley	%read{120,125} %write{111,111}
+local	float	___361_bottom_door	%read{142,142} %write{120,120}
+local	float	___361_top_door	%read{142,142} %write{126,126}
+local	float	___361_left_door	%read{143,143} %write{135,135}
+local	float	___361_right_door	%read{143,143} %write{141,141}
+temp	color	$tmp1	%read{1,1} %write{0,0}
+const	float	$const1	3.1415927		%read{1,99} %write{2147483647,-1}
+const	int	$const2	1		%read{2,108} %write{2147483647,-1}
+temp	int	$tmp2	%read{3,3} %write{2,2}
+const	float	$const3	1		%read{4,155} %write{2147483647,-1}
+temp	int	$tmp3	%read{5,5} %write{4,4}
+temp	int	$tmp4	%read{6,10} %write{5,9}
+const	int	$const4	0		%read{5,104} %write{2147483647,-1}
+temp	int	$tmp5	%read{8,8} %write{7,7}
+const	string	$const5	"diffuse"		%read{7,7} %write{2147483647,-1}
+temp	int	$tmp6	%read{9,9} %write{8,8}
+temp	int	$tmp7	%read{13,13} %write{12,12}
+temp	int	$tmp8	%read{14,18} %write{13,17}
+temp	int	$tmp9	%read{16,16} %write{15,15}
+const	string	$const6	"hair"		%read{15,15} %write{2147483647,-1}
+temp	int	$tmp10	%read{17,17} %write{16,16}
+temp	int	$tmp11	%read{21,21} %write{20,20}
+temp	int	$tmp12	%read{22,26} %write{21,25}
+temp	int	$tmp13	%read{24,24} %write{23,23}
+const	string	$const7	"specular"		%read{23,23} %write{2147483647,-1}
+temp	int	$tmp14	%read{25,25} %write{24,24}
+temp	int	$tmp15	%read{29,29} %write{28,28}
+temp	int	$tmp16	%read{30,34} %write{29,33}
+temp	int	$tmp17	%read{32,32} %write{31,31}
+const	string	$const8	"volume"		%read{31,31} %write{2147483647,-1}
+temp	int	$tmp18	%read{33,33} %write{32,32}
+const	float	$const9	0		%read{36,150} %write{2147483647,-1}
+temp	int	$tmp19	%read{37,37} %write{36,36}
+temp	vector	$tmp20	%read{41,41} %write{40,40}
+temp	vector	$tmp21	%read{43,43} %write{41,41}
+temp	normal	$tmp22	%read{43,43} %write{42,42}
+const	string	$const10	"radians"		%read{44,98} %write{2147483647,-1}
+const	float	$const11	180		%read{45,99} %write{2147483647,-1}
+temp	float	$tmp23	%read{46,46} %write{45,45}
+temp	float	$tmp24	%read{49,49} %write{48,48}
+const	int	$const12	2		%read{105,109} %write{2147483647,-1}
+temp	float	$tmp25	%read{51,51} %write{50,50}
+const	float	$const13	2		%read{50,159} %write{2147483647,-1}
+temp	float	$tmp26	%read{53,53} %write{52,52}
+temp	float	$tmp27	%read{54,54} %write{53,53}
+temp	float	$tmp28	%read{58,58} %write{57,57}
+temp	int	$tmp29	%read{60,60} %write{59,59}
+temp	float	$tmp30	%read{66,66} %write{65,65}
+temp	float	$tmp31	%read{64,64} %write{62,62}
+temp	float	$tmp32	%read{62,62} %write{61,61}
+const	string	$const14	"clamp"		%read{63,148} %write{2147483647,-1}
+temp	float	$tmp33	%read{65,65} %write{64,64}
+temp	int	$tmp34	%read{68,68} %write{67,67}
+temp	float	$tmp35	%read{70,70} %write{69,69}
+temp	int	$tmp36	%read{72,72} %write{71,71}
+temp	float	$tmp37	%read{75,75} %write{74,74}
+temp	float	$tmp38	%read{74,74} %write{73,73}
+const	int	$const15	3		%read{76,76} %write{2147483647,-1}
+temp	int	$tmp39	%read{77,77} %write{76,76}
+temp	float	$tmp40	%read{80,80} %write{79,79}
+temp	float	$tmp41	%read{79,79} %write{78,78}
+temp	int	$tmp42	%read{82,82} %write{81,81}
+temp	int	$tmp43	%read{83,88} %write{82,87}
+temp	int	$tmp44	%read{85,85} %write{84,84}
+const	string	$const16	"intensityestimate"		%read{84,84} %write{2147483647,-1}
+temp	int	$tmp45	%read{86,86} %write{85,85}
+temp	int	$tmp46	%read{87,87} %write{86,86}
+temp	float	$tmp47	%read{91,91} %write{90,90}
+temp	float	$tmp48	%read{94,94} %write{93,93}
+temp	float	$tmp49	%read{97,97} %write{96,96}
+temp	float	$tmp50	%read{100,100} %write{99,99}
+temp	vector	$tmp51	%read{103,103} %write{102,102}
+const	string	$const17	"object"		%read{102,102} %write{2147483647,-1}
+const	string	$const18	"transform"		%read{101,101} %write{2147483647,-1}
+const	string	$const19	"common"		%read{102,102} %write{2147483647,-1}
+temp	float	$tmp52	%read{107,107} %write{104,104}
+temp	float	$tmp53	%read{106,106} %write{105,105}
+temp	float	$tmp54	%read{107,107} %write{106,106}
+temp	float	$tmp55	%read{111,111} %write{108,108}
+temp	float	$tmp56	%read{110,110} %write{109,109}
+temp	float	$tmp57	%read{111,111} %write{110,110}
+temp	float	$tmp58	%read{120,120} %write{115,115}
+temp	float	$tmp59	%read{115,115} %write{112,112}
+temp	float	$tmp60	%read{114,114} %write{113,113}
+temp	float	$tmp61	%read{115,115} %write{114,114}
+temp	float	$tmp62	%read{120,120} %write{119,119}
+temp	float	$tmp63	%read{119,119} %write{116,116}
+temp	float	$tmp64	%read{118,118} %write{117,117}
+temp	float	$tmp65	%read{119,119} %write{118,118}
+temp	float	$tmp66	%read{126,126} %write{125,125}
+temp	float	$tmp67	%read{125,125} %write{122,122}
+temp	float	$tmp68	%read{122,122} %write{121,121}
+temp	float	$tmp69	%read{125,125} %write{124,124}
+temp	float	$tmp70	%read{124,124} %write{123,123}
+temp	float	$tmp71	%read{135,135} %write{130,130}
+temp	float	$tmp72	%read{130,130} %write{127,127}
+temp	float	$tmp73	%read{129,129} %write{128,128}
+temp	float	$tmp74	%read{130,130} %write{129,129}
+temp	float	$tmp75	%read{135,135} %write{134,134}
+temp	float	$tmp76	%read{134,134} %write{131,131}
+temp	float	$tmp77	%read{133,133} %write{132,132}
+temp	float	$tmp78	%read{134,134} %write{133,133}
+temp	float	$tmp79	%read{141,141} %write{140,140}
+temp	float	$tmp80	%read{140,140} %write{137,137}
+temp	float	$tmp81	%read{137,137} %write{136,136}
+temp	float	$tmp82	%read{140,140} %write{139,139}
+temp	float	$tmp83	%read{139,139} %write{138,138}
+temp	float	$tmp84	%read{144,144} %write{142,142}
+temp	float	$tmp85	%read{144,144} %write{143,143}
+temp	float	$tmp86	%read{145,145} %write{144,144}
+temp	closure color	$tmp87	%read{161,161} %write{156,156}
+const	string	$const20	"focus"		%read{156,156} %write{2147483647,-1}
+temp	float	$tmp88	%read{156,156} %write{155,155}
+const	string	$const21	"spread_to_focus"		%read{147,147} %write{2147483647,-1}
+temp	float	$tmp89	%read{150,150} %write{149,149}
+const	float	$const22	9.9999997e-06		%read{152,154} %write{2147483647,-1}
+temp	int	$tmp90	%read{153,153} %write{152,152}
+const	string	$const23	"emission"		%read{156,156} %write{2147483647,-1}
+temp	float	$tmp91	%read{158,158} %write{157,157}
+temp	color	$tmp92	%read{160,160} %write{158,158}
+temp	float	$tmp93	%read{160,160} %write{159,159}
+temp	color	$tmp94	%read{161,161} %write{160,160}
+code ___main___
+# ../../osl_shaders/spotLight.osl:156
+# 	color result = i_color * intensity * M_PI;
+	mul		$tmp1 i_color intensity 	%filename{"../../osl_shaders/spotLight.osl"} %line{156} %argrw{"wrr"}
+	mul		result $tmp1 $const1 	%argrw{"wrr"}
+# ../../osl_shaders/spotLight.osl:162
+# 	if( contributions == 1 )
+	eq		$tmp2 contributions $const2 	%line{162} %argrw{"wrr"}
+	if		$tmp2 36 36 	%argrw{"r"}
+# ../../osl_shaders/spotLight.osl:164
+# 		if( diffuse_contribution!=1.0 && raytype("diffuse") )
+	neq		$tmp3 diffuse_contribution $const3 	%line{164} %argrw{"wrr"}
+	neq		$tmp4 $tmp3 $const4 	%argrw{"wrr"}
+	if		$tmp4 10 10 	%argrw{"r"}
+	raytype		$tmp5 $const5 	%argrw{"wr"}
+	neq		$tmp6 $tmp5 $const4 	%argrw{"wrr"}
+	assign		$tmp4 $tmp6 	%argrw{"wr"}
+	if		$tmp4 12 36 	%argrw{"r"}
+# ../../osl_shaders/spotLight.osl:165
+# 			result *= diffuse_contribution;
+	mul		result result diffuse_contribution 	%line{165} %argrw{"wrr"}
+# ../../osl_shaders/spotLight.osl:166
+# 		else if( hair_contribution!=1.0 && raytype("hair") )
+	neq		$tmp7 hair_contribution $const3 	%line{166} %argrw{"wrr"}
+	neq		$tmp8 $tmp7 $const4 	%argrw{"wrr"}
+	if		$tmp8 18 18 	%argrw{"r"}
+	raytype		$tmp9 $const6 	%argrw{"wr"}
+	neq		$tmp10 $tmp9 $const4 	%argrw{"wrr"}
+	assign		$tmp8 $tmp10 	%argrw{"wr"}
+	if		$tmp8 20 36 	%argrw{"r"}
+# ../../osl_shaders/spotLight.osl:167
+# 			result *= hair_contribution;
+	mul		result result hair_contribution 	%line{167} %argrw{"wrr"}
+# ../../osl_shaders/spotLight.osl:168
+# 		else if( specular_contribution!=1.0 && raytype("specular") )
+	neq		$tmp11 specular_contribution $const3 	%line{168} %argrw{"wrr"}
+	neq		$tmp12 $tmp11 $const4 	%argrw{"wrr"}
+	if		$tmp12 26 26 	%argrw{"r"}
+	raytype		$tmp13 $const7 	%argrw{"wr"}
+	neq		$tmp14 $tmp13 $const4 	%argrw{"wrr"}
+	assign		$tmp12 $tmp14 	%argrw{"wr"}
+	if		$tmp12 28 36 	%argrw{"r"}
+# ../../osl_shaders/spotLight.osl:169
+# 			result *= specular_contribution;
+	mul		result result specular_contribution 	%line{169} %argrw{"wrr"}
+# ../../osl_shaders/spotLight.osl:170
+# 		else if( volume_contribution!=1.0 && raytype("volume") )
+	neq		$tmp15 volume_contribution $const3 	%line{170} %argrw{"wrr"}
+	neq		$tmp16 $tmp15 $const4 	%argrw{"wrr"}
+	if		$tmp16 34 34 	%argrw{"r"}
+	raytype		$tmp17 $const8 	%argrw{"wr"}
+	neq		$tmp18 $tmp17 $const4 	%argrw{"wrr"}
+	assign		$tmp16 $tmp18 	%argrw{"wr"}
+	if		$tmp16 36 36 	%argrw{"r"}
+# ../../osl_shaders/spotLight.osl:171
+# 			result *= volume_contribution;
+	mul		result result volume_contribution 	%line{171} %argrw{"wrr"}
+# ../../osl_shaders/spotLight.osl:174
+# 	if( result == 0.0 )
+	eq		$tmp19 result $const9 	%line{174} %argrw{"wrr"}
+	if		$tmp19 40 40 	%argrw{"r"}
+# ../../osl_shaders/spotLight.osl:176
+# 		Ci = 0;
+	assign		Ci $const4 	%line{176} %argrw{"wr"}
+# ../../osl_shaders/spotLight.osl:177
+# #ifdef _3DFK
+	exit	%line{177}
+# ../../osl_shaders/spotLight.osl:185
+# 	float cosangle = dot(-normalize(I), normalize(N));
+	normalize	$tmp20 I 	%line{185} %argrw{"wr"}
+	neg		$tmp21 $tmp20 	%argrw{"wr"}
+	normalize	$tmp22 N 	%argrw{"wr"}
+	dot		cosangle $tmp21 $tmp22 	%argrw{"wrr"}
+# ../../osl_shaders/spotLight.osl:186
+# 	float coneangle = radians(coneAngle);
+	functioncall	$const10 47 	%line{186} %argrw{"r"}
+# X:/r2d2\src\3delight\win64-x64-release-free\osl\stdosl.h:88
+# float  radians (float x)  { return x*(M_PI/180.0); }
+	div		$tmp23 $const1 $const11 	%filename{"X:/r2d2\src\3delight\win64-x64-release-free\osl\stdosl.h"} %line{88} %argrw{"wrr"}
+	mul		coneangle coneAngle $tmp23 	%argrw{"wrr"}
+# ../../osl_shaders/spotLight.osl:187
+# 	float penumbraangle = radians(penumbraAngle);
+	functioncall	$const10 50 	%filename{"../../osl_shaders/spotLight.osl"} %line{187} %argrw{"r"}
+# X:/r2d2\src\3delight\win64-x64-release-free\osl\stdosl.h:88
+# float  radians (float x)  { return x*(M_PI/180.0); }
+	div		$tmp24 $const1 $const11 	%filename{"X:/r2d2\src\3delight\win64-x64-release-free\osl\stdosl.h"} %line{88} %argrw{"wrr"}
+	mul		penumbraangle penumbraAngle $tmp24 	%argrw{"wrr"}
+# ../../osl_shaders/spotLight.osl:189
+# 	float coslimit = cos(coneangle / 2);
+	div		$tmp25 coneangle $const13 	%filename{"../../osl_shaders/spotLight.osl"} %line{189} %argrw{"wrr"}
+	cos		coslimit $tmp25 	%argrw{"wr"}
+# ../../osl_shaders/spotLight.osl:190
+# 	float cospen = cos((coneangle / 2) + penumbraangle);
+	div		$tmp26 coneangle $const13 	%line{190} %argrw{"wrr"}
+	add		$tmp27 $tmp26 penumbraangle 	%argrw{"wrr"}
+	cos		cospen $tmp27 	%argrw{"wr"}
+# ../../osl_shaders/spotLight.osl:191
+# 	float low = min(cospen, coslimit);
+	min		low cospen coslimit 	%line{191} %argrw{"wrr"}
+# ../../osl_shaders/spotLight.osl:192
+# 	float high = max(cospen, coslimit);
+	max		high cospen coslimit 	%line{192} %argrw{"wrr"}
+# ../../osl_shaders/spotLight.osl:194
+# 	result *= smoothstep(low, high, cosangle);
+	smoothstep	$tmp28 low high cosangle 	%line{194} %argrw{"wrrr"}
+	mul		result result $tmp28 	%argrw{"wrr"}
+# ../../osl_shaders/spotLight.osl:197
+# 	if (dropoff > 0)
+	gt		$tmp29 dropoff $const4 	%line{197} %argrw{"wrr"}
+	if		$tmp29 67 67 	%argrw{"r"}
+# ../../osl_shaders/spotLight.osl:199
+# 		result *= clamp(pow(cosangle, 1 + dropoff),0,1);
+	add		$tmp32 $const3 dropoff 	%line{199} %argrw{"wrr"}
+	pow		$tmp31 cosangle $tmp32 	%argrw{"wrr"}
+	functioncall	$const14 66 	%argrw{"r"}
+# X:/r2d2\src\3delight\win64-x64-release-free\osl\stdosl.h:163
+# float  clamp (float x, float minval, float maxval) { return max(min(x,maxval),minval); }
+	min		$tmp33 $tmp31 $const3 	%filename{"X:/r2d2\src\3delight\win64-x64-release-free\osl\stdosl.h"} %line{163} %argrw{"wrr"}
+	max		$tmp30 $tmp33 $const9 	%argrw{"wrr"}
+# ../../osl_shaders/spotLight.osl:199
+# 		result *= clamp(pow(cosangle, 1 + dropoff),0,1);
+	mul		result result $tmp30 	%filename{"../../osl_shaders/spotLight.osl"} %line{199} %argrw{"wrr"}
+# ../../osl_shaders/spotLight.osl:207
+# 	if( decayRate == 0 )
+	eq		$tmp34 decayRate $const4 	%line{207} %argrw{"wrr"}
+	if		$tmp34 71 81 	%argrw{"r"}
+# ../../osl_shaders/spotLight.osl:209
+# 		result *= dot(I,I);
+	dot		$tmp35 I I 	%line{209} %argrw{"wrr"}
+	mul		result result $tmp35 	%argrw{"wrr"}
+# ../../osl_shaders/spotLight.osl:211
+# 	else if( decayRate == 1 )
+	eq		$tmp36 decayRate $const2 	%line{211} %argrw{"wrr"}
+	if		$tmp36 76 81 	%argrw{"r"}
+# ../../osl_shaders/spotLight.osl:213
+# 		result *= sqrt(dot(I,I));
+	dot		$tmp38 I I 	%line{213} %argrw{"wrr"}
+	sqrt		$tmp37 $tmp38 	%argrw{"wr"}
+	mul		result result $tmp37 	%argrw{"wrr"}
+# ../../osl_shaders/spotLight.osl:215
+# 	else if( decayRate == 3 )
+	eq		$tmp39 decayRate $const15 	%line{215} %argrw{"wrr"}
+	if		$tmp39 81 81 	%argrw{"r"}
+# ../../osl_shaders/spotLight.osl:217
+# 		result /= sqrt(dot(I,I));
+	dot		$tmp41 I I 	%line{217} %argrw{"wrr"}
+	sqrt		$tmp40 $tmp41 	%argrw{"wr"}
+	div		result result $tmp40 	%argrw{"wrr"}
+# ../../osl_shaders/spotLight.osl:220
+# 	if( barnDoors != 0 && !raytype("intensityestimate") )
+	neq		$tmp42 barnDoors $const4 	%line{220} %argrw{"wrr"}
+	neq		$tmp43 $tmp42 $const4 	%argrw{"wrr"}
+	if		$tmp43 88 88 	%argrw{"r"}
+	raytype		$tmp44 $const16 	%argrw{"wr"}
+	eq		$tmp45 $tmp44 $const4 	%argrw{"wrr"}
+	neq		$tmp46 $tmp45 $const4 	%argrw{"wrr"}
+	assign		$tmp43 $tmp46 	%argrw{"wr"}
+	if		$tmp43 146 146 	%argrw{"r"}
+# ../../osl_shaders/spotLight.osl:222
+# 		float bottom = radians( bottomBarnDoor );
+	functioncall	$const10 92 	%line{222} %argrw{"r"}
+# X:/r2d2\src\3delight\win64-x64-release-free\osl\stdosl.h:88
+# float  radians (float x)  { return x*(M_PI/180.0); }
+	div		$tmp47 $const1 $const11 	%filename{"X:/r2d2\src\3delight\win64-x64-release-free\osl\stdosl.h"} %line{88} %argrw{"wrr"}
+	mul		___361_bottom bottomBarnDoor $tmp47 	%argrw{"wrr"}
+# ../../osl_shaders/spotLight.osl:223
+# 		float top = radians( topBarnDoor );
+	functioncall	$const10 95 	%filename{"../../osl_shaders/spotLight.osl"} %line{223} %argrw{"r"}
+# X:/r2d2\src\3delight\win64-x64-release-free\osl\stdosl.h:88
+# float  radians (float x)  { return x*(M_PI/180.0); }
+	div		$tmp48 $const1 $const11 	%filename{"X:/r2d2\src\3delight\win64-x64-release-free\osl\stdosl.h"} %line{88} %argrw{"wrr"}
+	mul		___361_top topBarnDoor $tmp48 	%argrw{"wrr"}
+# ../../osl_shaders/spotLight.osl:224
+# 		float left = radians( leftBarnDoor );
+	functioncall	$const10 98 	%filename{"../../osl_shaders/spotLight.osl"} %line{224} %argrw{"r"}
+# X:/r2d2\src\3delight\win64-x64-release-free\osl\stdosl.h:88
+# float  radians (float x)  { return x*(M_PI/180.0); }
+	div		$tmp49 $const1 $const11 	%filename{"X:/r2d2\src\3delight\win64-x64-release-free\osl\stdosl.h"} %line{88} %argrw{"wrr"}
+	mul		___361_left leftBarnDoor $tmp49 	%argrw{"wrr"}
+# ../../osl_shaders/spotLight.osl:225
+# 		float right = radians( rightBarnDoor );
+	functioncall	$const10 101 	%filename{"../../osl_shaders/spotLight.osl"} %line{225} %argrw{"r"}
+# X:/r2d2\src\3delight\win64-x64-release-free\osl\stdosl.h:88
+# float  radians (float x)  { return x*(M_PI/180.0); }
+	div		$tmp50 $const1 $const11 	%filename{"X:/r2d2\src\3delight\win64-x64-release-free\osl\stdosl.h"} %line{88} %argrw{"wrr"}
+	mul		___361_right rightBarnDoor $tmp50 	%argrw{"wrr"}
+# ../../osl_shaders/spotLight.osl:227
+# 		vector Iobj = -transform( "object", I );
+	functioncall	$const18 103 	%filename{"../../osl_shaders/spotLight.osl"} %line{227} %argrw{"r"}
+# X:/r2d2\src\3delight\win64-x64-release-free\osl\stdosl.h:284
+# vector transform (string to, vector p) { return transform("common",to,p); }
+	transformv	$tmp51 $const19 $const17 I 	%filename{"X:/r2d2\src\3delight\win64-x64-release-free\osl\stdosl.h"} %line{284} %argrw{"wrrr"}
+# ../../osl_shaders/spotLight.osl:227
+# 		vector Iobj = -transform( "object", I );
+	neg		___361_Iobj $tmp51 	%filename{"../../osl_shaders/spotLight.osl"} %line{227} %argrw{"wr"}
+# ../../osl_shaders/spotLight.osl:228
+# 		float anglex = atan2( Iobj[0], -Iobj[2] );
+	compref		$tmp52 ___361_Iobj $const4 	%line{228} %argrw{"wrr"}
+	compref		$tmp53 ___361_Iobj $const12 	%argrw{"wrr"}
+	neg		$tmp54 $tmp53 	%argrw{"wr"}
+	atan2		___361_anglex $tmp52 $tmp54 	%argrw{"wrr"}
+# ../../osl_shaders/spotLight.osl:229
+# 		float angley = atan2( Iobj[1], -Iobj[2] );
+	compref		$tmp55 ___361_Iobj $const2 	%line{229} %argrw{"wrr"}
+	compref		$tmp56 ___361_Iobj $const12 	%argrw{"wrr"}
+	neg		$tmp57 $tmp56 	%argrw{"wr"}
+	atan2		___361_angley $tmp55 $tmp57 	%argrw{"wrr"}
+# ../../osl_shaders/spotLight.osl:232
+# 				min(-bottom, -bottom - penumbraangle),
+	neg		$tmp59 ___361_bottom 	%line{232} %argrw{"wr"}
+	neg		$tmp60 ___361_bottom 	%argrw{"wr"}
+	sub		$tmp61 $tmp60 penumbraangle 	%argrw{"wrr"}
+	min		$tmp58 $tmp59 $tmp61 	%argrw{"wrr"}
+# ../../osl_shaders/spotLight.osl:233
+# 				max(-bottom, -bottom - penumbraangle), angley );
+	neg		$tmp63 ___361_bottom 	%line{233} %argrw{"wr"}
+	neg		$tmp64 ___361_bottom 	%argrw{"wr"}
+	sub		$tmp65 $tmp64 penumbraangle 	%argrw{"wrr"}
+	max		$tmp62 $tmp63 $tmp65 	%argrw{"wrr"}
+# ../../osl_shaders/spotLight.osl:231
+# 		float bottom_door = smoothstep(
+	smoothstep	___361_bottom_door $tmp58 $tmp62 ___361_angley 	%line{231} %argrw{"wrrr"}
+# ../../osl_shaders/spotLight.osl:235
+# 				min(top, top + penumbraangle),
+	add		$tmp68 ___361_top penumbraangle 	%line{235} %argrw{"wrr"}
+	min		$tmp67 ___361_top $tmp68 	%argrw{"wrr"}
+# ../../osl_shaders/spotLight.osl:236
+# 				max(top, top + penumbraangle), angley );
+	add		$tmp70 ___361_top penumbraangle 	%line{236} %argrw{"wrr"}
+	max		$tmp69 ___361_top $tmp70 	%argrw{"wrr"}
+# ../../osl_shaders/spotLight.osl:234
+# 		float top_door = 1 - smoothstep(
+	smoothstep	$tmp66 $tmp67 $tmp69 ___361_angley 	%line{234} %argrw{"wrrr"}
+	sub		___361_top_door $const3 $tmp66 	%argrw{"wrr"}
+# ../../osl_shaders/spotLight.osl:238
+# 				min(-left, -left - penumbraangle),
+	neg		$tmp72 ___361_left 	%line{238} %argrw{"wr"}
+	neg		$tmp73 ___361_left 	%argrw{"wr"}
+	sub		$tmp74 $tmp73 penumbraangle 	%argrw{"wrr"}
+	min		$tmp71 $tmp72 $tmp74 	%argrw{"wrr"}
+# ../../osl_shaders/spotLight.osl:239
+# 				max(-left, -left - penumbraangle), anglex );
+	neg		$tmp76 ___361_left 	%line{239} %argrw{"wr"}
+	neg		$tmp77 ___361_left 	%argrw{"wr"}
+	sub		$tmp78 $tmp77 penumbraangle 	%argrw{"wrr"}
+	max		$tmp75 $tmp76 $tmp78 	%argrw{"wrr"}
+# ../../osl_shaders/spotLight.osl:237
+# 		float left_door = smoothstep(
+	smoothstep	___361_left_door $tmp71 $tmp75 ___361_anglex 	%line{237} %argrw{"wrrr"}
+# ../../osl_shaders/spotLight.osl:241
+# 				min(right, right + penumbraangle),
+	add		$tmp81 ___361_right penumbraangle 	%line{241} %argrw{"wrr"}
+	min		$tmp80 ___361_right $tmp81 	%argrw{"wrr"}
+# ../../osl_shaders/spotLight.osl:242
+# 				max(right, right + penumbraangle), anglex );
+	add		$tmp83 ___361_right penumbraangle 	%line{242} %argrw{"wrr"}
+	max		$tmp82 ___361_right $tmp83 	%argrw{"wrr"}
+# ../../osl_shaders/spotLight.osl:240
+# 		float right_door = 1 - smoothstep(
+	smoothstep	$tmp79 $tmp80 $tmp82 ___361_anglex 	%line{240} %argrw{"wrrr"}
+	sub		___361_right_door $const3 $tmp79 	%argrw{"wrr"}
+# ../../osl_shaders/spotLight.osl:244
+# 		result *= (bottom_door * top_door) * (right_door * left_door);
+	mul		$tmp84 ___361_bottom_door ___361_top_door 	%line{244} %argrw{"wrr"}
+	mul		$tmp85 ___361_right_door ___361_left_door 	%argrw{"wrr"}
+	mul		$tmp86 $tmp84 $tmp85 	%argrw{"wrr"}
+	mul		result result $tmp86 	%argrw{"wrr"}
+# ../../osl_shaders/spotLight.osl:247
+# 	result *= filter;
+	mul		result result filter 	%line{247} %argrw{"wrr"}
+# ../../osl_shaders/spotLight.osl:250
+# 		* emission( "focus", spread_to_focus(spread) );
+	functioncall	$const21 156 	%line{250} %argrw{"r"}
+# X:/r2d2\src\osl_shaders\utils.h:260
+# 	float x = clamp(spread, 0.0, 1.0);
+	functioncall	$const14 151 	%filename{"X:/r2d2\src\osl_shaders\utils.h"} %line{260} %argrw{"r"}
+# X:/r2d2\src\3delight\win64-x64-release-free\osl\stdosl.h:163
+# float  clamp (float x, float minval, float maxval) { return max(min(x,maxval),minval); }
+	min		$tmp89 spread $const3 	%filename{"X:/r2d2\src\3delight\win64-x64-release-free\osl\stdosl.h"} %line{163} %argrw{"wrr"}
+	max		___349_x $tmp89 $const9 	%argrw{"wrr"}
+# X:/r2d2\src\osl_shaders\utils.h:261
+# 	x *= x;
+	mul		___349_x ___349_x ___349_x 	%filename{"X:/r2d2\src\osl_shaders\utils.h"} %line{261} %argrw{"wrr"}
+# X:/r2d2\src\osl_shaders\utils.h:264
+# 	if( x<1e-5)
+	lt		$tmp90 ___349_x $const22 	%line{264} %argrw{"wrr"}
+	if		$tmp90 155 155 	%argrw{"r"}
+# X:/r2d2\src\osl_shaders\utils.h:265
+# 		x=1e-5;
+	assign		___349_x $const22 	%line{265} %argrw{"wr"}
+# X:/r2d2\src\osl_shaders\utils.h:267
+# 	return 1 / x;
+	div		$tmp88 $const3 ___349_x 	%line{267} %argrw{"wrr"}
+# ../../osl_shaders/spotLight.osl:250
+# 		* emission( "focus", spread_to_focus(spread) );
+	closure		$tmp87 $const23 $const20 $tmp88 	%filename{"../../osl_shaders/spotLight.osl"} %line{250} %argrw{"wrrr"}
+# ../../osl_shaders/spotLight.osl:249
+# 	Ci = out = result / surfacearea() * pow(2, exposure)
+	surfacearea	$tmp91 	%line{249} %argrw{"w"}
+	div		$tmp92 result $tmp91 	%argrw{"wrr"}
+	pow		$tmp93 $const13 exposure 	%argrw{"wrr"}
+	mul		$tmp94 $tmp92 $tmp93 	%argrw{"wrr"}
+# ../../osl_shaders/spotLight.osl:250
+# 		* emission( "focus", spread_to_focus(spread) );
+	mul		out $tmp87 $tmp94 	%line{250} %argrw{"wrr"}
+# ../../osl_shaders/spotLight.osl:249
+# 	Ci = out = result / surfacearea() * pow(2, exposure)
+	assign		Ci out 	%line{249} %argrw{"wr"}
+	end

@@ -1,0 +1,650 @@
+OpenShadingLanguage 1.00
+# Compiled by oslc 1.11.0dev
+# options: -q -o ..\build\win64-x64-release-free\2016.5\..\osl\dlGlass.oso -I../../osl_shaders
+surface dlGlass	%meta{string[1],tags,"surface"} %meta{string,maya_classification,"surface"} %meta{string,niceName,"Glass"} %meta{int,maya_generateAETemplate,0} 
+param	color	reflect_color	0.600000024 0.600000024 0.600000024		%meta{string,page,"Reflection"} %meta{string,label,"Color"}  %read{119,200} %write{2147483647,-1}
+param	float	reflect_roughness	0		%meta{string,page,"Reflection"} %meta{string,label,"Roughness"} %meta{float,min,0} %meta{float,max,1}  %read{175,175} %write{2147483647,-1}
+param	float	reflect_ior	1.29999995		%meta{string,page,"Reflection"} %meta{string,label,"IOR"} %meta{float,min,0} %meta{float,max,100} %meta{float,slidermin,1} %meta{float,slidermax,5}  %read{133,176} %write{2147483647,-1}
+param	int	thin_film	0		%meta{string,page,"Reflection"} %meta{string,label,"Thin Film"} %meta{string,widget,"checkBox"}  %read{177,177} %write{2147483647,-1}
+param	float	film_thickness	0.25		%meta{string,page,"Reflection"} %meta{string,label,"Film Thickness"} %meta{float,min,0} %meta{float,max,100} %meta{float,slidermin,0} %meta{float,slidermax,1} %meta{string,lock_left,"thin_film"} %meta{string,lock_op,"lessThanOrEqualTo"} %meta{int,lock_right,0}  %read{178,178} %write{2147483647,-1}
+param	float	film_ior	1.5		%meta{string,page,"Reflection"} %meta{string,label,"Film IOR"} %meta{float,min,0} %meta{float,max,10} %meta{float,slidermin,1} %meta{float,slidermax,5} %meta{string,lock_left,"thin_film"} %meta{string,lock_op,"lessThanOrEqualTo"} %meta{int,lock_right,0}  %read{180,180} %write{2147483647,-1}
+param	color	i_color	1 1 1		%meta{string,page,"Refraction"} %meta{string,label,"Color"} %meta{string,attribute,"color"}  %read{3,3} %write{2147483647,-1}
+param	float	refract_roughness	0		%meta{string,page,"Refraction"} %meta{string,label,"Roughness"} %meta{float,min,0} %meta{float,max,1}  %read{189,189} %write{2147483647,-1}
+param	float	refract_ior	1.29999995		%meta{string,page,"Refraction"} %meta{string,label,"IOR"} %meta{float,min,1} %meta{float,slidermin,1} %meta{float,slidermax,5}  %read{194,194} %write{2147483647,-1}
+param	int	volumetric_enable	0		%meta{string,page,"Volumetric"} %meta{string,label,"Enable"} %meta{string,widget,"checkBox"}  %read{2147483647,-1} %write{2147483647,-1}
+param	float	volumetric_density	1		%meta{string,page,"Volumetric"} %meta{string,label,"Density"}  %read{2147483647,-1} %write{2147483647,-1}
+param	color	volumetric_scattering_color	0 0 0		%meta{string,page,"Volumetric"} %meta{string,label,"Scattering"}  %read{2147483647,-1} %write{2147483647,-1}
+param	color	volumetric_transparency_color	1 1 1		%meta{string,page,"Volumetric"} %meta{string,label,"Transparency"}  %read{2147483647,-1} %write{2147483647,-1}
+param	color	incandescence	0 0 0		%meta{string,page,"Incandescence"} %meta{string,label,"Color"}  %read{205,205} %write{2147483647,-1}
+param	float	incandescence_intensity	1		%meta{string,page,"Incandescence"} %meta{string,label,"Intensity"} %meta{float,min,0} %meta{float,slidermin,0} %meta{float,slidermax,5}  %read{206,206} %write{2147483647,-1}
+param	color	incandescence_multiplier	1 1 1		%meta{string,widget,"null"} %meta{string,maya_attribute,"*none"}  %read{205,205} %write{2147483647,-1}
+param	int	disp_normal_bump_type	0		%meta{string,page,"Bump / Normal / Displacement Map"} %meta{string,label,"Type"} %meta{string,widget,"mapper"} %meta{string,options,"Bump Map:0|Normal Map (DirectX):1|Normal Map (OpenGL):2|Displacement (0.0 centered):3|Displacement (0.5 centered):4|"} %meta{string,niceName,"Bump / Normal / Displacement Map Type"}  %read{13,37} %write{2147483647,-1}
+param	color	disp_normal_bump_value	0 0 0		%meta{string,page,"Bump / Normal / Displacement Map"} %meta{string,label,"Value"} %meta{int,skip_init,1} %meta{string,widget,"navigation"} %meta{string,niceName,"Bump / Normal / Displacement Map Value"}  %read{6,33} %write{0,0} %derivs %initexpr
+param	float	disp_normal_bump_intensity	1		%meta{string,page,"Bump / Normal / Displacement Map"} %meta{string,label,"Intensity"} %meta{float,slidermin,0} %meta{float,slidermax,1} %meta{string,niceName,"Bump / Normal / Displacement Map Intensity"}  %read{9,33} %write{2147483647,-1} %derivs
+param	float[2]	uvCoord	0 0		%meta{string,default_connection,"uvCoord"} %meta{int,skip_init,1} %meta{int,hidden,1} %meta{string,label,"UV Coordinates"} %meta{string,widget,"null"}  %read{1,2} %write{2147483647,-1} %derivs
+oparam	closure color	outColor			%meta{string,attribute,"outColor"}  %read{218,219} %write{199,218}
+global	vector	I	%read{116,116} %write{2147483647,-1}
+global	normal	N	%read{0,4} %write{2147483647,-1} %derivs
+global	float	u	%read{56,83} %write{2147483647,-1} %derivs
+global	float	v	%read{65,92} %write{2147483647,-1} %derivs
+global	vector	dPdu	%read{62,86} %write{2147483647,-1}
+global	vector	dPdv	%read{71,95} %write{2147483647,-1}
+global	closure color	Ci	%read{2147483647,-1} %write{219,219}
+local	float	___362_n	%read{140,140} %write{133,135}
+local	float	___362_ni	%read{141,141} %write{134,136}
+local	float	___362_cos_theta	%read{131,160} %write{130,137}
+local	float	___362_cos2_theta	%read{139,164} %write{138,138}
+local	float	___362_sin2_theta	%read{143,167} %write{139,139}
+local	float	___362_n2	%read{142,146} %write{140,140}
+local	float	___362_ni2	%read{143,155} %write{141,141}
+local	float	___362_t0	%read{145,154} %write{144,144}
+local	float	___362_t1	%read{150,154} %write{149,149}
+local	float	___362_a2plusb2	%read{158,164} %write{150,150}
+local	float	___362_a2	%read{157,157} %write{153,153}
+local	float	___362_b2	%read{2147483647,-1} %write{156,156}
+local	float	___362_a	%read{159,159} %write{157,157}
+local	float	___362_t2	%read{161,162} %write{158,158}
+local	float	___362_t3	%read{161,167} %write{160,160}
+local	float	___362_R_s	%read{169,172} %write{163,163}
+local	float	___362_t4	%read{168,170} %write{166,166}
+local	float	___362_t5	%read{168,170} %write{167,167}
+local	float	___362_R_p	%read{172,172} %write{171,171}
+local	normal	___369_N_result	%read{29,115} %write{28,110}
+local	float	___370_depth	%read{21,23} %write{18,18} %derivs
+local	float	___370_offset	%read{25,25} %write{24,24} %derivs
+local	point	___370_pb	%read{27,27} %write{26,26} %derivs
+local	vector	___369_basisx	%read{97,102} %write{53,100}
+local	vector	___369_basisy	%read{52,104} %write{51,75}
+local	vector	___369_basisz	%read{50,107} %write{42,42}
+local	vector	___369_stangent	%read{46,50} %write{43,43}
+local	vector	___374_uorient	%read{97,97} %write{96,96}
+local	float	ss	%read{26,91} %write{1,1} %derivs
+local	float	tt	%read{26,67} %write{2,2} %derivs
+local	color	refract_color	%read{183,188} %write{3,3}
+local	normal	Nn	%read{5,113} %write{4,4}
+local	normal	Nn_base	%read{128,194} %write{5,115}
+local	vector	In	%read{127,127} %write{116,116}
+local	closure color	c_reflect	%read{200,200} %write{117,180}
+local	float	refract_fresnel_scale	%read{195,195} %write{118,174}
+local	float	___391_reflect_roughness	%read{180,180} %write{175,175}
+local	closure color	c_refract	%read{202,202} %write{181,194}
+local	color	_refract_color	%read{195,202} %write{182,195}
+local	float	___392_refract_roughness	%read{194,194} %write{189,189}
+local	int	___392_sides	%read{194,194} %write{192,193}
+local	closure color	___394_aov_reflection	%read{204,204} %write{201,201}
+local	closure color	___394_aov_refraction	%read{204,204} %write{203,203}
+local	color	incand	%read{207,216} %write{206,206}
+const	int	$const1	0		%read{1,212} %write{2147483647,-1}
+const	int	$const2	1		%read{2,193} %write{2147483647,-1}
+temp	int	$tmp1	%read{7,7} %write{6,6}
+temp	int	$tmp2	%read{8,12} %write{7,11}
+temp	int	$tmp3	%read{10,10} %write{9,9}
+temp	int	$tmp4	%read{11,11} %write{10,10}
+const	int	$const3	2		%read{13,192} %write{2147483647,-1}
+temp	int	$tmp5	%read{14,14} %write{13,13}
+const	string	$const4	"getNormalFromMap"		%read{15,15} %write{2147483647,-1}
+temp	int	$tmp6	%read{17,17} %write{16,16}
+temp	float	$tmp7	%read{20,20} %write{19,19} %derivs
+temp	float	$tmp8	%read{23,23} %write{20,20} %derivs
+temp	float	$tmp9	%read{24,24} %write{21,21} %derivs
+const	string	$const5	"clamp"		%read{22,22} %write{2147483647,-1}
+temp	float	$tmp10	%read{24,24} %write{23,23} %derivs
+const	float	$const6	0.00400000019		%read{25,25} %write{2147483647,-1}
+temp	float	$tmp11	%read{26,26} %write{25,25} %derivs
+temp	vector	$tmp12	%read{28,28} %write{27,27}
+temp	float	$tmp13	%read{30,30} %write{29,29}
+temp	int	$tmp14	%read{31,31} %write{30,30}
+temp	normal	$tmp15	%read{35,35} %write{34,34}
+temp	color	$tmp16	%read{34,34} %write{33,33}
+const	color	$const7	0.5 0.5 1		%read{33,33} %write{2147483647,-1}
+const	vector	$const8	0.5 0.5 0.5		%read{35,35} %write{2147483647,-1}
+temp	normal	$tmp19	%read{36,36} %write{35,35}
+temp	int	$tmp20	%read{38,38} %write{37,37}
+temp	float	$tmp21	%read{40,40} %write{39,39}
+temp	float	$tmp22	%read{41,41} %write{40,40}
+const	float	$const10	-1		%read{40,40} %write{2147483647,-1}
+temp	int	$tmp23	%read{44,44} %write{43,43}
+const	string	$const11	"tangent:st"		%read{43,43} %write{2147483647,-1}
+temp	int	$tmp24	%read{45,49} %write{44,48}
+temp	int	$tmp25	%read{47,47} %write{46,46}
+temp	int	$tmp26	%read{48,48} %write{47,47}
+temp	vector	$tmp27	%read{51,51} %write{50,50}
+temp	vector	$tmp28	%read{53,53} %write{52,52}
+temp	float	$tmp29	%read{62,62} %write{61,61}
+const	string	$const12	"Du"		%read{54,78} %write{2147483647,-1}
+temp	float	$tmp30	%read{57,57} %write{55,55}
+temp	float	$tmp31	%read{57,57} %write{56,56}
+temp	float	$tmp32	%read{61,61} %write{57,57}
+temp	float	$tmp33	%read{60,60} %write{58,58}
+temp	float	$tmp34	%read{60,60} %write{59,59}
+temp	float	$tmp35	%read{61,61} %write{60,60}
+temp	vector	$tmp36	%read{72,72} %write{62,62}
+temp	float	$tmp37	%read{71,71} %write{70,70}
+const	string	$const13	"Dv"		%read{63,87} %write{2147483647,-1}
+temp	float	$tmp38	%read{66,66} %write{64,64}
+temp	float	$tmp39	%read{66,66} %write{65,65}
+temp	float	$tmp40	%read{70,70} %write{66,66}
+temp	float	$tmp41	%read{69,69} %write{67,67}
+temp	float	$tmp42	%read{69,69} %write{68,68}
+temp	float	$tmp43	%read{70,70} %write{69,69}
+temp	vector	$tmp44	%read{72,72} %write{71,71}
+temp	vector	$tmp45	%read{75,75} %write{74,74}
+temp	vector	$tmp46	%read{74,74} %write{73,73}
+temp	vector	$tmp47	%read{77,77} %write{76,76}
+temp	float	$tmp48	%read{86,86} %write{85,85}
+temp	float	$tmp49	%read{81,81} %write{79,79}
+temp	float	$tmp50	%read{81,81} %write{80,80}
+temp	float	$tmp51	%read{85,85} %write{81,81}
+temp	float	$tmp52	%read{84,84} %write{82,82}
+temp	float	$tmp53	%read{84,84} %write{83,83}
+temp	float	$tmp54	%read{85,85} %write{84,84}
+temp	vector	$tmp55	%read{96,96} %write{86,86}
+temp	float	$tmp56	%read{95,95} %write{94,94}
+temp	float	$tmp57	%read{90,90} %write{88,88}
+temp	float	$tmp58	%read{90,90} %write{89,89}
+temp	float	$tmp59	%read{94,94} %write{90,90}
+temp	float	$tmp60	%read{93,93} %write{91,91}
+temp	float	$tmp61	%read{93,93} %write{92,92}
+temp	float	$tmp62	%read{94,94} %write{93,93}
+temp	vector	$tmp63	%read{96,96} %write{95,95}
+temp	float	$tmp64	%read{98,98} %write{97,97}
+temp	int	$tmp65	%read{99,99} %write{98,98}
+temp	normal	$tmp66	%read{110,110} %write{109,109}
+temp	float	$tmp67	%read{102,102} %write{101,101}
+temp	vector	$tmp68	%read{105,105} %write{102,102}
+temp	float	$tmp69	%read{104,104} %write{103,103}
+temp	vector	$tmp70	%read{105,105} %write{104,104}
+temp	vector	$tmp71	%read{108,108} %write{105,105}
+temp	float	$tmp72	%read{107,107} %write{106,106}
+temp	vector	$tmp73	%read{108,108} %write{107,107}
+temp	vector	$tmp74	%read{109,109} %write{108,108}
+const	normal	$const14	0 0 0		%read{111,111} %write{2147483647,-1}
+temp	int	$tmp76	%read{112,112} %write{111,111}
+temp	int	$tmp77	%read{120,120} %write{119,119}
+temp	int	$tmp78	%read{121,126} %write{120,125}
+temp	int	$tmp79	%read{123,123} %write{122,122}
+temp	int	$tmp80	%read{124,124} %write{123,123}
+temp	int	$tmp81	%read{125,125} %write{124,124}
+temp	float	$tmp82	%read{174,174} %write{173,173}
+const	float	$const15	0		%read{142,180} %write{2147483647,-1}
+const	float	$const16	1		%read{134,180} %write{2147483647,-1}
+temp	float	$tmp83	%read{130,130} %write{128,128}
+temp	vector	$tmp84	%read{128,128} %write{127,127}
+const	string	$const17	"Fresnel_DieletricConductor"		%read{129,129} %write{2147483647,-1}
+temp	int	$tmp85	%read{132,132} %write{131,131}
+temp	float	$tmp86	%read{144,144} %write{142,142}
+temp	float	$tmp87	%read{144,144} %write{143,143}
+temp	float	$tmp88	%read{148,148} %write{145,145}
+temp	float	$tmp89	%read{147,147} %write{146,146}
+const	float	$const19	4		%read{146,146} %write{2147483647,-1}
+temp	float	$tmp90	%read{148,148} %write{147,147}
+temp	float	$tmp91	%read{149,149} %write{148,148}
+temp	float	$tmp92	%read{153,153} %write{151,151}
+temp	float	$tmp93	%read{153,153} %write{152,152}
+const	float	$const20	2		%read{152,159} %write{2147483647,-1}
+temp	float	$tmp94	%read{156,156} %write{154,154}
+temp	float	$tmp95	%read{156,156} %write{155,155}
+temp	float	$tmp96	%read{160,160} %write{159,159}
+temp	float	$tmp97	%read{163,163} %write{161,161}
+temp	float	$tmp98	%read{163,163} %write{162,162}
+temp	float	$tmp99	%read{166,166} %write{164,164}
+temp	float	$tmp100	%read{166,166} %write{165,165}
+temp	float	$tmp101	%read{169,169} %write{168,168}
+temp	float	$tmp102	%read{171,171} %write{169,169}
+temp	float	$tmp103	%read{171,171} %write{170,170}
+const	float	$const21	0.5		%read{173,173} %write{2147483647,-1}
+temp	float	$tmp104	%read{173,173} %write{172,172}
+const	string	$const22	"ggx"		%read{180,194} %write{2147483647,-1}
+const	vector	$const23	0 0 0		%read{180,194} %write{2147483647,-1}
+const	string	$const24	"mediumeta"		%read{180,180} %write{2147483647,-1}
+const	string	$const25	"thinfilmeta"		%read{180,180} %write{2147483647,-1}
+const	string	$const26	"realeta"		%read{180,180} %write{2147483647,-1}
+temp	color	$tmp106	%read{180,180} %write{176,176}
+const	string	$const27	"complexeta"		%read{180,180} %write{2147483647,-1}
+const	color	$const28	0 0 0		%read{180,180} %write{2147483647,-1}
+const	string	$const29	"thinfilmthickness"		%read{180,180} %write{2147483647,-1}
+temp	float	$tmp108	%read{180,180} %write{178,179}
+const	string	$const30	"microfacet"		%read{180,194} %write{2147483647,-1}
+temp	int	$tmp109	%read{184,184} %write{183,183}
+temp	int	$tmp110	%read{186,186} %write{185,185}
+const	color	$const31	1 1 1		%read{187,187} %write{2147483647,-1}
+temp	int	$tmp111	%read{191,191} %write{190,190}
+temp	int	$tmp113	%read{197,197} %write{196,196}
+const	string	$const32	"shadow"		%read{196,196} %write{2147483647,-1}
+temp	closure color	$tmp114	%read{199,199} %write{198,198}
+const	string	$const33	"transparent"		%read{198,198} %write{2147483647,-1}
+const	string	$const34	"reflection"		%read{201,201} %write{2147483647,-1}
+temp	closure color	$tmp115	%read{201,201} %write{200,200}
+const	string	$const35	"outputvariable"		%read{201,217} %write{2147483647,-1}
+const	string	$const36	"refraction"		%read{203,203} %write{2147483647,-1}
+temp	closure color	$tmp116	%read{203,203} %write{202,202}
+temp	color	$tmp117	%read{206,206} %write{205,205}
+temp	int	$tmp118	%read{208,208} %write{207,207}
+temp	int	$tmp119	%read{209,214} %write{208,213}
+temp	int	$tmp120	%read{211,211} %write{210,210}
+temp	int	$tmp121	%read{212,212} %write{211,211}
+temp	int	$tmp122	%read{213,213} %write{212,212}
+temp	closure color	$tmp123	%read{218,218} %write{217,217}
+const	string	$const37	"incandescence"		%read{217,217} %write{2147483647,-1}
+temp	closure color	$tmp124	%read{216,216} %write{215,215}
+const	string	$const38	"emission"		%read{215,215} %write{2147483647,-1}
+temp	closure color	$tmp125	%read{217,217} %write{216,216}
+code disp_normal_bump_value
+# ../../osl_shaders/dlGlass.osl:123
+# 	DECLARE_DISP_NORMALMAP_BUMP
+	assign		disp_normal_bump_value N 	%filename{"../../osl_shaders/dlGlass.osl"} %line{123} %argrw{"wr"}
+code ___main___
+# ../../osl_shaders/dlGlass.osl:131
+# 	GET_UV(ss,tt)
+	aref		ss uvCoord $const1 	%filename{"../../osl_shaders/dlGlass.osl"} %line{131} %argrw{"wrr"}
+	aref		tt uvCoord $const2 	%argrw{"wrr"}
+# ../../osl_shaders/dlGlass.osl:133
+# 	color refract_color = i_color;
+	assign		refract_color i_color 	%line{133} %argrw{"wr"}
+# ../../osl_shaders/dlGlass.osl:136
+# 	normal Nn = normalize(N);
+	normalize	Nn N 	%line{136} %argrw{"wr"}
+# ../../osl_shaders/dlGlass.osl:137
+# 	normal Nn_base = Nn;
+	assign		Nn_base Nn 	%line{137} %argrw{"wr"}
+# ../../osl_shaders/dlGlass.osl:138
+# 	COMPUTE_DISP_NORMALMAP_BUMP(Nn_base,ss,tt,Nn)
+	isconnected	$tmp1 disp_normal_bump_value 	%line{138} %argrw{"wr"}
+	neq		$tmp2 $tmp1 $const1 	%argrw{"wrr"}
+	if		$tmp2 12 12 	%argrw{"r"}
+	neq		$tmp3 disp_normal_bump_intensity $const1 	%argrw{"wrr"}
+	neq		$tmp4 $tmp3 $const1 	%argrw{"wrr"}
+	assign		$tmp2 $tmp4 	%argrw{"wr"}
+	if		$tmp2 116 116 	%argrw{"r"}
+	le		$tmp5 disp_normal_bump_type $const3 	%argrw{"wrr"}
+	if		$tmp5 116 116 	%argrw{"r"}
+	functioncall	$const4 116 	%argrw{"r"}
+# W:/r2d2\src\osl_shaders\material_common.h:265
+# 	if (i_type == 0) // Bump
+	eq		$tmp6 disp_normal_bump_type $const1 	%filename{"W:/r2d2\src\osl_shaders\material_common.h"} %line{265} %argrw{"wrr"}
+	if		$tmp6 33 42 	%argrw{"r"}
+# W:/r2d2\src\osl_shaders\material_common.h:267
+# 		float depth = abs( i_intensity );
+	abs		___370_depth disp_normal_bump_intensity 	%line{267} %argrw{"wr"}
+# W:/r2d2\src\osl_shaders\material_common.h:268
+# 		float offset = clamp( i_value[0] * i_intensity, -depth, depth );
+	compref		$tmp7 disp_normal_bump_value $const1 	%line{268} %argrw{"wrr"}
+	mul		$tmp8 $tmp7 disp_normal_bump_intensity 	%argrw{"wrr"}
+	neg		$tmp9 ___370_depth 	%argrw{"wr"}
+	functioncall	$const5 25 	%argrw{"r"}
+# W:/r2d2\src\3delight\win64-x64-release-free\osl\stdosl.h:163
+# float  clamp (float x, float minval, float maxval) { return max(min(x,maxval),minval); }
+	min		$tmp10 $tmp8 ___370_depth 	%filename{"W:/r2d2\src\3delight\win64-x64-release-free\osl\stdosl.h"} %line{163} %argrw{"wrr"}
+	max		___370_offset $tmp10 $tmp9 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\material_common.h:269
+# 		point pb = point( i_s, i_t, 0.004 * offset );
+	mul		$tmp11 $const6 ___370_offset 	%filename{"W:/r2d2\src\osl_shaders\material_common.h"} %line{269} %argrw{"wrr"}
+	point		___370_pb ss tt $tmp11 	%argrw{"wrrr"}
+# W:/r2d2\src\osl_shaders\material_common.h:270
+# 		N_result = normalize( calculatenormal( pb ) );
+	calculatenormal	$tmp12 ___370_pb 	%line{270} %argrw{"wr"} %argderivs{1}
+	normalize	___369_N_result $tmp12 	%argrw{"wr"}
+# W:/r2d2\src\osl_shaders\material_common.h:275
+# 		if ( N_result[2] < 0 )
+	compref		$tmp13 ___369_N_result $const3 	%line{275} %argrw{"wrr"}
+	lt		$tmp14 $tmp13 $const1 	%argrw{"wrr"}
+	if		$tmp14 33 33 	%argrw{"r"}
+# W:/r2d2\src\osl_shaders\material_common.h:277
+# 			N_result = -N_result;
+	neg		___369_N_result ___369_N_result 	%line{277} %argrw{"wr"}
+# W:/r2d2\src\osl_shaders\material_common.h:282
+# 		N_result = normal(normal(mix(color(0.5,0.5,1),i_value,i_intensity)) - vector(0.5));
+	mix		$tmp16 $const7 disp_normal_bump_value disp_normal_bump_intensity 	%line{282} %argrw{"wrrr"}
+	assign		$tmp15 $tmp16 	%argrw{"wr"}
+	sub		$tmp19 $tmp15 $const8 	%argrw{"wrr"}
+	assign		___369_N_result $tmp19 	%argrw{"wr"}
+# W:/r2d2\src\osl_shaders\material_common.h:284
+# 		if (i_type == 1) // DirectX Normal Map
+	eq		$tmp20 disp_normal_bump_type $const2 	%line{284} %argrw{"wrr"}
+	if		$tmp20 42 42 	%argrw{"r"}
+# W:/r2d2\src\osl_shaders\material_common.h:285
+# 			N_result[1] *= -1;
+	compref		$tmp21 ___369_N_result $const2 	%line{285} %argrw{"wrr"}
+	mul		$tmp22 $tmp21 $const10 	%argrw{"wrr"}
+	compassign	___369_N_result $const2 $tmp22 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\material_common.h:289
+# 	vector basisz = i_N;
+	assign		___369_basisz Nn 	%line{289} %argrw{"wr"}
+# W:/r2d2\src\osl_shaders\material_common.h:292
+# 	if( getattribute("tangent:st", 0, stangent) && stangent != 0 )
+	getattribute	$tmp23 $const11 $const1 ___369_stangent 	%line{292} %argrw{"wrrw"}
+	neq		$tmp24 $tmp23 $const1 	%argrw{"wrr"}
+	if		$tmp24 49 49 	%argrw{"r"}
+	neq		$tmp25 ___369_stangent $const1 	%argrw{"wrr"}
+	neq		$tmp26 $tmp25 $const1 	%argrw{"wrr"}
+	assign		$tmp24 $tmp26 	%argrw{"wr"}
+	if		$tmp24 54 101 	%argrw{"r"}
+# W:/r2d2\src\osl_shaders\material_common.h:294
+# 		basisy = normalize( cross( basisz, stangent ) );
+	cross		$tmp27 ___369_basisz ___369_stangent 	%line{294} %argrw{"wrr"}
+	normalize	___369_basisy $tmp27 	%argrw{"wr"}
+# W:/r2d2\src\osl_shaders\material_common.h:295
+# 		basisx = normalize( cross( basisy, basisz ) );
+	cross		$tmp28 ___369_basisy ___369_basisz 	%line{295} %argrw{"wrr"}
+	normalize	___369_basisx $tmp28 	%argrw{"wr"}
+# W:/r2d2\src\osl_shaders\material_common.h:299
+# 		basisy = Du(i_t) * dPdu + Dv(i_t) * dPdv;
+	functioncall	$const12 62 	%line{299} %argrw{"r"}
+# W:/r2d2\src\osl_shaders\utils.h:232
+# 	return Dx(a)/Dx(u) + Dy(a)/Dy(u);
+	Dx		$tmp30 tt 	%filename{"W:/r2d2\src\osl_shaders\utils.h"} %line{232} %argrw{"wr"} %argderivs{1}
+	Dx		$tmp31 u 	%argrw{"wr"} %argderivs{1}
+	div		$tmp32 $tmp30 $tmp31 	%argrw{"wrr"}
+	Dy		$tmp33 tt 	%argrw{"wr"} %argderivs{1}
+	Dy		$tmp34 u 	%argrw{"wr"} %argderivs{1}
+	div		$tmp35 $tmp33 $tmp34 	%argrw{"wrr"}
+	add		$tmp29 $tmp32 $tmp35 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\material_common.h:299
+# 		basisy = Du(i_t) * dPdu + Dv(i_t) * dPdv;
+	mul		$tmp36 $tmp29 dPdu 	%filename{"W:/r2d2\src\osl_shaders\material_common.h"} %line{299} %argrw{"wrr"}
+	functioncall	$const13 71 	%argrw{"r"}
+# W:/r2d2\src\osl_shaders\utils.h:244
+# 	return Dx(a)/Dx(v) + Dy(a)/Dy(v);
+	Dx		$tmp38 tt 	%filename{"W:/r2d2\src\osl_shaders\utils.h"} %line{244} %argrw{"wr"} %argderivs{1}
+	Dx		$tmp39 v 	%argrw{"wr"} %argderivs{1}
+	div		$tmp40 $tmp38 $tmp39 	%argrw{"wrr"}
+	Dy		$tmp41 tt 	%argrw{"wr"} %argderivs{1}
+	Dy		$tmp42 v 	%argrw{"wr"} %argderivs{1}
+	div		$tmp43 $tmp41 $tmp42 	%argrw{"wrr"}
+	add		$tmp37 $tmp40 $tmp43 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\material_common.h:299
+# 		basisy = Du(i_t) * dPdu + Dv(i_t) * dPdv;
+	mul		$tmp44 $tmp37 dPdv 	%filename{"W:/r2d2\src\osl_shaders\material_common.h"} %line{299} %argrw{"wrr"}
+	add		___369_basisy $tmp36 $tmp44 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\material_common.h:300
+# 		basisy = normalize( cross(basisz, cross(basisy, basisz)) );
+	cross		$tmp46 ___369_basisy ___369_basisz 	%line{300} %argrw{"wrr"}
+	cross		$tmp45 ___369_basisz $tmp46 	%argrw{"wrr"}
+	normalize	___369_basisy $tmp45 	%argrw{"wr"}
+# W:/r2d2\src\osl_shaders\material_common.h:301
+# 		basisx = normalize( cross( basisy, basisz ) );
+	cross		$tmp47 ___369_basisy ___369_basisz 	%line{301} %argrw{"wrr"}
+	normalize	___369_basisx $tmp47 	%argrw{"wr"}
+# W:/r2d2\src\osl_shaders\material_common.h:304
+# 		vector uorient = Du(i_s) * dPdu + Dv(i_s) * dPdv;
+	functioncall	$const12 86 	%line{304} %argrw{"r"}
+# W:/r2d2\src\osl_shaders\utils.h:232
+# 	return Dx(a)/Dx(u) + Dy(a)/Dy(u);
+	Dx		$tmp49 ss 	%filename{"W:/r2d2\src\osl_shaders\utils.h"} %line{232} %argrw{"wr"} %argderivs{1}
+	Dx		$tmp50 u 	%argrw{"wr"} %argderivs{1}
+	div		$tmp51 $tmp49 $tmp50 	%argrw{"wrr"}
+	Dy		$tmp52 ss 	%argrw{"wr"} %argderivs{1}
+	Dy		$tmp53 u 	%argrw{"wr"} %argderivs{1}
+	div		$tmp54 $tmp52 $tmp53 	%argrw{"wrr"}
+	add		$tmp48 $tmp51 $tmp54 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\material_common.h:304
+# 		vector uorient = Du(i_s) * dPdu + Dv(i_s) * dPdv;
+	mul		$tmp55 $tmp48 dPdu 	%filename{"W:/r2d2\src\osl_shaders\material_common.h"} %line{304} %argrw{"wrr"}
+	functioncall	$const13 95 	%argrw{"r"}
+# W:/r2d2\src\osl_shaders\utils.h:244
+# 	return Dx(a)/Dx(v) + Dy(a)/Dy(v);
+	Dx		$tmp57 ss 	%filename{"W:/r2d2\src\osl_shaders\utils.h"} %line{244} %argrw{"wr"} %argderivs{1}
+	Dx		$tmp58 v 	%argrw{"wr"} %argderivs{1}
+	div		$tmp59 $tmp57 $tmp58 	%argrw{"wrr"}
+	Dy		$tmp60 ss 	%argrw{"wr"} %argderivs{1}
+	Dy		$tmp61 v 	%argrw{"wr"} %argderivs{1}
+	div		$tmp62 $tmp60 $tmp61 	%argrw{"wrr"}
+	add		$tmp56 $tmp59 $tmp62 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\material_common.h:304
+# 		vector uorient = Du(i_s) * dPdu + Dv(i_s) * dPdv;
+	mul		$tmp63 $tmp56 dPdv 	%filename{"W:/r2d2\src\osl_shaders\material_common.h"} %line{304} %argrw{"wrr"}
+	add		___374_uorient $tmp55 $tmp63 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\material_common.h:305
+# 		if( dot( basisx, uorient ) < 0 )
+	dot		$tmp64 ___369_basisx ___374_uorient 	%line{305} %argrw{"wrr"}
+	lt		$tmp65 $tmp64 $const1 	%argrw{"wrr"}
+	if		$tmp65 101 101 	%argrw{"r"}
+# W:/r2d2\src\osl_shaders\material_common.h:307
+# 			basisx = -basisx;
+	neg		___369_basisx ___369_basisx 	%line{307} %argrw{"wr"}
+# W:/r2d2\src\osl_shaders\material_common.h:312
+# 		N_result[0] * basisx +
+	compref		$tmp67 ___369_N_result $const1 	%line{312} %argrw{"wrr"}
+	mul		$tmp68 $tmp67 ___369_basisx 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\material_common.h:313
+# 		N_result[1] * basisy +
+	compref		$tmp69 ___369_N_result $const2 	%line{313} %argrw{"wrr"}
+	mul		$tmp70 $tmp69 ___369_basisy 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\material_common.h:312
+# 		N_result[0] * basisx +
+	add		$tmp71 $tmp68 $tmp70 	%line{312} %argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\material_common.h:314
+# 		N_result[2] * basisz ));
+	compref		$tmp72 ___369_N_result $const3 	%line{314} %argrw{"wrr"}
+	mul		$tmp73 $tmp72 ___369_basisz 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\material_common.h:313
+# 		N_result[1] * basisy +
+	add		$tmp74 $tmp71 $tmp73 	%line{313} %argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\material_common.h:311
+# 	N_result = normalize(normal(
+	assign		$tmp66 $tmp74 	%line{311} %argrw{"wr"}
+	normalize	___369_N_result $tmp66 	%argrw{"wr"}
+# W:/r2d2\src\osl_shaders\material_common.h:316
+# 	if( N_result == normal(0) )
+	eq		$tmp76 ___369_N_result $const14 	%line{316} %argrw{"wrr"}
+	if		$tmp76 115 115 	%argrw{"r"}
+# W:/r2d2\src\osl_shaders\material_common.h:317
+# 		return i_N;
+	assign		Nn_base Nn 	%line{317} %argrw{"wr"}
+	return
+# W:/r2d2\src\osl_shaders\material_common.h:319
+# 	return N_result;
+	assign		Nn_base ___369_N_result 	%line{319} %argrw{"wr"}
+# ../../osl_shaders/dlGlass.osl:140
+# 	vector In = normalize(I);
+	normalize	In I 	%filename{"../../osl_shaders/dlGlass.osl"} %line{140} %argrw{"wr"}
+# ../../osl_shaders/dlGlass.osl:143
+# 	closure color c_reflect = 0;
+	assign		c_reflect $const1 	%line{143} %argrw{"wr"}
+# ../../osl_shaders/dlGlass.osl:144
+# 	float refract_fresnel_scale = 1;
+	assign		refract_fresnel_scale $const2 	%line{144} %argrw{"wr"}
+# ../../osl_shaders/dlGlass.osl:146
+# 	if( reflect_color != 0 && !backfacing() )
+	neq		$tmp77 reflect_color $const1 	%line{146} %argrw{"wrr"}
+	neq		$tmp78 $tmp77 $const1 	%argrw{"wrr"}
+	if		$tmp78 126 126 	%argrw{"r"}
+	backfacing	$tmp79 	%argrw{"w"}
+	eq		$tmp80 $tmp79 $const1 	%argrw{"wrr"}
+	neq		$tmp81 $tmp80 $const1 	%argrw{"wrr"}
+	assign		$tmp78 $tmp81 	%argrw{"wr"}
+	if		$tmp78 181 181 	%argrw{"r"}
+# ../../osl_shaders/dlGlass.osl:150
+# 				reflect_ior, 0, 1, dot(-In, Nn_base) );
+	neg		$tmp84 In 	%line{150} %argrw{"wr"}
+	dot		$tmp83 $tmp84 Nn_base 	%argrw{"wrr"}
+# ../../osl_shaders/dlGlass.osl:149
+# 			Fresnel_DieletricConductor(
+	functioncall	$const17 174 	%line{149} %argrw{"r"}
+# W:/r2d2\src\osl_shaders\material_common.h:113
+# 	float cos_theta = i_cos_theta;
+	assign		___362_cos_theta $tmp83 	%filename{"W:/r2d2\src\osl_shaders\material_common.h"} %line{113} %argrw{"wr"}
+# W:/r2d2\src\osl_shaders\material_common.h:115
+# 	if( cos_theta >= 0 )
+	ge		$tmp85 ___362_cos_theta $const1 	%line{115} %argrw{"wrr"}
+	if		$tmp85 135 138 	%argrw{"r"}
+# W:/r2d2\src\osl_shaders\material_common.h:117
+# 		n = i_n;
+	assign		___362_n reflect_ior 	%line{117} %argrw{"wr"}
+# W:/r2d2\src\osl_shaders\material_common.h:118
+# 		ni = i_ni;
+	assign		___362_ni $const16 	%line{118} %argrw{"wr"}
+# W:/r2d2\src\osl_shaders\material_common.h:122
+# 		n = i_ni;
+	assign		___362_n $const16 	%line{122} %argrw{"wr"}
+# W:/r2d2\src\osl_shaders\material_common.h:123
+# 		ni = i_n;
+	assign		___362_ni reflect_ior 	%line{123} %argrw{"wr"}
+# W:/r2d2\src\osl_shaders\material_common.h:125
+# 		cos_theta = -cos_theta;
+	neg		___362_cos_theta ___362_cos_theta 	%line{125} %argrw{"wr"}
+# W:/r2d2\src\osl_shaders\material_common.h:128
+# 	float cos2_theta = cos_theta * cos_theta;
+	mul		___362_cos2_theta ___362_cos_theta ___362_cos_theta 	%line{128} %argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\material_common.h:129
+# 	float sin2_theta = 1 - cos2_theta;
+	sub		___362_sin2_theta $const16 ___362_cos2_theta 	%line{129} %argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\material_common.h:130
+# 	float n2 = n * n;
+	mul		___362_n2 ___362_n ___362_n 	%line{130} %argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\material_common.h:131
+# 	float ni2 = ni * ni;
+	mul		___362_ni2 ___362_ni ___362_ni 	%line{131} %argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\material_common.h:133
+# 	float t0 = n2 - i_k2 - ni2 * sin2_theta;
+	sub		$tmp86 ___362_n2 $const15 	%line{133} %argrw{"wrr"}
+	mul		$tmp87 ___362_ni2 ___362_sin2_theta 	%argrw{"wrr"}
+	sub		___362_t0 $tmp86 $tmp87 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\material_common.h:134
+# 	float t1 = sqrt( t0 * t0 + 4 * n2 * i_k2 );
+	mul		$tmp88 ___362_t0 ___362_t0 	%line{134} %argrw{"wrr"}
+	mul		$tmp89 $const19 ___362_n2 	%argrw{"wrr"}
+	mul		$tmp90 $tmp89 $const15 	%argrw{"wrr"}
+	add		$tmp91 $tmp88 $tmp90 	%argrw{"wrr"}
+	sqrt		___362_t1 $tmp91 	%argrw{"wr"}
+# W:/r2d2\src\osl_shaders\material_common.h:135
+# 	float a2plusb2 = t1 / ni2;
+	div		___362_a2plusb2 ___362_t1 ___362_ni2 	%line{135} %argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\material_common.h:136
+# 	float a2 = ( t1 + t0 ) / ( 2 * ni2 );
+	add		$tmp92 ___362_t1 ___362_t0 	%line{136} %argrw{"wrr"}
+	mul		$tmp93 $const20 ___362_ni2 	%argrw{"wrr"}
+	div		___362_a2 $tmp92 $tmp93 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\material_common.h:137
+# 	float b2 = ( t1 - t0 ) / ( 2 * ni2 );
+	sub		$tmp94 ___362_t1 ___362_t0 	%line{137} %argrw{"wrr"}
+	mul		$tmp95 $const20 ___362_ni2 	%argrw{"wrr"}
+	div		___362_b2 $tmp94 $tmp95 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\material_common.h:138
+# 	float a = sqrt( a2 );
+	sqrt		___362_a ___362_a2 	%line{138} %argrw{"wr"}
+# W:/r2d2\src\osl_shaders\material_common.h:140
+# 	float t2 = a2plusb2 + cos2_theta;
+	add		___362_t2 ___362_a2plusb2 ___362_cos2_theta 	%line{140} %argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\material_common.h:141
+# 	float t3 = 2 * a * cos_theta;
+	mul		$tmp96 $const20 ___362_a 	%line{141} %argrw{"wrr"}
+	mul		___362_t3 $tmp96 ___362_cos_theta 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\material_common.h:142
+# 	float R_s = (t2 - t3) / (t2 + t3);
+	sub		$tmp97 ___362_t2 ___362_t3 	%line{142} %argrw{"wrr"}
+	add		$tmp98 ___362_t2 ___362_t3 	%argrw{"wrr"}
+	div		___362_R_s $tmp97 $tmp98 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\material_common.h:144
+# 	float t4 = cos2_theta * a2plusb2 + sin2_theta * sin2_theta;
+	mul		$tmp99 ___362_cos2_theta ___362_a2plusb2 	%line{144} %argrw{"wrr"}
+	mul		$tmp100 ___362_sin2_theta ___362_sin2_theta 	%argrw{"wrr"}
+	add		___362_t4 $tmp99 $tmp100 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\material_common.h:145
+# 	float t5 = t3 * sin2_theta;
+	mul		___362_t5 ___362_t3 ___362_sin2_theta 	%line{145} %argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\material_common.h:146
+# 	float R_p = R_s * (t4 - t5) / (t4 + t5);
+	sub		$tmp101 ___362_t4 ___362_t5 	%line{146} %argrw{"wrr"}
+	mul		$tmp102 ___362_R_s $tmp101 	%argrw{"wrr"}
+	add		$tmp103 ___362_t4 ___362_t5 	%argrw{"wrr"}
+	div		___362_R_p $tmp102 $tmp103 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\material_common.h:148
+# 	return 0.5 * (R_p + R_s);
+	add		$tmp104 ___362_R_p ___362_R_s 	%line{148} %argrw{"wrr"}
+	mul		$tmp82 $const21 $tmp104 	%argrw{"wrr"}
+# ../../osl_shaders/dlGlass.osl:148
+# 		refract_fresnel_scale = 1 -
+	sub		refract_fresnel_scale $const16 $tmp82 	%filename{"../../osl_shaders/dlGlass.osl"} %argrw{"wrr"}
+# ../../osl_shaders/dlGlass.osl:152
+# 		float reflect_roughness = reflect_roughness * reflect_roughness;
+	mul		___391_reflect_roughness reflect_roughness reflect_roughness 	%line{152} %argrw{"wrr"}
+# ../../osl_shaders/dlGlass.osl:163
+# 				"realeta", color(reflect_ior),
+	assign		$tmp106 reflect_ior 	%line{163} %argrw{"wr"}
+# ../../osl_shaders/dlGlass.osl:165
+# 				"thinfilmthickness", thin_film ? film_thickness : 0.0 );
+	if		thin_film 179 180 	%line{165} %argrw{"r"}
+	assign		$tmp108 film_thickness 	%argrw{"wr"}
+	assign		$tmp108 $const15 	%argrw{"wr"}
+# ../../osl_shaders/dlGlass.osl:155
+# 			microfacet(
+	closure		c_reflect $const30 $const22 Nn_base $const23 ___391_reflect_roughness ___391_reflect_roughness $const15 $const1 $const24 $const16 $const25 film_ior $const26 $tmp106 $const27 $const28 $const29 $tmp108 	%line{155} %argrw{"wrrrrrrrrrrrrrrrrrr"}
+# ../../osl_shaders/dlGlass.osl:169
+# 	closure color c_refract = 0;
+	assign		c_refract $const1 	%line{169} %argrw{"wr"}
+# ../../osl_shaders/dlGlass.osl:170
+# 	color _refract_color = 0;
+	assign		_refract_color $const1 	%line{170} %argrw{"wr"}
+# ../../osl_shaders/dlGlass.osl:171
+# 	if( refract_color != 0 )
+	neq		$tmp109 refract_color $const1 	%line{171} %argrw{"wrr"}
+	if		$tmp109 195 195 	%argrw{"r"}
+# ../../osl_shaders/dlGlass.osl:178
+# 		_refract_color = backfacing() ? color(1) : refract_color;
+	backfacing	$tmp110 	%line{178} %argrw{"w"}
+	if		$tmp110 188 189 	%argrw{"r"}
+	assign		_refract_color $const31 	%argrw{"wr"}
+	assign		_refract_color refract_color 	%argrw{"wr"}
+# ../../osl_shaders/dlGlass.osl:180
+# 		float refract_roughness = refract_roughness * refract_roughness;
+	mul		___392_refract_roughness refract_roughness refract_roughness 	%line{180} %argrw{"wrr"}
+# ../../osl_shaders/dlGlass.osl:188
+# 		int sides = backfacing() ? 2 : 1;
+	backfacing	$tmp111 	%line{188} %argrw{"w"}
+	if		$tmp111 193 194 	%argrw{"r"}
+	assign		___392_sides $const3 	%argrw{"wr"}
+	assign		___392_sides $const2 	%argrw{"wr"}
+# ../../osl_shaders/dlGlass.osl:191
+# 			microfacet(
+	closure		c_refract $const30 $const22 Nn_base $const23 ___392_refract_roughness ___392_refract_roughness refract_ior ___392_sides 	%line{191} %argrw{"wrrrrrrrr"}
+# ../../osl_shaders/dlGlass.osl:200
+# 	_refract_color *= refract_fresnel_scale;
+	mul		_refract_color _refract_color refract_fresnel_scale 	%line{200} %argrw{"wrr"}
+# ../../osl_shaders/dlGlass.osl:202
+# 	if( raytype("shadow") )
+	raytype		$tmp113 $const32 	%line{202} %argrw{"wr"}
+	if		$tmp113 200 205 	%argrw{"r"}
+# ../../osl_shaders/dlGlass.osl:204
+# 		outColor = transparent() * _refract_color;
+	closure		$tmp114 $const33 	%line{204} %argrw{"wr"}
+	mul		outColor $tmp114 _refract_color 	%argrw{"wrr"}
+# ../../osl_shaders/dlGlass.osl:211
+# 					c_reflect * reflect_color );
+	mul		$tmp115 c_reflect reflect_color 	%line{211} %argrw{"wrr"}
+# ../../osl_shaders/dlGlass.osl:209
+# 			outputvariable(
+	closure		___394_aov_reflection $const35 $const34 $tmp115 	%line{209} %argrw{"wrrr"}
+# ../../osl_shaders/dlGlass.osl:216
+# 					c_refract * _refract_color );
+	mul		$tmp116 c_refract _refract_color 	%line{216} %argrw{"wrr"}
+# ../../osl_shaders/dlGlass.osl:214
+# 			outputvariable(
+	closure		___394_aov_refraction $const35 $const36 $tmp116 	%line{214} %argrw{"wrrr"}
+# ../../osl_shaders/dlGlass.osl:218
+# 		outColor = aov_reflection + aov_refraction;
+	add		outColor ___394_aov_reflection ___394_aov_refraction 	%line{218} %argrw{"wrr"}
+# ../../osl_shaders/dlGlass.osl:221
+# 	color incand = incandescence * incandescence_multiplier * incandescence_intensity;
+	mul		$tmp117 incandescence incandescence_multiplier 	%line{221} %argrw{"wrr"}
+	mul		incand $tmp117 incandescence_intensity 	%argrw{"wrr"}
+# ../../osl_shaders/dlGlass.osl:222
+# 	if( incand != 0 && !backfacing() )
+	neq		$tmp118 incand $const1 	%line{222} %argrw{"wrr"}
+	neq		$tmp119 $tmp118 $const1 	%argrw{"wrr"}
+	if		$tmp119 214 214 	%argrw{"r"}
+	backfacing	$tmp120 	%argrw{"w"}
+	eq		$tmp121 $tmp120 $const1 	%argrw{"wrr"}
+	neq		$tmp122 $tmp121 $const1 	%argrw{"wrr"}
+	assign		$tmp119 $tmp122 	%argrw{"wr"}
+	if		$tmp119 219 219 	%argrw{"r"}
+# ../../osl_shaders/dlGlass.osl:224
+# 		outColor += outputvariable( "incandescence", emission() *  incand );
+	closure		$tmp124 $const38 	%line{224} %argrw{"wr"}
+	mul		$tmp125 $tmp124 incand 	%argrw{"wrr"}
+	closure		$tmp123 $const35 $const37 $tmp125 	%argrw{"wrrr"}
+	add		outColor outColor $tmp123 	%argrw{"wrr"}
+# ../../osl_shaders/dlGlass.osl:227
+# 	Ci = outColor;
+	assign		Ci outColor 	%line{227} %argrw{"wr"}
+	end

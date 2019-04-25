@@ -10,9 +10,8 @@ public:
 	virtual void ConnectNSINodes(GeListNode* C4DNode, BaseDocument* doc, DL_SceneParser* parser);
 
 private:
-	std::string transform_handle;
 	//std::string attributes_handle;
-	//std::string surface_handle;
+	std::string transform_handle;
 	//virtual void RegisterShaders(BaseTag* node, BaseDocument* doc, DL_SceneParser* parser);
 	//virtual void EmitBegin(BaseTag* node, BaseDocument* doc, DL_SceneParser* parser);
 	//virtual void EmitEnd(BaseTag* node, BaseDocument* doc, DL_SceneParser* parser);

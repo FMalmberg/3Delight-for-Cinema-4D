@@ -1,0 +1,2370 @@
+OpenShadingLanguage 1.00
+# Compiled by oslc 1.11.0dev
+# options: -q -o ..\build\win64-x64-release-free\2016.5\..\osl\dlCarPaint.oso -I../../osl_shaders
+surface dlCarPaint	%meta{string[1],tags,"surface"} %meta{string,maya_typeID,"0x0012548F"} %meta{string,maya_classification,"surface"} %meta{string,niceName,"Car Paint"} %meta{int,maya_generateAETemplate,0} 
+param	float	coating_thickness	0.0500000007		%meta{string,label,"Thickness"} %meta{string,page,"Coating"} %meta{float,min,0} %meta{float,max,1}  %read{129,210} %write{2147483647,-1}
+param	color	coating_color	0.899999976 0.899999976 0.899999976		%meta{string,page,"Coating"} %meta{string,label,"Color"}  %read{192,192} %write{2147483647,-1}
+param	float	coating_roughness	0.0500000007		%meta{string,page,"Coating"} %meta{string,label,"Roughness"} %meta{float,min,0} %meta{float,max,1}  %read{226,226} %write{2147483647,-1}
+param	float	coating_specular_level	0.5		%meta{string,page,"Coating"} %meta{string,label,"Specular Level"} %meta{float,min,0} %meta{float,max,1}  %read{132,132} %write{2147483647,-1}
+param	float	flake_density	0.300000012		%meta{string,page,"Flakes"} %meta{string,label,"Density"} %meta{float,min,0} %meta{float,max,1}  %read{301,489} %write{2147483647,-1} %derivs
+param	color	flake_color	1 1 1		%meta{string,page,"Flakes"} %meta{string,label,"Color"}  %read{691,691} %write{2147483647,-1}
+param	float	flake_roughness	0.300000012		%meta{string,page,"Flakes"} %meta{string,label,"Roughness"} %meta{float,min,0} %meta{float,max,1}  %read{686,686} %write{2147483647,-1}
+param	float	flake_scale	0.100000001		%meta{string,page,"Flakes"} %meta{string,label,"Scale"} %meta{float,min,0} %meta{float,max,1}  %read{328,328} %write{2147483647,-1} %derivs
+param	float	flake_randomness	0.300000012		%meta{string,page,"Flakes"} %meta{string,label,"Randomness"} %meta{float,min,0} %meta{float,max,1}  %read{583,583} %write{2147483647,-1} %derivs
+param	color	i_color	0.800000012 0.800000012 0.800000012		%meta{string,page,"Base"} %meta{string,label,"Color"} %meta{string,attribute,"color"}  %read{124,306} %write{2147483647,-1}
+param	float	roughness	0.300000012		%meta{string,page,"Base"} %meta{string,label,"Roughness"} %meta{float,min,0} %meta{float,max,1}  %read{125,305} %write{2147483647,-1}
+param	float	specular_level	0.5		%meta{string,page,"Base"} %meta{string,label,"Specular Level"} %meta{float,min,0} %meta{float,max,1}  %read{230,291} %write{2147483647,-1}
+param	float	metallic	0		%meta{string,page,"Base"} %meta{string,label,"Metallic"} %meta{float,min,0} %meta{float,max,1}  %read{297,693} %write{2147483647,-1}
+param	int	disp_normal_bump_type	0		%meta{string,page,"Bump / Normal / Displacement Map"} %meta{string,label,"Type"} %meta{string,widget,"mapper"} %meta{string,options,"Bump Map:0|Normal Map (DirectX):1|Normal Map (OpenGL):2|Displacement (0.0 centered):3|Displacement (0.5 centered):4|"} %meta{string,niceName,"Bump / Normal / Displacement Map Type"}  %read{14,38} %write{2147483647,-1}
+param	color	disp_normal_bump_value	0 0 0		%meta{string,page,"Bump / Normal / Displacement Map"} %meta{string,label,"Value"} %meta{int,skip_init,1} %meta{string,widget,"navigation"} %meta{string,niceName,"Bump / Normal / Displacement Map Value"}  %read{7,34} %write{0,0} %derivs %initexpr
+param	float	disp_normal_bump_intensity	1		%meta{string,page,"Bump / Normal / Displacement Map"} %meta{string,label,"Intensity"} %meta{float,slidermin,0} %meta{float,slidermax,1} %meta{string,niceName,"Bump / Normal / Displacement Map Intensity"}  %read{10,34} %write{2147483647,-1} %derivs
+param	int	normal_bump_affect_layer	0		%meta{string,page,"Bump / Normal / Displacement Map"} %meta{string,label,"Layers Affected"} %meta{string,widget,"mapper"} %meta{string,options,"Both Layers:0|Coating Layer:1|Base Layer:2|"} %meta{string,lock_left,"disp_normal_bump_type"} %meta{string,lock_op,"greaterThanOrEqualTo"} %meta{int,lock_right,3} %meta{string,niceName,"Bump / Normal / Displacement Map Affect Layer"}  %read{117,120} %write{2147483647,-1}
+param	float[2]	uvCoord	0 0		%meta{string,default_connection,"uvCoord"} %meta{int,skip_init,1} %meta{int,hidden,1} %meta{string,label,"UV Coordinates"} %meta{string,widget,"null"}  %read{1,2} %write{2147483647,-1} %derivs
+oparam	closure color	outColor			%meta{string,attribute,"outColor"}  %read{846,846} %write{828,845}
+global	point	P	%read{317,323} %write{2147483647,-1} %derivs
+global	vector	I	%read{123,123} %write{2147483647,-1}
+global	normal	N	%read{0,3} %write{2147483647,-1} %derivs
+global	float	u	%read{57,653} %write{2147483647,-1} %derivs
+global	float	v	%read{66,662} %write{2147483647,-1} %derivs
+global	vector	dPdu	%read{63,656} %write{2147483647,-1}
+global	vector	dPdv	%read{72,665} %write{2147483647,-1}
+global	closure color	Ci	%read{2147483647,-1} %write{846,846}
+local	point	___329_Pref	%read{319,325} %write{311,311} %derivs
+local	int	___329_have_Pref	%read{314,320} %write{311,311}
+local	point	___329_pp	%read{326,326} %write{317,325} %derivs
+local	point	___329_pq	%read{327,327} %write{326,326} %derivs
+local	float	___379_t	%read{345,558} %write{345,558}
+local	float	___379_tbase	%read{345,558} %write{345,558}
+local	point	___379_n1	%read{345,558} %write{345,558}
+local	float	___379_d	%read{345,558} %write{345,558}
+local	point	___379_n2	%read{345,558} %write{345,558}
+local	float	___425_dist	%read{345,558} %write{345,558}
+local	float	___426_dist	%read{345,558} %write{345,558}
+local	vector	___427_diff	%read{345,558} %write{345,558}
+local	float	___427_dist	%read{345,558} %write{345,558}
+local	point	___428_thiscell	%read{345,558} %write{345,558} %derivs
+local	int	___429_i	%read{345,558} %write{345,558} %derivs
+local	int	___431_j	%read{345,558} %write{345,558} %derivs
+local	int	___433_k	%read{345,558} %write{345,558} %derivs
+local	point	___434_testcell	%read{345,558} %write{345,558} %derivs
+local	point	___434_cell_noise	%read{345,558} %write{345,558}
+local	point	___434_pos	%read{345,558} %write{345,558}
+local	float	___434_dist	%read{345,558} %write{345,558}
+local	vector	___435_offset	%read{345,558} %write{345,558}
+local	float	___441_result	%read{345,562} %write{335,561}
+local	float	___441_freq_ratio	%read{345,558} %write{337,337} %derivs
+local	float	___441_lacunarity	%read{345,558} %write{338,558} %derivs
+local	float	___441_sum	%read{2147483647,-1} %write{339,339}
+local	float	___441_amp	%read{345,558} %write{340,558} %derivs
+local	float	___441_ampSum	%read{345,561} %write{341,558}
+local	float	___441_mask	%read{345,563} %write{342,558} %derivs
+local	int	___442_i	%read{345,558} %write{344,558} %derivs
+local	float	___443_curr_result	%read{345,558} %write{345,558}
+local	float	___443_f1	%read{345,558} %write{345,558}
+local	float	___443_f2	%read{345,558} %write{345,558}
+local	point	___443_pos1	%read{345,558} %write{345,558}
+local	point	___443_pos2	%read{345,558} %write{345,558}
+local	color	___443_col1	%read{345,558} %write{345,558} %derivs
+local	float	___443_curr_mask	%read{345,558} %write{345,558} %derivs
+local	float	___445_edge_factor	%read{345,558} %write{345,558}
+local	float	___464_sqrtr	%read{711,774} %write{710,772}
+local	float	___465_nplusone	%read{719,781} %write{717,779}
+local	float	___465_nminusone	%read{721,783} %write{718,780}
+local	float	___465_nr	%read{724,786} %write{722,784}
+local	float	___461_rr	%read{704,785} %write{701,763}
+local	float	___466_n_r	%read{717,788} %write{715,715}
+local	float	___466_n_g	%read{748,788} %write{746,746}
+local	float	___466_n_b	%read{779,788} %write{777,777}
+local	float	___466_k2_r	%read{789,789} %write{725,725}
+local	float	___466_k2_g	%read{789,789} %write{756,756}
+local	float	___466_k2_b	%read{789,789} %write{787,787}
+local	float	___468_n	%read{157,256} %write{150,251}
+local	float	___468_ni	%read{158,257} %write{151,252}
+local	float	___468_cos_theta	%read{148,276} %write{147,253}
+local	float	___468_cos2_theta	%read{156,280} %write{155,254}
+local	float	___468_sin2_theta	%read{160,283} %write{156,255}
+local	float	___468_n2	%read{159,262} %write{157,256}
+local	float	___468_ni2	%read{160,271} %write{158,257}
+local	float	___468_t0	%read{162,270} %write{161,260}
+local	float	___468_t1	%read{167,270} %write{166,265}
+local	float	___468_a2plusb2	%read{175,280} %write{167,266}
+local	float	___468_a2	%read{174,273} %write{170,269}
+local	float	___468_b2	%read{2147483647,-1} %write{173,272}
+local	float	___468_a	%read{176,275} %write{174,273}
+local	float	___468_t2	%read{178,278} %write{175,274}
+local	float	___468_t3	%read{178,283} %write{177,276}
+local	float	___468_R_s	%read{186,288} %write{180,279}
+local	float	___468_t4	%read{185,286} %write{183,282}
+local	float	___468_t5	%read{185,286} %write{184,283}
+local	float	___468_R_p	%read{189,288} %write{188,287}
+local	float	___471_T	%read{139,241} %write{138,239}
+local	float	___473_vdotn	%read{207,207} %write{201,201}
+local	float	___473_ldotn	%read{208,208} %write{206,206}
+local	float	___473_l	%read{213,221} %write{210,210}
+local	float	___473_r	%read{223,223} %write{214,214}
+local	float	___473_g	%read{223,223} %write{218,218}
+local	float	___473_b	%read{223,223} %write{222,222}
+local	vector	___474_H	%read{2147483647,-1} %write{195,195}
+local	color	___474_absorpt_term	%read{224,224} %write{223,223}
+local	normal	___475_N_result	%read{30,685} %write{29,680}
+local	float	___476_depth	%read{22,593} %write{19,588} %derivs
+local	float	___476_offset	%read{26,595} %write{25,594} %derivs
+local	point	___476_pb	%read{28,597} %write{27,596} %derivs
+local	vector	___475_basisx	%read{98,672} %write{54,670}
+local	vector	___475_basisy	%read{53,674} %write{52,645}
+local	vector	___475_basisz	%read{51,677} %write{43,612}
+local	vector	___475_stangent	%read{47,620} %write{44,613}
+local	vector	___480_uorient	%read{98,667} %write{97,666}
+local	float	___482_theta	%read{574,577} %write{571,571} %derivs
+local	float	___482_phi	%read{575,578} %write{573,573} %derivs
+local	float	ss	%read{27,661} %write{1,1} %derivs
+local	float	tt	%read{27,637} %write{2,2} %derivs
+local	normal	Nn	%read{4,114} %write{3,3}
+local	normal	N_normal_bump	%read{119,122} %write{4,116}
+local	normal	Nn_coating	%read{145,227} %write{5,119}
+local	normal	Nn_base	%read{125,791} %write{6,685}
+local	vector	In	%read{144,243} %write{123,123}
+local	color	diffuse_color	%read{825,829} %write{124,825}
+local	closure color	c_diffuse	%read{829,829} %write{125,125}
+local	closure color	c_coating	%read{834,834} %write{126,227}
+local	color	_coating_color	%read{191,834} %write{127,191}
+local	color	coating_absorbed	%read{225,841} %write{128,225}
+local	float	___499_coating_ior	%read{143,227} %write{136,143}
+local	color	___499_coating_absorbtion	%read{211,219} %write{192,192}
+local	float	___499__coating_roughness	%read{227,227} %write{226,226}
+local	closure color	c_reflect	%read{835,835} %write{228,294}
+local	color	_reflect_color	%read{292,835} %write{229,803}
+local	float	___500__roughness	%read{294,294} %write{232,232}
+local	float	___500_reflect_ior	%read{249,294} %write{237,242}
+local	closure color	c_metallic	%read{840,840} %write{295,791}
+local	color	_metallic_color	%read{814,840} %write{296,814}
+local	float	_metallic	%read{831,842} %write{297,693}
+local	float	___501_metal_roughness	%read{687,791} %write{305,687}
+local	color	___501_metal_color	%read{692,758} %write{306,692}
+local	point	___502_pp_flake	%read{345,558} %write{330,330} %derivs
+local	float	___502_worley_dummy	%read{2147483647,-1} %write{331,562}
+local	color	___502_worley_color	%read{345,688} %write{332,558} %derivs
+local	float	___502_worley_mask	%read{588,693} %write{333,563} %derivs
+local	float	___502_x	%read{580,580} %write{564,576} %derivs
+local	float	___502_y	%read{581,581} %write{565,579} %derivs
+local	color	___502_flake_tangent	%read{584,603} %write{582,584} %derivs
+local	color	___501_metallic_ior	%read{791,791} %write{788,788}
+local	color	___501_metallic_complex_ior	%read{791,791} %write{789,789}
+local	closure color	___504_aov_diffuse	%read{845,845} %write{833,833}
+local	closure color	___504_aov_reflection	%read{845,845} %write{844,844}
+const	int	$const1	0		%read{1,828} %write{2147483647,-1}
+const	int	$const2	1		%read{2,818} %write{2147483647,-1}
+temp	int	$tmp1	%read{8,8} %write{7,7}
+temp	int	$tmp2	%read{9,13} %write{8,12}
+temp	int	$tmp3	%read{11,11} %write{10,10}
+temp	int	$tmp4	%read{12,12} %write{11,11}
+const	int	$const3	2		%read{14,821} %write{2147483647,-1}
+temp	int	$tmp5	%read{15,15} %write{14,14}
+const	string	$const4	"getNormalFromMap"		%read{16,585} %write{2147483647,-1}
+temp	int	$tmp6	%read{18,18} %write{17,17}
+temp	float	$tmp7	%read{21,21} %write{20,20} %derivs
+temp	float	$tmp8	%read{24,24} %write{21,21} %derivs
+temp	float	$tmp9	%read{25,25} %write{22,22} %derivs
+const	string	$const5	"clamp"		%read{23,761} %write{2147483647,-1}
+temp	float	$tmp10	%read{25,25} %write{24,24} %derivs
+const	float	$const6	0.00400000019		%read{26,595} %write{2147483647,-1}
+temp	float	$tmp11	%read{27,27} %write{26,26} %derivs
+temp	vector	$tmp12	%read{29,29} %write{28,28}
+temp	float	$tmp13	%read{31,31} %write{30,30}
+temp	int	$tmp14	%read{32,32} %write{31,31}
+temp	normal	$tmp15	%read{36,36} %write{35,35}
+temp	color	$tmp16	%read{35,35} %write{34,34}
+const	color	$const7	0.5 0.5 1		%read{34,603} %write{2147483647,-1}
+const	vector	$const8	0.5 0.5 0.5		%read{36,605} %write{2147483647,-1}
+temp	normal	$tmp19	%read{37,37} %write{36,36}
+temp	int	$tmp20	%read{39,39} %write{38,38}
+temp	float	$tmp21	%read{41,41} %write{40,40}
+const	int	$const9	-1		%read{376,384} %write{2147483647,-1}
+temp	float	$tmp22	%read{42,42} %write{41,41}
+const	float	$const10	-1		%read{41,610} %write{2147483647,-1}
+temp	int	$tmp23	%read{45,45} %write{44,44}
+const	string	$const11	"tangent:st"		%read{44,613} %write{2147483647,-1}
+temp	int	$tmp24	%read{46,50} %write{45,49}
+temp	int	$tmp25	%read{48,48} %write{47,47}
+temp	int	$tmp26	%read{49,49} %write{48,48}
+temp	vector	$tmp27	%read{52,52} %write{51,51}
+temp	vector	$tmp28	%read{54,54} %write{53,53}
+temp	float	$tmp29	%read{63,63} %write{62,62}
+const	string	$const12	"Du"		%read{55,648} %write{2147483647,-1}
+temp	float	$tmp30	%read{58,58} %write{56,56}
+temp	float	$tmp31	%read{58,58} %write{57,57}
+temp	float	$tmp32	%read{62,62} %write{58,58}
+temp	float	$tmp33	%read{61,61} %write{59,59}
+temp	float	$tmp34	%read{61,61} %write{60,60}
+temp	float	$tmp35	%read{62,62} %write{61,61}
+temp	vector	$tmp36	%read{73,73} %write{63,63}
+temp	float	$tmp37	%read{72,72} %write{71,71}
+const	string	$const13	"Dv"		%read{64,657} %write{2147483647,-1}
+temp	float	$tmp38	%read{67,67} %write{65,65}
+temp	float	$tmp39	%read{67,67} %write{66,66}
+temp	float	$tmp40	%read{71,71} %write{67,67}
+temp	float	$tmp41	%read{70,70} %write{68,68}
+temp	float	$tmp42	%read{70,70} %write{69,69}
+temp	float	$tmp43	%read{71,71} %write{70,70}
+temp	vector	$tmp44	%read{73,73} %write{72,72}
+temp	vector	$tmp45	%read{76,76} %write{75,75}
+temp	vector	$tmp46	%read{75,75} %write{74,74}
+temp	vector	$tmp47	%read{78,78} %write{77,77}
+temp	float	$tmp48	%read{87,87} %write{86,86}
+temp	float	$tmp49	%read{82,82} %write{80,80}
+temp	float	$tmp50	%read{82,82} %write{81,81}
+temp	float	$tmp51	%read{86,86} %write{82,82}
+temp	float	$tmp52	%read{85,85} %write{83,83}
+temp	float	$tmp53	%read{85,85} %write{84,84}
+temp	float	$tmp54	%read{86,86} %write{85,85}
+temp	vector	$tmp55	%read{97,97} %write{87,87}
+temp	float	$tmp56	%read{96,96} %write{95,95}
+temp	float	$tmp57	%read{91,91} %write{89,89}
+temp	float	$tmp58	%read{91,91} %write{90,90}
+temp	float	$tmp59	%read{95,95} %write{91,91}
+temp	float	$tmp60	%read{94,94} %write{92,92}
+temp	float	$tmp61	%read{94,94} %write{93,93}
+temp	float	$tmp62	%read{95,95} %write{94,94}
+temp	vector	$tmp63	%read{97,97} %write{96,96}
+temp	float	$tmp64	%read{99,99} %write{98,98}
+temp	int	$tmp65	%read{100,100} %write{99,99}
+temp	normal	$tmp66	%read{111,111} %write{110,110}
+temp	float	$tmp67	%read{103,103} %write{102,102}
+temp	vector	$tmp68	%read{106,106} %write{103,103}
+temp	float	$tmp69	%read{105,105} %write{104,104}
+temp	vector	$tmp70	%read{106,106} %write{105,105}
+temp	vector	$tmp71	%read{109,109} %write{106,106}
+temp	float	$tmp72	%read{108,108} %write{107,107}
+temp	vector	$tmp73	%read{109,109} %write{108,108}
+temp	vector	$tmp74	%read{110,110} %write{109,109}
+const	normal	$const14	0 0 0		%read{112,681} %write{2147483647,-1}
+temp	int	$tmp76	%read{113,113} %write{112,112}
+temp	int	$tmp77	%read{118,118} %write{117,117}
+temp	int	$tmp78	%read{121,121} %write{120,120}
+const	string	$const15	"oren_nayar"		%read{125,125} %write{2147483647,-1}
+temp	int	$tmp79	%read{130,130} %write{129,129}
+const	float	$const16	0.0799999982		%read{132,233} %write{2147483647,-1}
+temp	float	$tmp80	%read{134,138} %write{132,132}
+const	string	$const17	"EtaFromIntensity"		%read{133,234} %write{2147483647,-1}
+temp	int	$tmp81	%read{135,135} %write{134,134}
+const	int	$const18	500		%read{136,237} %write{2147483647,-1}
+temp	float	$tmp82	%read{141,141} %write{139,139}
+const	float	$const19	1		%read{139,837} %write{2147483647,-1}
+temp	float	$tmp83	%read{141,141} %write{140,140}
+temp	float	$tmp84	%read{143,143} %write{142,142}
+const	float	$const20	0		%read{142,791} %write{2147483647,-1}
+const	float	$const21	0.0250000004		%read{142,142} %write{2147483647,-1}
+temp	float	$tmp85	%read{191,191} %write{190,190}
+temp	float	$tmp86	%read{147,147} %write{145,145}
+temp	vector	$tmp87	%read{145,145} %write{144,144}
+const	string	$const22	"Fresnel_DieletricConductor"		%read{146,245} %write{2147483647,-1}
+temp	int	$tmp88	%read{149,149} %write{148,148}
+temp	float	$tmp89	%read{161,161} %write{159,159}
+temp	float	$tmp90	%read{161,161} %write{160,160}
+temp	float	$tmp91	%read{165,165} %write{162,162}
+const	int	$const23	4		%read{505,518} %write{2147483647,-1}
+temp	float	$tmp92	%read{164,164} %write{163,163}
+const	float	$const24	4		%read{163,262} %write{2147483647,-1}
+temp	float	$tmp93	%read{165,165} %write{164,164}
+temp	float	$tmp94	%read{166,166} %write{165,165}
+temp	float	$tmp95	%read{170,170} %write{168,168}
+temp	float	$tmp96	%read{170,170} %write{169,169}
+const	float	$const25	2		%read{169,572} %write{2147483647,-1}
+temp	float	$tmp97	%read{173,173} %write{171,171}
+temp	float	$tmp98	%read{173,173} %write{172,172}
+temp	float	$tmp99	%read{177,177} %write{176,176}
+temp	float	$tmp100	%read{180,180} %write{178,178}
+temp	float	$tmp101	%read{180,180} %write{179,179}
+temp	float	$tmp102	%read{183,183} %write{181,181}
+temp	float	$tmp103	%read{183,183} %write{182,182}
+temp	float	$tmp104	%read{186,186} %write{185,185}
+temp	float	$tmp105	%read{188,188} %write{186,186}
+temp	float	$tmp106	%read{188,188} %write{187,187}
+const	float	$const26	0.5		%read{190,581} %write{2147483647,-1}
+temp	float	$tmp107	%read{190,190} %write{189,189}
+temp	color	$tmp108	%read{225,225} %write{224,224}
+const	string	$const27	"GetLayerScale"		%read{193,193} %write{2147483647,-1}
+temp	vector	$tmp109	%read{195,195} %write{194,194}
+const	string	$const28	"GetAbsorption"		%read{196,196} %write{2147483647,-1}
+temp	float	$tmp110	%read{200,200} %write{198,198}
+temp	float	$tmp111	%read{198,198} %write{197,197}
+const	float	$const29	9.99999997e-07		%read{201,329} %write{2147483647,-1}
+temp	float	$tmp112	%read{201,201} %write{200,200}
+temp	float	$tmp113	%read{205,205} %write{203,203}
+temp	float	$tmp114	%read{203,203} %write{202,202}
+temp	float	$tmp115	%read{206,206} %write{205,205}
+temp	float	$tmp116	%read{209,209} %write{207,207}
+temp	float	$tmp117	%read{209,209} %write{208,208}
+temp	float	$tmp118	%read{210,210} %write{209,209}
+temp	float	$tmp119	%read{212,212} %write{211,211}
+temp	float	$tmp120	%read{213,213} %write{212,212}
+temp	float	$tmp121	%read{214,214} %write{213,213}
+temp	float	$tmp122	%read{216,216} %write{215,215}
+temp	float	$tmp123	%read{217,217} %write{216,216}
+temp	float	$tmp124	%read{218,218} %write{217,217}
+temp	float	$tmp125	%read{220,220} %write{219,219}
+temp	float	$tmp126	%read{221,221} %write{220,220}
+temp	float	$tmp127	%read{222,222} %write{221,221}
+const	string	$const30	"ggx"		%read{227,791} %write{2147483647,-1}
+const	vector	$const31	0 0 0		%read{227,294} %write{2147483647,-1}
+const	string	$const32	"microfacet"		%read{227,791} %write{2147483647,-1}
+temp	int	$tmp129	%read{231,231} %write{230,230}
+temp	float	$tmp130	%read{235,239} %write{233,233}
+temp	int	$tmp131	%read{236,236} %write{235,235}
+temp	float	$tmp132	%read{242,242} %write{240,240}
+temp	float	$tmp133	%read{242,242} %write{241,241}
+temp	float	$tmp134	%read{290,290} %write{289,289}
+temp	float	$tmp135	%read{246,246} %write{244,244}
+temp	vector	$tmp136	%read{244,244} %write{243,243}
+temp	int	$tmp137	%read{248,248} %write{247,247}
+temp	float	$tmp138	%read{260,260} %write{258,258}
+temp	float	$tmp139	%read{260,260} %write{259,259}
+temp	float	$tmp140	%read{264,264} %write{261,261}
+temp	float	$tmp141	%read{263,263} %write{262,262}
+temp	float	$tmp142	%read{264,264} %write{263,263}
+temp	float	$tmp143	%read{265,265} %write{264,264}
+temp	float	$tmp144	%read{269,269} %write{267,267}
+temp	float	$tmp145	%read{269,269} %write{268,268}
+temp	float	$tmp146	%read{272,272} %write{270,270}
+temp	float	$tmp147	%read{272,272} %write{271,271}
+temp	float	$tmp148	%read{276,276} %write{275,275}
+temp	float	$tmp149	%read{279,279} %write{277,277}
+temp	float	$tmp150	%read{279,279} %write{278,278}
+temp	float	$tmp151	%read{282,282} %write{280,280}
+temp	float	$tmp152	%read{282,282} %write{281,281}
+temp	float	$tmp153	%read{285,285} %write{284,284}
+temp	float	$tmp154	%read{287,287} %write{285,285}
+temp	float	$tmp155	%read{287,287} %write{286,286}
+temp	float	$tmp156	%read{289,289} %write{288,288}
+temp	float	$tmp157	%read{292,292} %write{291,291}
+const	float	$const33	0.0500000007		%read{291,291} %write{2147483647,-1}
+temp	int	$tmp159	%read{299,299} %write{298,298}
+temp	int	$tmp160	%read{300,304} %write{299,303}
+temp	int	$tmp161	%read{302,302} %write{301,301}
+temp	int	$tmp162	%read{303,303} %write{302,302}
+temp	int	$tmp163	%read{308,308} %write{307,307}
+temp	point	$tmp164	%read{330,330} %write{327,327} %derivs
+temp	matrix	$tmp165	%read{326,326} %write{309,309} %derivs
+const	string	$const34	"transformP"		%read{310,310} %write{2147483647,-1}
+const	string	$const35	"Pref"		%read{311,311} %write{2147483647,-1}
+temp	int	$tmp166	%read{313,313} %write{312,312}
+temp	int	$tmp167	%read{315,315} %write{314,314}
+const	string	$const36	"object"		%read{317,319} %write{2147483647,-1}
+const	string	$const37	"transform"		%read{316,324} %write{2147483647,-1}
+const	string	$const38	"common"		%read{317,325} %write{2147483647,-1}
+temp	int	$tmp168	%read{321,321} %write{320,320}
+const	string	$const39	"world"		%read{323,325} %write{2147483647,-1}
+temp	float	$tmp169	%read{330,330} %write{329,329} %derivs
+const	float	$const40	0.00999999978		%read{328,328} %write{2147483647,-1}
+temp	float	$tmp170	%read{329,329} %write{328,328} %derivs
+const	int	$const41	3		%read{345,515} %write{2147483647,-1}
+const	float	$const42	0.800000012		%read{336,336} %write{2147483647,-1}
+const	string	$const43	"worley_noise_multilevel"		%read{334,334} %write{2147483647,-1}
+temp	float	$tmp171	%read{337,337} %write{336,336} %derivs
+const	float	$const44	0.00100000005		%read{336,760} %write{2147483647,-1}
+temp	int	$tmp172	%read{345,558} %write{345,558}
+temp	int	$tmp173	%read{343,558} %write{344,558}
+temp	point	$tmp174	%read{345,558} %write{345,558} %derivs
+temp	point	$tmp175	%read{345,558} %write{345,558} %derivs
+const	int	$const45	1000		%read{355,359} %write{2147483647,-1}
+temp	int	$tmp176	%read{345,558} %write{345,558} %derivs
+temp	float	$tmp177	%read{345,558} %write{345,558} %derivs
+temp	point	$tmp178	%read{345,558} %write{345,558} %derivs
+temp	int	$tmp179	%read{345,558} %write{345,558}
+temp	float	$tmp180	%read{345,558} %write{345,558}
+temp	float	$tmp181	%read{345,558} %write{345,558}
+const	string	$const46	"worley_noise"		%read{362,362} %write{2147483647,-1}
+temp	float	$tmp182	%read{345,558} %write{345,558} %derivs
+temp	float	$tmp183	%read{345,558} %write{345,558} %derivs
+temp	float	$tmp184	%read{345,558} %write{345,558} %derivs
+temp	float	$tmp185	%read{345,558} %write{345,558} %derivs
+temp	float	$tmp186	%read{345,558} %write{345,558} %derivs
+temp	float	$tmp187	%read{345,558} %write{345,558} %derivs
+temp	float	$tmp188	%read{345,558} %write{345,558} %derivs
+temp	float	$tmp189	%read{345,558} %write{345,558} %derivs
+temp	float	$tmp190	%read{345,558} %write{345,558} %derivs
+const	int	$const47	1000000		%read{373,374} %write{2147483647,-1}
+temp	int	$tmp191	%read{345,558} %write{345,558}
+temp	int	$tmp192	%read{345,558} %write{345,558}
+temp	int	$tmp193	%read{345,558} %write{345,558}
+temp	int	$tmp194	%read{345,558} %write{345,558}
+temp	int	$tmp195	%read{345,558} %write{345,558}
+temp	int	$tmp196	%read{345,558} %write{345,558}
+temp	vector	$tmp197	%read{345,558} %write{345,558} %derivs
+temp	float	$tmp198	%read{345,558} %write{345,558} %derivs
+temp	float	$tmp199	%read{345,558} %write{345,558} %derivs
+temp	float	$tmp200	%read{345,558} %write{345,558} %derivs
+const	float	$const48	0.0399999991		%read{392,392} %write{2147483647,-1}
+temp	float	$tmp201	%read{345,558} %write{345,558}
+const	string	$const49	"animatedcellnoise"		%read{393,393} %write{2147483647,-1}
+temp	float	$tmp202	%read{345,558} %write{345,558}
+temp	float	$tmp203	%read{345,558} %write{345,558}
+temp	vector	$tmp204	%read{345,558} %write{345,558}
+temp	vector	$tmp205	%read{345,558} %write{345,558}
+temp	point	$tmp206	%read{345,558} %write{345,558}
+temp	point	$tmp207	%read{345,558} %write{345,558}
+temp	int	$tmp208	%read{345,558} %write{345,558}
+temp	int	$tmp209	%read{345,558} %write{345,558}
+const	string	$const50	"distance_manhattan"		%read{415,415} %write{2147483647,-1}
+temp	float	$tmp210	%read{345,558} %write{345,558}
+temp	float	$tmp211	%read{345,558} %write{345,558}
+temp	float	$tmp212	%read{345,558} %write{345,558}
+temp	float	$tmp213	%read{345,558} %write{345,558}
+temp	float	$tmp214	%read{345,558} %write{345,558}
+temp	float	$tmp215	%read{345,558} %write{345,558}
+temp	float	$tmp216	%read{345,558} %write{345,558}
+temp	float	$tmp217	%read{345,558} %write{345,558}
+temp	float	$tmp218	%read{345,558} %write{345,558}
+temp	float	$tmp219	%read{345,558} %write{345,558}
+temp	float	$tmp220	%read{345,558} %write{345,558}
+temp	float	$tmp221	%read{345,558} %write{345,558}
+temp	float	$tmp222	%read{345,558} %write{345,558}
+temp	int	$tmp223	%read{345,558} %write{345,558}
+const	string	$const51	"distance_chebyshev"		%read{433,433} %write{2147483647,-1}
+temp	float	$tmp224	%read{345,558} %write{345,558}
+temp	float	$tmp225	%read{345,558} %write{345,558}
+temp	float	$tmp226	%read{345,558} %write{345,558}
+temp	float	$tmp227	%read{345,558} %write{345,558}
+temp	float	$tmp228	%read{345,558} %write{345,558}
+temp	float	$tmp229	%read{345,558} %write{345,558}
+temp	float	$tmp230	%read{345,558} %write{345,558}
+temp	int	$tmp231	%read{345,558} %write{345,558}
+const	string	$const52	"distance_minkowski"		%read{446,446} %write{2147483647,-1}
+temp	float	$tmp232	%read{345,558} %write{345,558}
+temp	float	$tmp233	%read{345,558} %write{345,558}
+temp	float	$tmp234	%read{345,558} %write{345,558}
+temp	float	$tmp235	%read{345,558} %write{345,558}
+temp	float	$tmp236	%read{345,558} %write{345,558}
+temp	float	$tmp237	%read{345,558} %write{345,558}
+temp	float	$tmp238	%read{345,558} %write{345,558}
+temp	float	$tmp239	%read{345,558} %write{345,558}
+temp	float	$tmp240	%read{345,558} %write{345,558}
+temp	float	$tmp241	%read{345,558} %write{345,558}
+temp	float	$tmp242	%read{345,558} %write{345,558}
+temp	float	$tmp243	%read{345,558} %write{345,558}
+temp	float	$tmp244	%read{345,558} %write{345,558}
+temp	float	$tmp245	%read{345,558} %write{345,558}
+temp	float	$tmp246	%read{345,558} %write{345,558}
+temp	float	$tmp247	%read{345,558} %write{345,558}
+temp	float	$tmp248	%read{345,558} %write{345,558}
+temp	float	$tmp249	%read{345,558} %write{345,558}
+temp	int	$tmp250	%read{345,558} %write{345,558}
+const	string	$const53	"hash"		%read{475,477} %write{2147483647,-1}
+const	vector	$const54	2 13 511		%read{474,474} %write{2147483647,-1}
+temp	point	$tmp252	%read{345,558} %write{345,558} %derivs
+const	vector	$const55	1 7 1023		%read{476,476} %write{2147483647,-1}
+temp	point	$tmp254	%read{345,558} %write{345,558} %derivs
+temp	int	$tmp255	%read{345,558} %write{345,558}
+const	float	$const56	1.20000005		%read{485,486} %write{2147483647,-1}
+temp	float	$tmp256	%read{345,558} %write{345,558} %derivs
+temp	float	$tmp257	%read{345,558} %write{345,558} %derivs
+temp	float	$tmp258	%read{345,558} %write{345,558} %derivs
+temp	float	$tmp259	%read{345,558} %write{345,558} %derivs
+temp	float	$tmp260	%read{345,558} %write{345,558} %derivs
+temp	int	$tmp261	%read{345,558} %write{345,558}
+temp	int	$tmp262	%read{345,558} %write{345,558}
+temp	float	$tmp263	%read{345,558} %write{345,558}
+temp	float	$tmp264	%read{345,558} %write{345,558}
+temp	float	$tmp265	%read{345,558} %write{345,558}
+temp	float	$tmp266	%read{345,558} %write{345,558}
+temp	int	$tmp267	%read{345,558} %write{345,558}
+temp	int	$tmp268	%read{345,558} %write{345,558}
+temp	float	$tmp269	%read{345,558} %write{345,558}
+temp	float	$tmp270	%read{345,558} %write{345,558}
+temp	float	$tmp271	%read{345,558} %write{345,558}
+temp	int	$tmp272	%read{345,558} %write{345,558}
+temp	int	$tmp273	%read{345,558} %write{345,558}
+temp	int	$tmp274	%read{345,558} %write{345,558}
+const	int	$const57	5		%read{521,521} %write{2147483647,-1}
+temp	int	$tmp275	%read{345,558} %write{345,558}
+temp	float	$tmp276	%read{345,558} %write{345,558}
+temp	int	$tmp277	%read{345,558} %write{345,558}
+temp	int	$tmp278	%read{345,558} %write{345,558}
+temp	int	$tmp279	%read{345,558} %write{345,558}
+temp	int	$tmp280	%read{345,558} %write{345,558}
+temp	float	$tmp281	%read{345,558} %write{345,558}
+temp	float	$tmp282	%read{345,558} %write{345,558}
+temp	float	$tmp283	%read{345,558} %write{345,558} %derivs
+temp	float	$tmp284	%read{345,558} %write{345,558} %derivs
+temp	int	$tmp285	%read{345,558} %write{345,558}
+temp	float	$tmp286	%read{345,558} %write{345,558}
+temp	float	$tmp287	%read{345,558} %write{345,558}
+temp	int	$tmp288	%read{345,558} %write{345,558}
+temp	float	$tmp289	%read{345,558} %write{345,558}
+temp	int	$tmp290	%read{345,558} %write{345,558}
+temp	float	$tmp291	%read{345,558} %write{345,558}
+temp	float	$tmp292	%read{345,558} %write{345,558} %derivs
+temp	float	$tmp293	%read{345,558} %write{345,558} %derivs
+temp	float	$tmp294	%read{345,558} %write{345,558} %derivs
+temp	int	$tmp295	%read{560,560} %write{559,559}
+temp	float	$tmp296	%read{569,569} %write{566,566} %derivs
+temp	float	$tmp297	%read{573,573} %write{567,567} %derivs
+const	string	$const58	"hemisphereCosineWeighted"		%read{568,568} %write{2147483647,-1}
+temp	float	$tmp298	%read{571,571} %write{570,570} %derivs
+temp	float	$tmp299	%read{570,570} %write{569,569} %derivs
+const	float	$const59	3.14159274		%read{572,572} %write{2147483647,-1}
+temp	float	$tmp300	%read{573,573} %write{572,572} %derivs
+temp	float	$tmp301	%read{576,576} %write{574,574} %derivs
+temp	float	$tmp302	%read{576,576} %write{575,575} %derivs
+temp	float	$tmp303	%read{579,579} %write{577,577} %derivs
+temp	float	$tmp304	%read{579,579} %write{578,578} %derivs
+temp	float	$tmp305	%read{582,582} %write{580,580} %derivs
+temp	float	$tmp306	%read{582,582} %write{581,581} %derivs
+const	float	$const60	0.25		%read{583,583} %write{2147483647,-1}
+temp	float	$tmp308	%read{584,584} %write{583,583} %derivs
+temp	int	$tmp309	%read{587,587} %write{586,586}
+temp	float	$tmp310	%read{590,590} %write{589,589} %derivs
+temp	float	$tmp311	%read{593,593} %write{590,590} %derivs
+temp	float	$tmp312	%read{594,594} %write{591,591} %derivs
+temp	float	$tmp313	%read{594,594} %write{593,593} %derivs
+temp	float	$tmp314	%read{596,596} %write{595,595} %derivs
+temp	vector	$tmp315	%read{598,598} %write{597,597}
+temp	float	$tmp316	%read{600,600} %write{599,599}
+temp	int	$tmp317	%read{601,601} %write{600,600}
+temp	normal	$tmp318	%read{605,605} %write{604,604}
+temp	color	$tmp319	%read{604,604} %write{603,603}
+temp	normal	$tmp322	%read{606,606} %write{605,605}
+temp	int	$tmp323	%read{608,608} %write{607,607}
+temp	float	$tmp324	%read{610,610} %write{609,609}
+temp	float	$tmp325	%read{611,611} %write{610,610}
+temp	int	$tmp326	%read{614,614} %write{613,613}
+temp	int	$tmp327	%read{615,619} %write{614,618}
+temp	int	$tmp328	%read{617,617} %write{616,616}
+temp	int	$tmp329	%read{618,618} %write{617,617}
+temp	vector	$tmp330	%read{621,621} %write{620,620}
+temp	vector	$tmp331	%read{623,623} %write{622,622}
+temp	float	$tmp332	%read{632,632} %write{631,631}
+temp	float	$tmp333	%read{627,627} %write{625,625}
+temp	float	$tmp334	%read{627,627} %write{626,626}
+temp	float	$tmp335	%read{631,631} %write{627,627}
+temp	float	$tmp336	%read{630,630} %write{628,628}
+temp	float	$tmp337	%read{630,630} %write{629,629}
+temp	float	$tmp338	%read{631,631} %write{630,630}
+temp	vector	$tmp339	%read{642,642} %write{632,632}
+temp	float	$tmp340	%read{641,641} %write{640,640}
+temp	float	$tmp341	%read{636,636} %write{634,634}
+temp	float	$tmp342	%read{636,636} %write{635,635}
+temp	float	$tmp343	%read{640,640} %write{636,636}
+temp	float	$tmp344	%read{639,639} %write{637,637}
+temp	float	$tmp345	%read{639,639} %write{638,638}
+temp	float	$tmp346	%read{640,640} %write{639,639}
+temp	vector	$tmp347	%read{642,642} %write{641,641}
+temp	vector	$tmp348	%read{645,645} %write{644,644}
+temp	vector	$tmp349	%read{644,644} %write{643,643}
+temp	vector	$tmp350	%read{647,647} %write{646,646}
+temp	float	$tmp351	%read{656,656} %write{655,655}
+temp	float	$tmp352	%read{651,651} %write{649,649}
+temp	float	$tmp353	%read{651,651} %write{650,650}
+temp	float	$tmp354	%read{655,655} %write{651,651}
+temp	float	$tmp355	%read{654,654} %write{652,652}
+temp	float	$tmp356	%read{654,654} %write{653,653}
+temp	float	$tmp357	%read{655,655} %write{654,654}
+temp	vector	$tmp358	%read{666,666} %write{656,656}
+temp	float	$tmp359	%read{665,665} %write{664,664}
+temp	float	$tmp360	%read{660,660} %write{658,658}
+temp	float	$tmp361	%read{660,660} %write{659,659}
+temp	float	$tmp362	%read{664,664} %write{660,660}
+temp	float	$tmp363	%read{663,663} %write{661,661}
+temp	float	$tmp364	%read{663,663} %write{662,662}
+temp	float	$tmp365	%read{664,664} %write{663,663}
+temp	vector	$tmp366	%read{666,666} %write{665,665}
+temp	float	$tmp367	%read{668,668} %write{667,667}
+temp	int	$tmp368	%read{669,669} %write{668,668}
+temp	normal	$tmp369	%read{680,680} %write{679,679}
+temp	float	$tmp370	%read{672,672} %write{671,671}
+temp	vector	$tmp371	%read{675,675} %write{672,672}
+temp	float	$tmp372	%read{674,674} %write{673,673}
+temp	vector	$tmp373	%read{675,675} %write{674,674}
+temp	vector	$tmp374	%read{678,678} %write{675,675}
+temp	float	$tmp375	%read{677,677} %write{676,676}
+temp	vector	$tmp376	%read{678,678} %write{677,677}
+temp	vector	$tmp377	%read{679,679} %write{678,678}
+temp	int	$tmp379	%read{682,682} %write{681,681}
+temp	float	$tmp380	%read{687,687} %write{686,686}
+temp	float	$tmp381	%read{689,689} %write{688,688}
+const	float	$const61	0.270000011		%read{689,689} %write{2147483647,-1}
+temp	float	$tmp382	%read{690,690} %write{689,689}
+const	float	$const62	0.75		%read{690,690} %write{2147483647,-1}
+temp	float	$tmp383	%read{691,691} %write{690,690}
+temp	color	$tmp384	%read{692,692} %write{691,691}
+const	string	$const63	"Gulbrandsen_Mapping"		%read{694,759} %write{2147483647,-1}
+temp	float	$tmp385	%read{700,700} %write{695,695}
+temp	float	$tmp386	%read{707,708} %write{696,696}
+temp	float	$tmp387	%read{700,700} %write{698,698}
+temp	float	$tmp388	%read{701,701} %write{700,700}
+const	string	$const64	"get_n"		%read{702,764} %write{2147483647,-1}
+temp	float	$tmp389	%read{707,707} %write{706,706}
+const	string	$const65	"n_min"		%read{703,765} %write{2147483647,-1}
+temp	float	$tmp390	%read{706,706} %write{704,704}
+temp	float	$tmp391	%read{706,706} %write{705,705}
+temp	float	$tmp392	%read{715,715} %write{707,707}
+temp	float	$tmp393	%read{714,714} %write{708,708}
+temp	float	$tmp394	%read{714,714} %write{713,713}
+const	string	$const66	"n_max"		%read{709,771} %write{2147483647,-1}
+temp	float	$tmp395	%read{713,713} %write{711,711}
+temp	float	$tmp396	%read{713,713} %write{712,712}
+temp	float	$tmp397	%read{715,715} %write{714,714}
+temp	float	$tmp398	%read{725,725} %write{724,724}
+const	string	$const67	"get_k2"		%read{716,778} %write{2147483647,-1}
+temp	float	$tmp399	%read{720,720} %write{719,719}
+temp	float	$tmp400	%read{722,722} %write{720,720}
+temp	float	$tmp401	%read{722,722} %write{721,721}
+temp	float	$tmp402	%read{724,724} %write{723,723}
+temp	float	$tmp403	%read{731,731} %write{726,726}
+temp	float	$tmp404	%read{738,739} %write{727,727}
+temp	float	$tmp405	%read{731,731} %write{729,729}
+temp	float	$tmp406	%read{732,732} %write{731,731}
+temp	float	$tmp407	%read{738,738} %write{737,737}
+temp	float	$tmp408	%read{737,737} %write{735,735}
+temp	float	$tmp409	%read{737,737} %write{736,736}
+temp	float	$tmp410	%read{746,746} %write{738,738}
+temp	float	$tmp411	%read{745,745} %write{739,739}
+temp	float	$tmp412	%read{745,745} %write{744,744}
+temp	float	$tmp413	%read{744,744} %write{742,742}
+temp	float	$tmp414	%read{744,744} %write{743,743}
+temp	float	$tmp415	%read{746,746} %write{745,745}
+temp	float	$tmp416	%read{756,756} %write{755,755}
+temp	float	$tmp417	%read{751,751} %write{750,750}
+temp	float	$tmp418	%read{753,753} %write{751,751}
+temp	float	$tmp419	%read{753,753} %write{752,752}
+temp	float	$tmp420	%read{755,755} %write{754,754}
+temp	float	$tmp421	%read{762,762} %write{757,757}
+temp	float	$tmp422	%read{769,770} %write{758,758}
+temp	float	$tmp423	%read{762,762} %write{760,760}
+temp	float	$tmp424	%read{763,763} %write{762,762}
+temp	float	$tmp425	%read{769,769} %write{768,768}
+temp	float	$tmp426	%read{768,768} %write{766,766}
+temp	float	$tmp427	%read{768,768} %write{767,767}
+temp	float	$tmp428	%read{777,777} %write{769,769}
+temp	float	$tmp429	%read{776,776} %write{770,770}
+temp	float	$tmp430	%read{776,776} %write{775,775}
+temp	float	$tmp431	%read{775,775} %write{773,773}
+temp	float	$tmp432	%read{775,775} %write{774,774}
+temp	float	$tmp433	%read{777,777} %write{776,776}
+temp	float	$tmp434	%read{787,787} %write{786,786}
+temp	float	$tmp435	%read{782,782} %write{781,781}
+temp	float	$tmp436	%read{784,784} %write{782,782}
+temp	float	$tmp437	%read{784,784} %write{783,783}
+temp	float	$tmp438	%read{786,786} %write{785,785}
+temp	vector	$tmp439	%read{791,791} %write{790,790}
+const	string	$const68	"mediumeta"		%read{791,791} %write{2147483647,-1}
+const	string	$const69	"thinfilmeta"		%read{791,791} %write{2147483647,-1}
+const	string	$const70	"realeta"		%read{791,791} %write{2147483647,-1}
+const	string	$const71	"complexeta"		%read{791,791} %write{2147483647,-1}
+const	string	$const72	"thinfilmthickness"		%read{791,791} %write{2147483647,-1}
+temp	float	$tmp440	%read{802,802} %write{801,801}
+const	string	$const73	"CIEluminance"		%read{793,815} %write{2147483647,-1}
+temp	float	$tmp441	%read{795,795} %write{794,794}
+const	float	$const74	0.212670997		%read{795,817} %write{2147483647,-1}
+temp	float	$tmp442	%read{798,798} %write{795,795}
+temp	float	$tmp443	%read{797,797} %write{796,796}
+const	float	$const75	0.715160012		%read{797,819} %write{2147483647,-1}
+temp	float	$tmp444	%read{798,798} %write{797,797}
+temp	float	$tmp445	%read{801,801} %write{798,798}
+temp	float	$tmp446	%read{800,800} %write{799,799}
+const	float	$const76	0.0721689984		%read{800,822} %write{2147483647,-1}
+temp	float	$tmp447	%read{801,801} %write{800,800}
+temp	float	$tmp448	%read{803,803} %write{802,802}
+temp	float	$tmp449	%read{813,813} %write{812,812}
+temp	float	$tmp450	%read{806,806} %write{805,805}
+temp	float	$tmp451	%read{809,809} %write{806,806}
+temp	float	$tmp452	%read{808,808} %write{807,807}
+temp	float	$tmp453	%read{809,809} %write{808,808}
+temp	float	$tmp454	%read{812,812} %write{809,809}
+temp	float	$tmp455	%read{811,811} %write{810,810}
+temp	float	$tmp456	%read{812,812} %write{811,811}
+temp	float	$tmp457	%read{814,814} %write{813,813}
+temp	float	$tmp458	%read{824,824} %write{823,823}
+temp	float	$tmp459	%read{817,817} %write{816,816}
+temp	float	$tmp460	%read{820,820} %write{817,817}
+temp	float	$tmp461	%read{819,819} %write{818,818}
+temp	float	$tmp462	%read{820,820} %write{819,819}
+temp	float	$tmp463	%read{823,823} %write{820,820}
+temp	float	$tmp464	%read{822,822} %write{821,821}
+temp	float	$tmp465	%read{823,823} %write{822,822}
+temp	float	$tmp466	%read{825,825} %write{824,824}
+temp	int	$tmp467	%read{827,827} %write{826,826}
+const	string	$const77	"shadow"		%read{826,826} %write{2147483647,-1}
+const	string	$const78	"diffuse"		%read{833,833} %write{2147483647,-1}
+temp	closure color	$tmp468	%read{830,830} %write{829,829}
+temp	closure color	$tmp469	%read{832,832} %write{830,830}
+temp	float	$tmp470	%read{832,832} %write{831,831}
+temp	closure color	$tmp471	%read{833,833} %write{832,832}
+const	string	$const79	"outputvariable"		%read{833,844} %write{2147483647,-1}
+const	string	$const80	"reflection"		%read{844,844} %write{2147483647,-1}
+temp	closure color	$tmp472	%read{839,839} %write{834,834}
+temp	closure color	$tmp473	%read{836,836} %write{835,835}
+temp	closure color	$tmp474	%read{838,838} %write{836,836}
+temp	float	$tmp475	%read{838,838} %write{837,837}
+temp	closure color	$tmp476	%read{839,839} %write{838,838}
+temp	closure color	$tmp477	%read{843,843} %write{839,839}
+temp	closure color	$tmp478	%read{841,841} %write{840,840}
+temp	closure color	$tmp479	%read{842,842} %write{841,841}
+temp	closure color	$tmp480	%read{843,843} %write{842,842}
+temp	closure color	$tmp481	%read{844,844} %write{843,843}
+code disp_normal_bump_value
+# ../../osl_shaders/dlCarPaint.osl:121
+# 	DECLARE_DISP_NORMALMAP_BUMP
+	assign		disp_normal_bump_value N 	%filename{"../../osl_shaders/dlCarPaint.osl"} %line{121} %argrw{"wr"}
+code ___main___
+# ../../osl_shaders/dlCarPaint.osl:130
+# 	GET_UV(ss,tt)
+	aref		ss uvCoord $const1 	%filename{"../../osl_shaders/dlCarPaint.osl"} %line{130} %argrw{"wrr"}
+	aref		tt uvCoord $const2 	%argrw{"wrr"}
+# ../../osl_shaders/dlCarPaint.osl:132
+# 	normal Nn = normalize(N);
+	normalize	Nn N 	%line{132} %argrw{"wr"}
+# ../../osl_shaders/dlCarPaint.osl:133
+# 	normal N_normal_bump = Nn;
+	assign		N_normal_bump Nn 	%line{133} %argrw{"wr"}
+# ../../osl_shaders/dlCarPaint.osl:134
+# 	normal Nn_coating = Nn;
+	assign		Nn_coating Nn 	%line{134} %argrw{"wr"}
+# ../../osl_shaders/dlCarPaint.osl:135
+# 	normal Nn_base = Nn;
+	assign		Nn_base Nn 	%line{135} %argrw{"wr"}
+# ../../osl_shaders/dlCarPaint.osl:137
+# 	COMPUTE_DISP_NORMALMAP_BUMP(N_normal_bump,ss,tt,Nn)
+	isconnected	$tmp1 disp_normal_bump_value 	%line{137} %argrw{"wr"}
+	neq		$tmp2 $tmp1 $const1 	%argrw{"wrr"}
+	if		$tmp2 13 13 	%argrw{"r"}
+	neq		$tmp3 disp_normal_bump_intensity $const1 	%argrw{"wrr"}
+	neq		$tmp4 $tmp3 $const1 	%argrw{"wrr"}
+	assign		$tmp2 $tmp4 	%argrw{"wr"}
+	if		$tmp2 117 117 	%argrw{"r"}
+	le		$tmp5 disp_normal_bump_type $const3 	%argrw{"wrr"}
+	if		$tmp5 117 117 	%argrw{"r"}
+	functioncall	$const4 117 	%argrw{"r"}
+# W:/r2d2\src\osl_shaders\material_common.h:265
+# 	if (i_type == 0) // Bump
+	eq		$tmp6 disp_normal_bump_type $const1 	%filename{"W:/r2d2\src\osl_shaders\material_common.h"} %line{265} %argrw{"wrr"}
+	if		$tmp6 34 43 	%argrw{"r"}
+# W:/r2d2\src\osl_shaders\material_common.h:267
+# 		float depth = abs( i_intensity );
+	abs		___476_depth disp_normal_bump_intensity 	%line{267} %argrw{"wr"}
+# W:/r2d2\src\osl_shaders\material_common.h:268
+# 		float offset = clamp( i_value[0] * i_intensity, -depth, depth );
+	compref		$tmp7 disp_normal_bump_value $const1 	%line{268} %argrw{"wrr"}
+	mul		$tmp8 $tmp7 disp_normal_bump_intensity 	%argrw{"wrr"}
+	neg		$tmp9 ___476_depth 	%argrw{"wr"}
+	functioncall	$const5 26 	%argrw{"r"}
+# W:/r2d2\src\3delight\win64-x64-release-free\osl\stdosl.h:163
+# float  clamp (float x, float minval, float maxval) { return max(min(x,maxval),minval); }
+	min		$tmp10 $tmp8 ___476_depth 	%filename{"W:/r2d2\src\3delight\win64-x64-release-free\osl\stdosl.h"} %line{163} %argrw{"wrr"}
+	max		___476_offset $tmp10 $tmp9 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\material_common.h:269
+# 		point pb = point( i_s, i_t, 0.004 * offset );
+	mul		$tmp11 $const6 ___476_offset 	%filename{"W:/r2d2\src\osl_shaders\material_common.h"} %line{269} %argrw{"wrr"}
+	point		___476_pb ss tt $tmp11 	%argrw{"wrrr"}
+# W:/r2d2\src\osl_shaders\material_common.h:270
+# 		N_result = normalize( calculatenormal( pb ) );
+	calculatenormal	$tmp12 ___476_pb 	%line{270} %argrw{"wr"} %argderivs{1}
+	normalize	___475_N_result $tmp12 	%argrw{"wr"}
+# W:/r2d2\src\osl_shaders\material_common.h:275
+# 		if ( N_result[2] < 0 )
+	compref		$tmp13 ___475_N_result $const3 	%line{275} %argrw{"wrr"}
+	lt		$tmp14 $tmp13 $const1 	%argrw{"wrr"}
+	if		$tmp14 34 34 	%argrw{"r"}
+# W:/r2d2\src\osl_shaders\material_common.h:277
+# 			N_result = -N_result;
+	neg		___475_N_result ___475_N_result 	%line{277} %argrw{"wr"}
+# W:/r2d2\src\osl_shaders\material_common.h:282
+# 		N_result = normal(normal(mix(color(0.5,0.5,1),i_value,i_intensity)) - vector(0.5));
+	mix		$tmp16 $const7 disp_normal_bump_value disp_normal_bump_intensity 	%line{282} %argrw{"wrrr"}
+	assign		$tmp15 $tmp16 	%argrw{"wr"}
+	sub		$tmp19 $tmp15 $const8 	%argrw{"wrr"}
+	assign		___475_N_result $tmp19 	%argrw{"wr"}
+# W:/r2d2\src\osl_shaders\material_common.h:284
+# 		if (i_type == 1) // DirectX Normal Map
+	eq		$tmp20 disp_normal_bump_type $const2 	%line{284} %argrw{"wrr"}
+	if		$tmp20 43 43 	%argrw{"r"}
+# W:/r2d2\src\osl_shaders\material_common.h:285
+# 			N_result[1] *= -1;
+	compref		$tmp21 ___475_N_result $const2 	%line{285} %argrw{"wrr"}
+	mul		$tmp22 $tmp21 $const10 	%argrw{"wrr"}
+	compassign	___475_N_result $const2 $tmp22 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\material_common.h:289
+# 	vector basisz = i_N;
+	assign		___475_basisz Nn 	%line{289} %argrw{"wr"}
+# W:/r2d2\src\osl_shaders\material_common.h:292
+# 	if( getattribute("tangent:st", 0, stangent) && stangent != 0 )
+	getattribute	$tmp23 $const11 $const1 ___475_stangent 	%line{292} %argrw{"wrrw"}
+	neq		$tmp24 $tmp23 $const1 	%argrw{"wrr"}
+	if		$tmp24 50 50 	%argrw{"r"}
+	neq		$tmp25 ___475_stangent $const1 	%argrw{"wrr"}
+	neq		$tmp26 $tmp25 $const1 	%argrw{"wrr"}
+	assign		$tmp24 $tmp26 	%argrw{"wr"}
+	if		$tmp24 55 102 	%argrw{"r"}
+# W:/r2d2\src\osl_shaders\material_common.h:294
+# 		basisy = normalize( cross( basisz, stangent ) );
+	cross		$tmp27 ___475_basisz ___475_stangent 	%line{294} %argrw{"wrr"}
+	normalize	___475_basisy $tmp27 	%argrw{"wr"}
+# W:/r2d2\src\osl_shaders\material_common.h:295
+# 		basisx = normalize( cross( basisy, basisz ) );
+	cross		$tmp28 ___475_basisy ___475_basisz 	%line{295} %argrw{"wrr"}
+	normalize	___475_basisx $tmp28 	%argrw{"wr"}
+# W:/r2d2\src\osl_shaders\material_common.h:299
+# 		basisy = Du(i_t) * dPdu + Dv(i_t) * dPdv;
+	functioncall	$const12 63 	%line{299} %argrw{"r"}
+# W:/r2d2\src\osl_shaders\utils.h:232
+# 	return Dx(a)/Dx(u) + Dy(a)/Dy(u);
+	Dx		$tmp30 tt 	%filename{"W:/r2d2\src\osl_shaders\utils.h"} %line{232} %argrw{"wr"} %argderivs{1}
+	Dx		$tmp31 u 	%argrw{"wr"} %argderivs{1}
+	div		$tmp32 $tmp30 $tmp31 	%argrw{"wrr"}
+	Dy		$tmp33 tt 	%argrw{"wr"} %argderivs{1}
+	Dy		$tmp34 u 	%argrw{"wr"} %argderivs{1}
+	div		$tmp35 $tmp33 $tmp34 	%argrw{"wrr"}
+	add		$tmp29 $tmp32 $tmp35 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\material_common.h:299
+# 		basisy = Du(i_t) * dPdu + Dv(i_t) * dPdv;
+	mul		$tmp36 $tmp29 dPdu 	%filename{"W:/r2d2\src\osl_shaders\material_common.h"} %line{299} %argrw{"wrr"}
+	functioncall	$const13 72 	%argrw{"r"}
+# W:/r2d2\src\osl_shaders\utils.h:244
+# 	return Dx(a)/Dx(v) + Dy(a)/Dy(v);
+	Dx		$tmp38 tt 	%filename{"W:/r2d2\src\osl_shaders\utils.h"} %line{244} %argrw{"wr"} %argderivs{1}
+	Dx		$tmp39 v 	%argrw{"wr"} %argderivs{1}
+	div		$tmp40 $tmp38 $tmp39 	%argrw{"wrr"}
+	Dy		$tmp41 tt 	%argrw{"wr"} %argderivs{1}
+	Dy		$tmp42 v 	%argrw{"wr"} %argderivs{1}
+	div		$tmp43 $tmp41 $tmp42 	%argrw{"wrr"}
+	add		$tmp37 $tmp40 $tmp43 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\material_common.h:299
+# 		basisy = Du(i_t) * dPdu + Dv(i_t) * dPdv;
+	mul		$tmp44 $tmp37 dPdv 	%filename{"W:/r2d2\src\osl_shaders\material_common.h"} %line{299} %argrw{"wrr"}
+	add		___475_basisy $tmp36 $tmp44 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\material_common.h:300
+# 		basisy = normalize( cross(basisz, cross(basisy, basisz)) );
+	cross		$tmp46 ___475_basisy ___475_basisz 	%line{300} %argrw{"wrr"}
+	cross		$tmp45 ___475_basisz $tmp46 	%argrw{"wrr"}
+	normalize	___475_basisy $tmp45 	%argrw{"wr"}
+# W:/r2d2\src\osl_shaders\material_common.h:301
+# 		basisx = normalize( cross( basisy, basisz ) );
+	cross		$tmp47 ___475_basisy ___475_basisz 	%line{301} %argrw{"wrr"}
+	normalize	___475_basisx $tmp47 	%argrw{"wr"}
+# W:/r2d2\src\osl_shaders\material_common.h:304
+# 		vector uorient = Du(i_s) * dPdu + Dv(i_s) * dPdv;
+	functioncall	$const12 87 	%line{304} %argrw{"r"}
+# W:/r2d2\src\osl_shaders\utils.h:232
+# 	return Dx(a)/Dx(u) + Dy(a)/Dy(u);
+	Dx		$tmp49 ss 	%filename{"W:/r2d2\src\osl_shaders\utils.h"} %line{232} %argrw{"wr"} %argderivs{1}
+	Dx		$tmp50 u 	%argrw{"wr"} %argderivs{1}
+	div		$tmp51 $tmp49 $tmp50 	%argrw{"wrr"}
+	Dy		$tmp52 ss 	%argrw{"wr"} %argderivs{1}
+	Dy		$tmp53 u 	%argrw{"wr"} %argderivs{1}
+	div		$tmp54 $tmp52 $tmp53 	%argrw{"wrr"}
+	add		$tmp48 $tmp51 $tmp54 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\material_common.h:304
+# 		vector uorient = Du(i_s) * dPdu + Dv(i_s) * dPdv;
+	mul		$tmp55 $tmp48 dPdu 	%filename{"W:/r2d2\src\osl_shaders\material_common.h"} %line{304} %argrw{"wrr"}
+	functioncall	$const13 96 	%argrw{"r"}
+# W:/r2d2\src\osl_shaders\utils.h:244
+# 	return Dx(a)/Dx(v) + Dy(a)/Dy(v);
+	Dx		$tmp57 ss 	%filename{"W:/r2d2\src\osl_shaders\utils.h"} %line{244} %argrw{"wr"} %argderivs{1}
+	Dx		$tmp58 v 	%argrw{"wr"} %argderivs{1}
+	div		$tmp59 $tmp57 $tmp58 	%argrw{"wrr"}
+	Dy		$tmp60 ss 	%argrw{"wr"} %argderivs{1}
+	Dy		$tmp61 v 	%argrw{"wr"} %argderivs{1}
+	div		$tmp62 $tmp60 $tmp61 	%argrw{"wrr"}
+	add		$tmp56 $tmp59 $tmp62 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\material_common.h:304
+# 		vector uorient = Du(i_s) * dPdu + Dv(i_s) * dPdv;
+	mul		$tmp63 $tmp56 dPdv 	%filename{"W:/r2d2\src\osl_shaders\material_common.h"} %line{304} %argrw{"wrr"}
+	add		___480_uorient $tmp55 $tmp63 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\material_common.h:305
+# 		if( dot( basisx, uorient ) < 0 )
+	dot		$tmp64 ___475_basisx ___480_uorient 	%line{305} %argrw{"wrr"}
+	lt		$tmp65 $tmp64 $const1 	%argrw{"wrr"}
+	if		$tmp65 102 102 	%argrw{"r"}
+# W:/r2d2\src\osl_shaders\material_common.h:307
+# 			basisx = -basisx;
+	neg		___475_basisx ___475_basisx 	%line{307} %argrw{"wr"}
+# W:/r2d2\src\osl_shaders\material_common.h:312
+# 		N_result[0] * basisx +
+	compref		$tmp67 ___475_N_result $const1 	%line{312} %argrw{"wrr"}
+	mul		$tmp68 $tmp67 ___475_basisx 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\material_common.h:313
+# 		N_result[1] * basisy +
+	compref		$tmp69 ___475_N_result $const2 	%line{313} %argrw{"wrr"}
+	mul		$tmp70 $tmp69 ___475_basisy 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\material_common.h:312
+# 		N_result[0] * basisx +
+	add		$tmp71 $tmp68 $tmp70 	%line{312} %argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\material_common.h:314
+# 		N_result[2] * basisz ));
+	compref		$tmp72 ___475_N_result $const3 	%line{314} %argrw{"wrr"}
+	mul		$tmp73 $tmp72 ___475_basisz 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\material_common.h:313
+# 		N_result[1] * basisy +
+	add		$tmp74 $tmp71 $tmp73 	%line{313} %argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\material_common.h:311
+# 	N_result = normalize(normal(
+	assign		$tmp66 $tmp74 	%line{311} %argrw{"wr"}
+	normalize	___475_N_result $tmp66 	%argrw{"wr"}
+# W:/r2d2\src\osl_shaders\material_common.h:316
+# 	if( N_result == normal(0) )
+	eq		$tmp76 ___475_N_result $const14 	%line{316} %argrw{"wrr"}
+	if		$tmp76 116 116 	%argrw{"r"}
+# W:/r2d2\src\osl_shaders\material_common.h:317
+# 		return i_N;
+	assign		N_normal_bump Nn 	%line{317} %argrw{"wr"}
+	return
+# W:/r2d2\src\osl_shaders\material_common.h:319
+# 	return N_result;
+	assign		N_normal_bump ___475_N_result 	%line{319} %argrw{"wr"}
+# ../../osl_shaders/dlCarPaint.osl:138
+# 	COMPUTE_NORMALMAP_BUMP_LAYER_AFFECT(N_normal_bump,Nn_coating,Nn_base)
+	neq		$tmp77 normal_bump_affect_layer $const3 	%filename{"../../osl_shaders/dlCarPaint.osl"} %line{138} %argrw{"wrr"}
+	if		$tmp77 120 120 	%argrw{"r"}
+	assign		Nn_coating N_normal_bump 	%argrw{"wr"}
+	neq		$tmp78 normal_bump_affect_layer $const2 	%argrw{"wrr"}
+	if		$tmp78 123 123 	%argrw{"r"}
+	assign		Nn_base N_normal_bump 	%argrw{"wr"}
+# ../../osl_shaders/dlCarPaint.osl:140
+# 	vector In = normalize(I);
+	normalize	In I 	%line{140} %argrw{"wr"}
+# ../../osl_shaders/dlCarPaint.osl:143
+# 	color diffuse_color = i_color;
+	assign		diffuse_color i_color 	%line{143} %argrw{"wr"}
+# ../../osl_shaders/dlCarPaint.osl:147
+# 	c_diffuse = oren_nayar(Nn_base, roughness);
+	closure		c_diffuse $const15 Nn_base roughness 	%line{147} %argrw{"wrrr"}
+# ../../osl_shaders/dlCarPaint.osl:150
+# 	closure color c_coating = 0;
+	assign		c_coating $const1 	%line{150} %argrw{"wr"}
+# ../../osl_shaders/dlCarPaint.osl:151
+# 	color _coating_color = 0;
+	assign		_coating_color $const1 	%line{151} %argrw{"wr"}
+# ../../osl_shaders/dlCarPaint.osl:152
+# 	color coating_absorbed = 1;
+	assign		coating_absorbed $const2 	%line{152} %argrw{"wr"}
+# ../../osl_shaders/dlCarPaint.osl:154
+# 	if( coating_thickness != 0 )
+	neq		$tmp79 coating_thickness $const1 	%line{154} %argrw{"wrr"}
+	if		$tmp79 228 228 	%argrw{"r"}
+# ../../osl_shaders/dlCarPaint.osl:156
+# 		_coating_color = 1;
+	assign		_coating_color $const2 	%line{156} %argrw{"wr"}
+# ../../osl_shaders/dlCarPaint.osl:158
+# 		float coating_ior = EtaFromIntensity( coating_specular_level * 0.08 );
+	mul		$tmp80 coating_specular_level $const16 	%line{158} %argrw{"wrr"}
+	functioncall	$const17 142 	%argrw{"r"}
+# W:/r2d2\src\osl_shaders\material_common.h:171
+# 	if( x >= 1 )
+	ge		$tmp81 $tmp80 $const2 	%filename{"W:/r2d2\src\osl_shaders\material_common.h"} %line{171} %argrw{"wrr"}
+	if		$tmp81 138 138 	%argrw{"r"}
+# W:/r2d2\src\osl_shaders\material_common.h:174
+# 		return 500;
+	assign		___499_coating_ior $const18 	%line{174} %argrw{"wr"}
+	return
+# W:/r2d2\src\osl_shaders\material_common.h:177
+# 	float T = sqrt( x );
+	sqrt		___471_T $tmp80 	%line{177} %argrw{"wr"}
+# W:/r2d2\src\osl_shaders\material_common.h:178
+# 	return (T+1) / (1-T);
+	add		$tmp82 ___471_T $const19 	%line{178} %argrw{"wrr"}
+	sub		$tmp83 $const19 ___471_T 	%argrw{"wrr"}
+	div		___499_coating_ior $tmp82 $tmp83 	%argrw{"wrr"}
+# ../../osl_shaders/dlCarPaint.osl:159
+# 		coating_ior = mix(1, coating_ior, smoothstep(0.0, 0.025, coating_thickness));
+	smoothstep	$tmp84 $const20 $const21 coating_thickness 	%filename{"../../osl_shaders/dlCarPaint.osl"} %line{159} %argrw{"wrrr"}
+	mix		___499_coating_ior $const19 ___499_coating_ior $tmp84 	%argrw{"wrrr"}
+# ../../osl_shaders/dlCarPaint.osl:163
+# 				coating_ior, 0, 1, dot(-In, Nn_coating) );
+	neg		$tmp87 In 	%line{163} %argrw{"wr"}
+	dot		$tmp86 $tmp87 Nn_coating 	%argrw{"wrr"}
+# ../../osl_shaders/dlCarPaint.osl:162
+# 			Fresnel_DieletricConductor(
+	functioncall	$const22 191 	%line{162} %argrw{"r"}
+# W:/r2d2\src\osl_shaders\material_common.h:113
+# 	float cos_theta = i_cos_theta;
+	assign		___468_cos_theta $tmp86 	%filename{"W:/r2d2\src\osl_shaders\material_common.h"} %line{113} %argrw{"wr"}
+# W:/r2d2\src\osl_shaders\material_common.h:115
+# 	if( cos_theta >= 0 )
+	ge		$tmp88 ___468_cos_theta $const1 	%line{115} %argrw{"wrr"}
+	if		$tmp88 152 155 	%argrw{"r"}
+# W:/r2d2\src\osl_shaders\material_common.h:117
+# 		n = i_n;
+	assign		___468_n ___499_coating_ior 	%line{117} %argrw{"wr"}
+# W:/r2d2\src\osl_shaders\material_common.h:118
+# 		ni = i_ni;
+	assign		___468_ni $const19 	%line{118} %argrw{"wr"}
+# W:/r2d2\src\osl_shaders\material_common.h:122
+# 		n = i_ni;
+	assign		___468_n $const19 	%line{122} %argrw{"wr"}
+# W:/r2d2\src\osl_shaders\material_common.h:123
+# 		ni = i_n;
+	assign		___468_ni ___499_coating_ior 	%line{123} %argrw{"wr"}
+# W:/r2d2\src\osl_shaders\material_common.h:125
+# 		cos_theta = -cos_theta;
+	neg		___468_cos_theta ___468_cos_theta 	%line{125} %argrw{"wr"}
+# W:/r2d2\src\osl_shaders\material_common.h:128
+# 	float cos2_theta = cos_theta * cos_theta;
+	mul		___468_cos2_theta ___468_cos_theta ___468_cos_theta 	%line{128} %argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\material_common.h:129
+# 	float sin2_theta = 1 - cos2_theta;
+	sub		___468_sin2_theta $const19 ___468_cos2_theta 	%line{129} %argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\material_common.h:130
+# 	float n2 = n * n;
+	mul		___468_n2 ___468_n ___468_n 	%line{130} %argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\material_common.h:131
+# 	float ni2 = ni * ni;
+	mul		___468_ni2 ___468_ni ___468_ni 	%line{131} %argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\material_common.h:133
+# 	float t0 = n2 - i_k2 - ni2 * sin2_theta;
+	sub		$tmp89 ___468_n2 $const20 	%line{133} %argrw{"wrr"}
+	mul		$tmp90 ___468_ni2 ___468_sin2_theta 	%argrw{"wrr"}
+	sub		___468_t0 $tmp89 $tmp90 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\material_common.h:134
+# 	float t1 = sqrt( t0 * t0 + 4 * n2 * i_k2 );
+	mul		$tmp91 ___468_t0 ___468_t0 	%line{134} %argrw{"wrr"}
+	mul		$tmp92 $const24 ___468_n2 	%argrw{"wrr"}
+	mul		$tmp93 $tmp92 $const20 	%argrw{"wrr"}
+	add		$tmp94 $tmp91 $tmp93 	%argrw{"wrr"}
+	sqrt		___468_t1 $tmp94 	%argrw{"wr"}
+# W:/r2d2\src\osl_shaders\material_common.h:135
+# 	float a2plusb2 = t1 / ni2;
+	div		___468_a2plusb2 ___468_t1 ___468_ni2 	%line{135} %argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\material_common.h:136
+# 	float a2 = ( t1 + t0 ) / ( 2 * ni2 );
+	add		$tmp95 ___468_t1 ___468_t0 	%line{136} %argrw{"wrr"}
+	mul		$tmp96 $const25 ___468_ni2 	%argrw{"wrr"}
+	div		___468_a2 $tmp95 $tmp96 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\material_common.h:137
+# 	float b2 = ( t1 - t0 ) / ( 2 * ni2 );
+	sub		$tmp97 ___468_t1 ___468_t0 	%line{137} %argrw{"wrr"}
+	mul		$tmp98 $const25 ___468_ni2 	%argrw{"wrr"}
+	div		___468_b2 $tmp97 $tmp98 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\material_common.h:138
+# 	float a = sqrt( a2 );
+	sqrt		___468_a ___468_a2 	%line{138} %argrw{"wr"}
+# W:/r2d2\src\osl_shaders\material_common.h:140
+# 	float t2 = a2plusb2 + cos2_theta;
+	add		___468_t2 ___468_a2plusb2 ___468_cos2_theta 	%line{140} %argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\material_common.h:141
+# 	float t3 = 2 * a * cos_theta;
+	mul		$tmp99 $const25 ___468_a 	%line{141} %argrw{"wrr"}
+	mul		___468_t3 $tmp99 ___468_cos_theta 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\material_common.h:142
+# 	float R_s = (t2 - t3) / (t2 + t3);
+	sub		$tmp100 ___468_t2 ___468_t3 	%line{142} %argrw{"wrr"}
+	add		$tmp101 ___468_t2 ___468_t3 	%argrw{"wrr"}
+	div		___468_R_s $tmp100 $tmp101 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\material_common.h:144
+# 	float t4 = cos2_theta * a2plusb2 + sin2_theta * sin2_theta;
+	mul		$tmp102 ___468_cos2_theta ___468_a2plusb2 	%line{144} %argrw{"wrr"}
+	mul		$tmp103 ___468_sin2_theta ___468_sin2_theta 	%argrw{"wrr"}
+	add		___468_t4 $tmp102 $tmp103 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\material_common.h:145
+# 	float t5 = t3 * sin2_theta;
+	mul		___468_t5 ___468_t3 ___468_sin2_theta 	%line{145} %argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\material_common.h:146
+# 	float R_p = R_s * (t4 - t5) / (t4 + t5);
+	sub		$tmp104 ___468_t4 ___468_t5 	%line{146} %argrw{"wrr"}
+	mul		$tmp105 ___468_R_s $tmp104 	%argrw{"wrr"}
+	add		$tmp106 ___468_t4 ___468_t5 	%argrw{"wrr"}
+	div		___468_R_p $tmp105 $tmp106 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\material_common.h:148
+# 	return 0.5 * (R_p + R_s);
+	add		$tmp107 ___468_R_p ___468_R_s 	%line{148} %argrw{"wrr"}
+	mul		$tmp85 $const26 $tmp107 	%argrw{"wrr"}
+# ../../osl_shaders/dlCarPaint.osl:163
+# 				coating_ior, 0, 1, dot(-In, Nn_coating) );
+	mul		_coating_color _coating_color $tmp85 	%filename{"../../osl_shaders/dlCarPaint.osl"} %line{163} %argrw{"wrr"}
+# ../../osl_shaders/dlCarPaint.osl:168
+# 		color coating_absorbtion = 1 - coating_color;
+	sub		___499_coating_absorbtion $const19 coating_color 	%line{168} %argrw{"wrr"}
+# ../../osl_shaders/dlCarPaint.osl:171
+# 			GetLayerScale(
+	functioncall	$const27 225 	%line{171} %argrw{"r"}
+# W:/r2d2\src\osl_shaders\material_common.h:223
+# 	vector H = normalize( i_L + i_V );
+	add		$tmp109 In In 	%filename{"W:/r2d2\src\osl_shaders\material_common.h"} %line{223} %argrw{"wrr"}
+	normalize	___474_H $tmp109 	%argrw{"wr"}
+# W:/r2d2\src\osl_shaders\material_common.h:227
+# 		GetAbsorption(
+	functioncall	$const28 224 	%line{227} %argrw{"r"}
+# W:/r2d2\src\osl_shaders\material_common.h:194
+# 	float vdotn = clamp(abs( dot(V, Nn) ), EPSILON, 1.0);
+	dot		$tmp111 In Nn_coating 	%line{194} %argrw{"wrr"}
+	abs		$tmp110 $tmp111 	%argrw{"wr"}
+	functioncall	$const5 202 	%argrw{"r"}
+# W:/r2d2\src\3delight\win64-x64-release-free\osl\stdosl.h:163
+# float  clamp (float x, float minval, float maxval) { return max(min(x,maxval),minval); }
+	min		$tmp112 $tmp110 $const19 	%filename{"W:/r2d2\src\3delight\win64-x64-release-free\osl\stdosl.h"} %line{163} %argrw{"wrr"}
+	max		___473_vdotn $tmp112 $const29 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\material_common.h:195
+# 	float ldotn = clamp(abs( dot(Ln,Nn) ), EPSILON, 1.0);
+	dot		$tmp114 In Nn_coating 	%filename{"W:/r2d2\src\osl_shaders\material_common.h"} %line{195} %argrw{"wrr"}
+	abs		$tmp113 $tmp114 	%argrw{"wr"}
+	functioncall	$const5 207 	%argrw{"r"}
+# W:/r2d2\src\3delight\win64-x64-release-free\osl\stdosl.h:163
+# float  clamp (float x, float minval, float maxval) { return max(min(x,maxval),minval); }
+	min		$tmp115 $tmp113 $const19 	%filename{"W:/r2d2\src\3delight\win64-x64-release-free\osl\stdosl.h"} %line{163} %argrw{"wrr"}
+	max		___473_ldotn $tmp115 $const29 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\material_common.h:199
+# 	float l = d*(1.0/vdotn + 1.0/ldotn);
+	div		$tmp116 $const19 ___473_vdotn 	%filename{"W:/r2d2\src\osl_shaders\material_common.h"} %line{199} %argrw{"wrr"}
+	div		$tmp117 $const19 ___473_ldotn 	%argrw{"wrr"}
+	add		$tmp118 $tmp116 $tmp117 	%argrw{"wrr"}
+	mul		___473_l coating_thickness $tmp118 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\material_common.h:201
+# 	float r = exp( -alpha[0]*l );
+	compref		$tmp119 ___499_coating_absorbtion $const1 	%line{201} %argrw{"wrr"}
+	neg		$tmp120 $tmp119 	%argrw{"wr"}
+	mul		$tmp121 $tmp120 ___473_l 	%argrw{"wrr"}
+	exp		___473_r $tmp121 	%argrw{"wr"}
+# W:/r2d2\src\osl_shaders\material_common.h:202
+# 	float g = exp( -alpha[1]*l );
+	compref		$tmp122 ___499_coating_absorbtion $const2 	%line{202} %argrw{"wrr"}
+	neg		$tmp123 $tmp122 	%argrw{"wr"}
+	mul		$tmp124 $tmp123 ___473_l 	%argrw{"wrr"}
+	exp		___473_g $tmp124 	%argrw{"wr"}
+# W:/r2d2\src\osl_shaders\material_common.h:203
+# 	float b = exp( -alpha[2]*l );
+	compref		$tmp125 ___499_coating_absorbtion $const3 	%line{203} %argrw{"wrr"}
+	neg		$tmp126 $tmp125 	%argrw{"wr"}
+	mul		$tmp127 $tmp126 ___473_l 	%argrw{"wrr"}
+	exp		___473_b $tmp127 	%argrw{"wr"}
+# W:/r2d2\src\osl_shaders\material_common.h:205
+# 	return color(r,g,b);
+	color		___474_absorpt_term ___473_r ___473_g ___473_b 	%line{205} %argrw{"wrrr"}
+# W:/r2d2\src\osl_shaders\material_common.h:251
+# 	return absorpt_term;
+	assign		$tmp108 ___474_absorpt_term 	%line{251} %argrw{"wr"}
+# ../../osl_shaders/dlCarPaint.osl:176
+# 					coating_thickness);
+	mul		coating_absorbed coating_absorbed $tmp108 	%filename{"../../osl_shaders/dlCarPaint.osl"} %line{176} %argrw{"wrr"}
+# ../../osl_shaders/dlCarPaint.osl:178
+# 		float _coating_roughness = coating_roughness * coating_roughness;
+	mul		___499__coating_roughness coating_roughness coating_roughness 	%line{178} %argrw{"wrr"}
+# ../../osl_shaders/dlCarPaint.osl:181
+# 			microfacet(
+	closure		c_coating $const32 $const30 Nn_coating $const31 ___499__coating_roughness ___499__coating_roughness ___499_coating_ior $const1 	%line{181} %argrw{"wrrrrrrrr"}
+# ../../osl_shaders/dlCarPaint.osl:190
+# 	closure color c_reflect = 0;
+	assign		c_reflect $const1 	%line{190} %argrw{"wr"}
+# ../../osl_shaders/dlCarPaint.osl:191
+# 	color _reflect_color = 0;
+	assign		_reflect_color $const1 	%line{191} %argrw{"wr"}
+# ../../osl_shaders/dlCarPaint.osl:193
+# 	if( specular_level != 0  )
+	neq		$tmp129 specular_level $const1 	%line{193} %argrw{"wrr"}
+	if		$tmp129 295 295 	%argrw{"r"}
+# ../../osl_shaders/dlCarPaint.osl:195
+# 		float _roughness = roughness * roughness;
+	mul		___500__roughness roughness roughness 	%line{195} %argrw{"wrr"}
+# ../../osl_shaders/dlCarPaint.osl:196
+# 		float reflect_ior = EtaFromIntensity( specular_level * 0.08 );
+	mul		$tmp130 specular_level $const16 	%line{196} %argrw{"wrr"}
+	functioncall	$const17 243 	%argrw{"r"}
+# W:/r2d2\src\osl_shaders\material_common.h:171
+# 	if( x >= 1 )
+	ge		$tmp131 $tmp130 $const2 	%filename{"W:/r2d2\src\osl_shaders\material_common.h"} %line{171} %argrw{"wrr"}
+	if		$tmp131 239 239 	%argrw{"r"}
+# W:/r2d2\src\osl_shaders\material_common.h:174
+# 		return 500;
+	assign		___500_reflect_ior $const18 	%line{174} %argrw{"wr"}
+	return
+# W:/r2d2\src\osl_shaders\material_common.h:177
+# 	float T = sqrt( x );
+	sqrt		___471_T $tmp130 	%line{177} %argrw{"wr"}
+# W:/r2d2\src\osl_shaders\material_common.h:178
+# 	return (T+1) / (1-T);
+	add		$tmp132 ___471_T $const19 	%line{178} %argrw{"wrr"}
+	sub		$tmp133 $const19 ___471_T 	%argrw{"wrr"}
+	div		___500_reflect_ior $tmp132 $tmp133 	%argrw{"wrr"}
+# ../../osl_shaders/dlCarPaint.osl:200
+# 				reflect_ior, 0, 1, dot(-In, Nn_base) );
+	neg		$tmp136 In 	%filename{"../../osl_shaders/dlCarPaint.osl"} %line{200} %argrw{"wr"}
+	dot		$tmp135 $tmp136 Nn_base 	%argrw{"wrr"}
+# ../../osl_shaders/dlCarPaint.osl:199
+# 			Fresnel_DieletricConductor(
+	functioncall	$const22 290 	%line{199} %argrw{"r"}
+# W:/r2d2\src\osl_shaders\material_common.h:113
+# 	float cos_theta = i_cos_theta;
+	assign		___468_cos_theta $tmp135 	%filename{"W:/r2d2\src\osl_shaders\material_common.h"} %line{113} %argrw{"wr"}
+# W:/r2d2\src\osl_shaders\material_common.h:115
+# 	if( cos_theta >= 0 )
+	ge		$tmp137 ___468_cos_theta $const1 	%line{115} %argrw{"wrr"}
+	if		$tmp137 251 254 	%argrw{"r"}
+# W:/r2d2\src\osl_shaders\material_common.h:117
+# 		n = i_n;
+	assign		___468_n ___500_reflect_ior 	%line{117} %argrw{"wr"}
+# W:/r2d2\src\osl_shaders\material_common.h:118
+# 		ni = i_ni;
+	assign		___468_ni $const19 	%line{118} %argrw{"wr"}
+# W:/r2d2\src\osl_shaders\material_common.h:122
+# 		n = i_ni;
+	assign		___468_n $const19 	%line{122} %argrw{"wr"}
+# W:/r2d2\src\osl_shaders\material_common.h:123
+# 		ni = i_n;
+	assign		___468_ni ___500_reflect_ior 	%line{123} %argrw{"wr"}
+# W:/r2d2\src\osl_shaders\material_common.h:125
+# 		cos_theta = -cos_theta;
+	neg		___468_cos_theta ___468_cos_theta 	%line{125} %argrw{"wr"}
+# W:/r2d2\src\osl_shaders\material_common.h:128
+# 	float cos2_theta = cos_theta * cos_theta;
+	mul		___468_cos2_theta ___468_cos_theta ___468_cos_theta 	%line{128} %argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\material_common.h:129
+# 	float sin2_theta = 1 - cos2_theta;
+	sub		___468_sin2_theta $const19 ___468_cos2_theta 	%line{129} %argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\material_common.h:130
+# 	float n2 = n * n;
+	mul		___468_n2 ___468_n ___468_n 	%line{130} %argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\material_common.h:131
+# 	float ni2 = ni * ni;
+	mul		___468_ni2 ___468_ni ___468_ni 	%line{131} %argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\material_common.h:133
+# 	float t0 = n2 - i_k2 - ni2 * sin2_theta;
+	sub		$tmp138 ___468_n2 $const20 	%line{133} %argrw{"wrr"}
+	mul		$tmp139 ___468_ni2 ___468_sin2_theta 	%argrw{"wrr"}
+	sub		___468_t0 $tmp138 $tmp139 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\material_common.h:134
+# 	float t1 = sqrt( t0 * t0 + 4 * n2 * i_k2 );
+	mul		$tmp140 ___468_t0 ___468_t0 	%line{134} %argrw{"wrr"}
+	mul		$tmp141 $const24 ___468_n2 	%argrw{"wrr"}
+	mul		$tmp142 $tmp141 $const20 	%argrw{"wrr"}
+	add		$tmp143 $tmp140 $tmp142 	%argrw{"wrr"}
+	sqrt		___468_t1 $tmp143 	%argrw{"wr"}
+# W:/r2d2\src\osl_shaders\material_common.h:135
+# 	float a2plusb2 = t1 / ni2;
+	div		___468_a2plusb2 ___468_t1 ___468_ni2 	%line{135} %argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\material_common.h:136
+# 	float a2 = ( t1 + t0 ) / ( 2 * ni2 );
+	add		$tmp144 ___468_t1 ___468_t0 	%line{136} %argrw{"wrr"}
+	mul		$tmp145 $const25 ___468_ni2 	%argrw{"wrr"}
+	div		___468_a2 $tmp144 $tmp145 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\material_common.h:137
+# 	float b2 = ( t1 - t0 ) / ( 2 * ni2 );
+	sub		$tmp146 ___468_t1 ___468_t0 	%line{137} %argrw{"wrr"}
+	mul		$tmp147 $const25 ___468_ni2 	%argrw{"wrr"}
+	div		___468_b2 $tmp146 $tmp147 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\material_common.h:138
+# 	float a = sqrt( a2 );
+	sqrt		___468_a ___468_a2 	%line{138} %argrw{"wr"}
+# W:/r2d2\src\osl_shaders\material_common.h:140
+# 	float t2 = a2plusb2 + cos2_theta;
+	add		___468_t2 ___468_a2plusb2 ___468_cos2_theta 	%line{140} %argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\material_common.h:141
+# 	float t3 = 2 * a * cos_theta;
+	mul		$tmp148 $const25 ___468_a 	%line{141} %argrw{"wrr"}
+	mul		___468_t3 $tmp148 ___468_cos_theta 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\material_common.h:142
+# 	float R_s = (t2 - t3) / (t2 + t3);
+	sub		$tmp149 ___468_t2 ___468_t3 	%line{142} %argrw{"wrr"}
+	add		$tmp150 ___468_t2 ___468_t3 	%argrw{"wrr"}
+	div		___468_R_s $tmp149 $tmp150 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\material_common.h:144
+# 	float t4 = cos2_theta * a2plusb2 + sin2_theta * sin2_theta;
+	mul		$tmp151 ___468_cos2_theta ___468_a2plusb2 	%line{144} %argrw{"wrr"}
+	mul		$tmp152 ___468_sin2_theta ___468_sin2_theta 	%argrw{"wrr"}
+	add		___468_t4 $tmp151 $tmp152 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\material_common.h:145
+# 	float t5 = t3 * sin2_theta;
+	mul		___468_t5 ___468_t3 ___468_sin2_theta 	%line{145} %argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\material_common.h:146
+# 	float R_p = R_s * (t4 - t5) / (t4 + t5);
+	sub		$tmp153 ___468_t4 ___468_t5 	%line{146} %argrw{"wrr"}
+	mul		$tmp154 ___468_R_s $tmp153 	%argrw{"wrr"}
+	add		$tmp155 ___468_t4 ___468_t5 	%argrw{"wrr"}
+	div		___468_R_p $tmp154 $tmp155 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\material_common.h:148
+# 	return 0.5 * (R_p + R_s);
+	add		$tmp156 ___468_R_p ___468_R_s 	%line{148} %argrw{"wrr"}
+	mul		$tmp134 $const26 $tmp156 	%argrw{"wrr"}
+# ../../osl_shaders/dlCarPaint.osl:198
+# 		_reflect_color =
+	assign		_reflect_color $tmp134 	%filename{"../../osl_shaders/dlCarPaint.osl"} %line{198} %argrw{"wr"}
+# ../../osl_shaders/dlCarPaint.osl:205
+# 		_reflect_color *= smoothstep(0, 0.05, specular_level);	
+	smoothstep	$tmp157 $const20 $const33 specular_level 	%line{205} %argrw{"wrrr"}
+	mul		_reflect_color _reflect_color $tmp157 	%argrw{"wrr"}
+# ../../osl_shaders/dlCarPaint.osl:208
+# 			microfacet(
+	functioncall	$const32 295 	%line{208} %argrw{"r"}
+# W:/r2d2\src\3delight\win64-x64-release-free\osl\stdosl.h:460
+#     return microfacet(distribution, N, vector(0), alpha, alpha, eta, refr);
+	closure		c_reflect $const32 $const30 Nn_base $const31 ___500__roughness ___500__roughness ___500_reflect_ior $const1 	%filename{"W:/r2d2\src\3delight\win64-x64-release-free\osl\stdosl.h"} %line{460} %argrw{"wrrrrrrrr"}
+# ../../osl_shaders/dlCarPaint.osl:218
+# 	closure color c_metallic = 0;
+	assign		c_metallic $const1 	%filename{"../../osl_shaders/dlCarPaint.osl"} %line{218} %argrw{"wr"}
+# ../../osl_shaders/dlCarPaint.osl:219
+# 	color _metallic_color = 0;
+	assign		_metallic_color $const1 	%line{219} %argrw{"wr"}
+# ../../osl_shaders/dlCarPaint.osl:220
+# 	float _metallic = metallic;
+	assign		_metallic metallic 	%line{220} %argrw{"wr"}
+# ../../osl_shaders/dlCarPaint.osl:222
+# 	if( metallic > 0 || flake_density != 0)
+	gt		$tmp159 metallic $const1 	%line{222} %argrw{"wrr"}
+	neq		$tmp160 $tmp159 $const1 	%argrw{"wrr"}
+	if		$tmp160 301 304 	%argrw{"r"}
+	neq		$tmp161 flake_density $const1 	%argrw{"wrr"}
+	neq		$tmp162 $tmp161 $const1 	%argrw{"wrr"}
+	assign		$tmp160 $tmp162 	%argrw{"wr"}
+	if		$tmp160 793 793 	%argrw{"r"}
+# ../../osl_shaders/dlCarPaint.osl:224
+# 		float metal_roughness = roughness * roughness;
+	mul		___501_metal_roughness roughness roughness 	%line{224} %argrw{"wrr"}
+# ../../osl_shaders/dlCarPaint.osl:225
+# 		color metal_color = i_color;
+	assign		___501_metal_color i_color 	%line{225} %argrw{"wr"}
+# ../../osl_shaders/dlCarPaint.osl:227
+# 		if( flake_density != 0 )
+	neq		$tmp163 flake_density $const1 	%line{227} %argrw{"wrr"}
+	if		$tmp163 694 694 	%argrw{"r"}
+# ../../osl_shaders/dlCarPaint.osl:229
+# 			point pp_flake = transformP(1 /*Local(Objs Space)*/ , matrix(1) ) / max(flake_scale * 0.01, 0.000001);
+	assign		$tmp165 $const19 	%line{229} %argrw{"wr"}
+	functioncall	$const34 328 	%argrw{"r"}
+# W:/r2d2\src\osl_shaders\texture3d.h:84
+# 	int have_Pref = getattribute("Pref", Pref);
+	getattribute	___329_have_Pref $const35 ___329_Pref 	%filename{"W:/r2d2\src\osl_shaders\texture3d.h"} %line{84} %argrw{"wrw"}
+# W:/r2d2\src\osl_shaders\texture3d.h:88
+# 	if(i_local != 0)
+	neq		$tmp166 $const2 $const1 	%line{88} %argrw{"wrr"}
+	if		$tmp166 320 326 	%argrw{"r"}
+# W:/r2d2\src\osl_shaders\texture3d.h:90
+# 		if( !have_Pref )
+	eq		$tmp167 ___329_have_Pref $const1 	%line{90} %argrw{"wrr"}
+	if		$tmp167 318 320 	%argrw{"r"}
+# W:/r2d2\src\osl_shaders\texture3d.h:91
+# 			pp = transform("object", P);
+	functioncall	$const37 318 	%line{91} %argrw{"r"}
+# W:/r2d2\src\3delight\win64-x64-release-free\osl\stdosl.h:285
+# point  transform (string to, point p)  { return transform("common",to,p); }
+	transform	___329_pp $const38 $const36 P 	%filename{"W:/r2d2\src\3delight\win64-x64-release-free\osl\stdosl.h"} %line{285} %argrw{"wrrr"}
+# W:/r2d2\src\osl_shaders\texture3d.h:93
+# 			pp = transform("object", Pref);
+	functioncall	$const37 320 	%filename{"W:/r2d2\src\osl_shaders\texture3d.h"} %line{93} %argrw{"r"}
+# W:/r2d2\src\3delight\win64-x64-release-free\osl\stdosl.h:285
+# point  transform (string to, point p)  { return transform("common",to,p); }
+	transform	___329_pp $const38 $const36 ___329_Pref 	%filename{"W:/r2d2\src\3delight\win64-x64-release-free\osl\stdosl.h"} %line{285} %argrw{"wrrr"}
+# W:/r2d2\src\osl_shaders\texture3d.h:97
+# 		if( !have_Pref )
+	eq		$tmp168 ___329_have_Pref $const1 	%filename{"W:/r2d2\src\osl_shaders\texture3d.h"} %line{97} %argrw{"wrr"}
+	if		$tmp168 324 326 	%argrw{"r"}
+# W:/r2d2\src\osl_shaders\texture3d.h:98
+# 			pp = transform("world", P);
+	functioncall	$const37 324 	%line{98} %argrw{"r"}
+# W:/r2d2\src\3delight\win64-x64-release-free\osl\stdosl.h:285
+# point  transform (string to, point p)  { return transform("common",to,p); }
+	transform	___329_pp $const38 $const39 P 	%filename{"W:/r2d2\src\3delight\win64-x64-release-free\osl\stdosl.h"} %line{285} %argrw{"wrrr"}
+# W:/r2d2\src\osl_shaders\texture3d.h:100
+# 			pp = transform("world", Pref);
+	functioncall	$const37 326 	%filename{"W:/r2d2\src\osl_shaders\texture3d.h"} %line{100} %argrw{"r"}
+# W:/r2d2\src\3delight\win64-x64-release-free\osl\stdosl.h:285
+# point  transform (string to, point p)  { return transform("common",to,p); }
+	transform	___329_pp $const38 $const39 ___329_Pref 	%filename{"W:/r2d2\src\3delight\win64-x64-release-free\osl\stdosl.h"} %line{285} %argrw{"wrrr"}
+# W:/r2d2\src\osl_shaders\texture3d.h:103
+# 	point pq = transform(i_placementMatrix, pp);
+	transform	___329_pq $tmp165 ___329_pp 	%filename{"W:/r2d2\src\osl_shaders\texture3d.h"} %line{103} %argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\texture3d.h:105
+# 	return pq;
+	assign		$tmp164 ___329_pq 	%line{105} %argrw{"wr"}
+# ../../osl_shaders/dlCarPaint.osl:229
+# 			point pp_flake = transformP(1 /*Local(Objs Space)*/ , matrix(1) ) / max(flake_scale * 0.01, 0.000001);
+	mul		$tmp170 flake_scale $const40 	%filename{"../../osl_shaders/dlCarPaint.osl"} %line{229} %argrw{"wrr"}
+	max		$tmp169 $tmp170 $const29 	%argrw{"wrr"}
+	div		___502_pp_flake $tmp164 $tmp169 	%argrw{"wrr"}
+# ../../osl_shaders/dlCarPaint.osl:230
+# 			float worley_dummy = 0;
+	assign		___502_worley_dummy $const1 	%line{230} %argrw{"wr"}
+# ../../osl_shaders/dlCarPaint.osl:231
+# 			color worley_color = 0;
+	assign		___502_worley_color $const1 	%line{231} %argrw{"wr"}
+# ../../osl_shaders/dlCarPaint.osl:232
+# 			float worley_mask = 0;
+	assign		___502_worley_mask $const1 	%line{232} %argrw{"wr"}
+# ../../osl_shaders/dlCarPaint.osl:234
+# 			worley_noise_multilevel(
+	functioncall	$const43 564 	%line{234} %argrw{"r"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:617
+# 	float result = 0;
+	assign		___441_result $const1 	%filename{"W:/r2d2\src\osl_shaders\noise_utils.h"} %line{617} %argrw{"wr"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:619
+# 	float freq_ratio = 1 / max(octave_scale,0.001); 
+	max		$tmp171 $const42 $const44 	%line{619} %argrw{"wrr"}
+	div		___441_freq_ratio $const19 $tmp171 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:620
+# 	float lacunarity = 1;
+	assign		___441_lacunarity $const2 	%line{620} %argrw{"wr"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:621
+# 	float sum = 0;
+	assign		___441_sum $const1 	%line{621} %argrw{"wr"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:622
+# 	float amp = 1;
+	assign		___441_amp $const2 	%line{622} %argrw{"wr"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:623
+# 	float ampSum = 0;
+	assign		___441_ampSum $const1 	%line{623} %argrw{"wr"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:624
+# 	float mask = 0;
+	assign		___441_mask $const1 	%line{624} %argrw{"wr"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:626
+# 	for (int i = 0; i<octaves; i+=1 ) 
+	for		$tmp173 345 347 558 559 	%line{626} %argrw{"r"}
+	assign		___442_i $const1 	%argrw{"wr"}
+	lt		$tmp172 ___442_i $const41 	%argrw{"wrr"}
+	neq		$tmp173 $tmp172 $const1 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:628
+# 		float curr_result = 0;
+	assign		___443_curr_result $const1 	%line{628} %argrw{"wr"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:630
+# 		float f1 = 0;
+	assign		___443_f1 $const1 	%line{630} %argrw{"wr"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:631
+# 		float f2 = 0;
+	assign		___443_f2 $const1 	%line{631} %argrw{"wr"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:632
+# 		point pos1 = 0;
+	assign		___443_pos1 $const1 	%line{632} %argrw{"wr"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:633
+# 		point pos2 = 0;
+	assign		___443_pos2 $const1 	%line{633} %argrw{"wr"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:634
+# 		color col1 = 0;
+	assign		___443_col1 $const1 	%line{634} %argrw{"wr"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:635
+# 		float curr_mask = 0;
+	assign		___443_curr_mask $const1 	%line{635} %argrw{"wr"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:637
+# 		worley_noise(i_p * lacunarity + point(1000 * i), dist_type, minkowski_k, random_pos, i_time + 1000 * i,
+	mul		$tmp174 ___502_pp_flake ___441_lacunarity 	%line{637} %argrw{"wrr"}
+	mul		$tmp176 $const45 ___442_i 	%argrw{"wrr"}
+	assign		$tmp177 $tmp176 	%argrw{"wr"}
+	assign		$tmp175 $tmp177 	%argrw{"wr"}
+	add		$tmp178 $tmp174 $tmp175 	%argrw{"wrr"}
+	mul		$tmp179 $const45 ___442_i 	%argrw{"wrr"}
+	assign		$tmp181 $tmp179 	%argrw{"wr"}
+	add		$tmp180 $const20 $tmp181 	%argrw{"wrr"}
+	functioncall	$const46 487 	%argrw{"r"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:538
+# 	point thiscell = point (floor(i_p[0])+0.5, floor(i_p[1])+0.5, floor(i_p[2])+0.5);
+	compref		$tmp183 $tmp178 $const1 	%line{538} %argrw{"wrr"}
+	floor		$tmp182 $tmp183 	%argrw{"wr"}
+	add		$tmp184 $tmp182 $const26 	%argrw{"wrr"}
+	compref		$tmp186 $tmp178 $const2 	%argrw{"wrr"}
+	floor		$tmp185 $tmp186 	%argrw{"wr"}
+	add		$tmp187 $tmp185 $const26 	%argrw{"wrr"}
+	compref		$tmp189 $tmp178 $const3 	%argrw{"wrr"}
+	floor		$tmp188 $tmp189 	%argrw{"wr"}
+	add		$tmp190 $tmp188 $const26 	%argrw{"wrr"}
+	point		___428_thiscell $tmp184 $tmp187 $tmp190 	%argrw{"wrrr"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:540
+# 	f1 = 1000000;
+	assign		___443_f1 $const47 	%line{540} %argrw{"wr"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:541
+# 	f2 = 1000000;
+	assign		___443_f2 $const47 	%line{541} %argrw{"wr"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:543
+# 	for (int i = -1;  i <= 1;  i += 1)
+	for		$tmp192 377 379 484 485 	%line{543} %argrw{"r"}
+	assign		___429_i $const9 	%argrw{"wr"}
+	le		$tmp191 ___429_i $const2 	%argrw{"wrr"}
+	neq		$tmp192 $tmp191 $const1 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:545
+# 		for (int j = -1;  j <= 1;  j += 1)
+	for		$tmp194 381 383 483 484 	%line{545} %argrw{"r"}
+	assign		___431_j $const9 	%argrw{"wr"}
+	le		$tmp193 ___431_j $const2 	%argrw{"wrr"}
+	neq		$tmp194 $tmp193 $const1 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:547
+# 			for (int k = -1;  k <= 1;  k += 1)
+	for		$tmp196 385 387 482 483 	%line{547} %argrw{"r"}
+	assign		___433_k $const9 	%argrw{"wr"}
+	le		$tmp195 ___433_k $const2 	%argrw{"wrr"}
+	neq		$tmp196 $tmp195 $const1 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:549
+# 				point testcell = thiscell + vector(i,j,k);
+	assign		$tmp198 ___429_i 	%line{549} %argrw{"wr"}
+	assign		$tmp199 ___431_j 	%argrw{"wr"}
+	assign		$tmp200 ___433_k 	%argrw{"wr"}
+	vector		$tmp197 $tmp198 $tmp199 $tmp200 	%argrw{"wrrr"}
+	add		___434_testcell ___428_thiscell $tmp197 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:551
+# 				point cell_noise = animatedcellnoise(testcell, i_time * 0.04);
+	mul		$tmp201 $tmp180 $const48 	%line{551} %argrw{"wrr"}
+	functioncall	$const49 405 	%argrw{"r"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:185
+# 	float t = cellnoise(i_p) + i_t;
+	cellnoise	$tmp202 ___434_testcell 	%line{185} %argrw{"wr"}
+	add		___379_t $tmp202 $tmp201 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:187
+# 	float tbase = floor(t);
+	floor		___379_tbase ___379_t 	%line{187} %argrw{"wr"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:189
+# 	point n1 = cellnoise( i_p, tbase );
+	cellnoise	___379_n1 ___434_testcell ___379_tbase 	%line{189} %argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:190
+# 	float d = t - tbase;
+	sub		___379_d ___379_t ___379_tbase 	%line{190} %argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:191
+# 	point n2 = cellnoise( i_p, tbase + 1 );
+	add		$tmp203 ___379_tbase $const19 	%line{191} %argrw{"wrr"}
+	cellnoise	___379_n2 ___434_testcell $tmp203 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:192
+# 	n1 += d * (n2 - n1);
+	sub		$tmp204 ___379_n2 ___379_n1 	%line{192} %argrw{"wrr"}
+	mul		$tmp205 ___379_d $tmp204 	%argrw{"wrr"}
+	add		___379_n1 ___379_n1 $tmp205 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:194
+# 	return n1;
+	assign		___434_cell_noise ___379_n1 	%line{194} %argrw{"wr"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:554
+# 				point pos = testcell + (cell_noise - 0.5) * jitter;
+	sub		$tmp206 ___434_cell_noise $const26 	%line{554} %argrw{"wrr"}
+	mul		$tmp207 $tmp206 $const19 	%argrw{"wrr"}
+	add		___434_pos ___434_testcell $tmp207 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:555
+# 				float dist = 0;
+	assign		___434_dist $const1 	%line{555} %argrw{"wr"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:557
+# 				if (dist_type == 0) // Euclidean Squared
+	eq		$tmp208 $const1 $const1 	%line{557} %argrw{"wrr"}
+	if		$tmp208 413 468 	%argrw{"r"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:559
+# 					vector offset = pos - i_p;
+	sub		___435_offset ___434_pos $tmp178 	%line{559} %argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:560
+# 					dist = dot(offset,offset); /* actually dist^2 */
+	dot		___434_dist ___435_offset ___435_offset 	%line{560} %argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:562
+# 				else if (dist_type == 1) // Manhattan
+	eq		$tmp209 $const1 $const2 	%line{562} %argrw{"wrr"}
+	if		$tmp209 431 468 	%argrw{"r"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:564
+# 					dist = distance_manhattan(pos, i_p);
+	functioncall	$const50 431 	%line{564} %argrw{"r"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:499
+# 	float dist = abs(A[0] - B[0]) + abs(A[1] - B[1]) +  abs(A[2] - B[2]);
+	compref		$tmp211 ___434_pos $const1 	%line{499} %argrw{"wrr"}
+	compref		$tmp212 $tmp178 $const1 	%argrw{"wrr"}
+	sub		$tmp213 $tmp211 $tmp212 	%argrw{"wrr"}
+	abs		$tmp210 $tmp213 	%argrw{"wr"}
+	compref		$tmp215 ___434_pos $const2 	%argrw{"wrr"}
+	compref		$tmp216 $tmp178 $const2 	%argrw{"wrr"}
+	sub		$tmp217 $tmp215 $tmp216 	%argrw{"wrr"}
+	abs		$tmp214 $tmp217 	%argrw{"wr"}
+	add		$tmp218 $tmp210 $tmp214 	%argrw{"wrr"}
+	compref		$tmp220 ___434_pos $const3 	%argrw{"wrr"}
+	compref		$tmp221 $tmp178 $const3 	%argrw{"wrr"}
+	sub		$tmp222 $tmp220 $tmp221 	%argrw{"wrr"}
+	abs		$tmp219 $tmp222 	%argrw{"wr"}
+	add		___425_dist $tmp218 $tmp219 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:500
+# 	return dist; 
+	assign		___434_dist ___425_dist 	%line{500} %argrw{"wr"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:566
+# 				else if (dist_type == 2) // Chebyshev
+	eq		$tmp223 $const1 $const3 	%line{566} %argrw{"wrr"}
+	if		$tmp223 444 468 	%argrw{"r"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:568
+# 					dist = distance_chebyshev(pos, i_p);
+	functioncall	$const51 444 	%line{568} %argrw{"r"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:519
+# 	vector diff = A - B;
+	sub		___427_diff ___434_pos $tmp178 	%line{519} %argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:520
+# 	float dist = max( max( abs(diff[0]), abs(diff[1])), abs(diff[2]));
+	compref		$tmp226 ___427_diff $const1 	%line{520} %argrw{"wrr"}
+	abs		$tmp225 $tmp226 	%argrw{"wr"}
+	compref		$tmp228 ___427_diff $const2 	%argrw{"wrr"}
+	abs		$tmp227 $tmp228 	%argrw{"wr"}
+	max		$tmp224 $tmp225 $tmp227 	%argrw{"wrr"}
+	compref		$tmp230 ___427_diff $const3 	%argrw{"wrr"}
+	abs		$tmp229 $tmp230 	%argrw{"wr"}
+	max		___427_dist $tmp224 $tmp229 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:521
+# 	return dist; 
+	assign		___434_dist ___427_dist 	%line{521} %argrw{"wr"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:570
+# 				else if (dist_type == 3) // Minkowski
+	eq		$tmp231 $const1 $const41 	%line{570} %argrw{"wrr"}
+	if		$tmp231 468 468 	%argrw{"r"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:572
+# 					dist = distance_minkowski(pos, i_p, minkowski_k);
+	functioncall	$const52 468 	%line{572} %argrw{"r"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:509
+# 	float dist = pow(abs(A[0] - B[0]),k) + pow(abs(A[1] - B[1]),k) + pow(abs(A[2] - B[2]),k);
+	compref		$tmp234 ___434_pos $const1 	%line{509} %argrw{"wrr"}
+	compref		$tmp235 $tmp178 $const1 	%argrw{"wrr"}
+	sub		$tmp236 $tmp234 $tmp235 	%argrw{"wrr"}
+	abs		$tmp233 $tmp236 	%argrw{"wr"}
+	pow		$tmp232 $tmp233 $const19 	%argrw{"wrr"}
+	compref		$tmp239 ___434_pos $const2 	%argrw{"wrr"}
+	compref		$tmp240 $tmp178 $const2 	%argrw{"wrr"}
+	sub		$tmp241 $tmp239 $tmp240 	%argrw{"wrr"}
+	abs		$tmp238 $tmp241 	%argrw{"wr"}
+	pow		$tmp237 $tmp238 $const19 	%argrw{"wrr"}
+	add		$tmp242 $tmp232 $tmp237 	%argrw{"wrr"}
+	compref		$tmp245 ___434_pos $const3 	%argrw{"wrr"}
+	compref		$tmp246 $tmp178 $const3 	%argrw{"wrr"}
+	sub		$tmp247 $tmp245 $tmp246 	%argrw{"wrr"}
+	abs		$tmp244 $tmp247 	%argrw{"wr"}
+	pow		$tmp243 $tmp244 $const19 	%argrw{"wrr"}
+	add		___426_dist $tmp242 $tmp243 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:510
+# 	dist = pow(dist, 1/max(k,0.001) );
+	max		$tmp248 $const19 $const44 	%line{510} %argrw{"wrr"}
+	div		$tmp249 $const19 $tmp248 	%argrw{"wrr"}
+	pow		___426_dist ___426_dist $tmp249 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:511
+# 	return dist; 
+	assign		___434_dist ___426_dist 	%line{511} %argrw{"wr"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:575
+# 				if (dist < f1)
+	lt		$tmp250 ___434_dist ___443_f1 	%line{575} %argrw{"wrr"}
+	if		$tmp250 478 482 	%argrw{"r"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:577
+# 					f2 = f1;
+	assign		___443_f2 ___443_f1 	%line{577} %argrw{"wr"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:578
+# 					pos2 = pos1;
+	assign		___443_pos2 ___443_pos1 	%line{578} %argrw{"wr"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:580
+# 					f1 = dist;
+	assign		___443_f1 ___434_dist 	%line{580} %argrw{"wr"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:581
+# 					pos1 = pos;
+	assign		___443_pos1 ___434_pos 	%line{581} %argrw{"wr"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:583
+# 					col1 = noise("hash",testcell+vector(2, 13, 511));
+	add		$tmp252 ___434_testcell $const54 	%line{583} %argrw{"wrr"}
+	noise		___443_col1 $const53 $tmp252 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:584
+# 					mask = noise("hash",testcell+vector(1, 7, 1023));
+	add		$tmp254 ___434_testcell $const55 	%line{584} %argrw{"wrr"}
+	noise		___443_curr_mask $const53 $tmp254 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:586
+# 				else if (dist < f2)
+	lt		$tmp255 ___434_dist ___443_f2 	%line{586} %argrw{"wrr"}
+	if		$tmp255 482 482 	%argrw{"r"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:588
+# 					f2 = dist;
+	assign		___443_f2 ___434_dist 	%line{588} %argrw{"wr"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:589
+# 					pos2 = pos;
+	assign		___443_pos2 ___434_pos 	%line{589} %argrw{"wr"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:547
+# 			for (int k = -1;  k <= 1;  k += 1)
+	add		___433_k ___433_k $const2 	%line{547} %argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:545
+# 		for (int j = -1;  j <= 1;  j += 1)
+	add		___431_j ___431_j $const2 	%line{545} %argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:543
+# 	for (int i = -1;  i <= 1;  i += 1)
+	add		___429_i ___429_i $const2 	%line{543} %argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:595
+# 	f1 /= 1.2;
+	div		___443_f1 ___443_f1 $const56 	%line{595} %argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:596
+# 	f2 /= 1.2;
+	div		___443_f2 ___443_f2 $const56 	%line{596} %argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:640
+# 		curr_mask = step( 1 - density / sqrt(octaves), curr_mask) * amp;
+	assign		$tmp258 $const41 	%line{640} %argrw{"wr"}
+	sqrt		$tmp257 $tmp258 	%argrw{"wr"}
+	div		$tmp259 flake_density $tmp257 	%argrw{"wrr"}
+	sub		$tmp260 $const19 $tmp259 	%argrw{"wrr"}
+	step		$tmp256 $tmp260 ___443_curr_mask 	%argrw{"wrr"}
+	mul		___443_curr_mask $tmp256 ___441_amp 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:642
+# 		if (output_type == 0) // Cell Value
+	eq		$tmp261 $const3 $const1 	%line{642} %argrw{"wrr"}
+	if		$tmp261 496 512 	%argrw{"r"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:644
+# 			curr_result = col1[0];
+	compref		___443_curr_result ___443_col1 $const1 	%line{644} %argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:646
+# 		else if (output_type == 1) // Borders
+	eq		$tmp262 $const3 $const2 	%line{646} %argrw{"wrr"}
+	if		$tmp262 512 512 	%argrw{"r"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:648
+# 			float edge_factor = distance(pos1,pos2) / (distance(pos1,i_p)+distance(i_p,pos2));
+	distance	$tmp263 ___443_pos1 ___443_pos2 	%line{648} %argrw{"wrr"}
+	distance	$tmp264 ___443_pos1 ___502_pp_flake 	%argrw{"wrr"}
+	distance	$tmp265 ___502_pp_flake ___443_pos2 	%argrw{"wrr"}
+	add		$tmp266 $tmp264 $tmp265 	%argrw{"wrr"}
+	div		___445_edge_factor $tmp263 $tmp266 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:649
+# 			edge_factor *= (dist_type == 3) ? 4 : 1; // Increase the thickness for Minkowski 
+	eq		$tmp268 $const1 $const41 	%line{649} %argrw{"wrr"}
+	if		$tmp268 506 507 	%argrw{"r"}
+	assign		$tmp267 $const23 	%argrw{"wr"}
+	assign		$tmp267 $const2 	%argrw{"wr"}
+	assign		$tmp269 $tmp267 	%argrw{"wr"}
+	mul		___445_edge_factor ___445_edge_factor $tmp269 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:650
+# 			curr_result = step(0.5 * edge_factor, f2-f1);
+	mul		$tmp270 $const26 ___445_edge_factor 	%line{650} %argrw{"wrr"}
+	sub		$tmp271 ___443_f2 ___443_f1 	%argrw{"wrr"}
+	step		___443_curr_result $tmp270 $tmp271 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:652
+# 		if (output_type == 2) // Voronoi 1 (F1)
+	eq		$tmp272 $const3 $const3 	%line{652} %argrw{"wrr"}
+	if		$tmp272 515 515 	%argrw{"r"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:654
+# 			curr_result = f1;
+	assign		___443_curr_result ___443_f1 	%line{654} %argrw{"wr"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:656
+# 		if (output_type == 3) // Voronoi 2 (F2)
+	eq		$tmp273 $const3 $const41 	%line{656} %argrw{"wrr"}
+	if		$tmp273 518 518 	%argrw{"r"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:658
+# 			curr_result = f2;
+	assign		___443_curr_result ___443_f2 	%line{658} %argrw{"wr"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:660
+# 		if (output_type == 4) // Voronoi 3 (F2 - F1)
+	eq		$tmp274 $const3 $const23 	%line{660} %argrw{"wrr"}
+	if		$tmp274 521 525 	%argrw{"r"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:662
+# 			curr_result = f2 - f1;
+	sub		___443_curr_result ___443_f2 ___443_f1 	%line{662} %argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:664
+# 		else if (output_type == 5) // Voronoi 4 (F1 + F2)
+	eq		$tmp275 $const3 $const57 	%line{664} %argrw{"wrr"}
+	if		$tmp275 525 525 	%argrw{"r"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:666
+# 			curr_result = (f2 + f1) * 0.5;
+	add		$tmp276 ___443_f2 ___443_f1 	%line{666} %argrw{"wrr"}
+	mul		___443_curr_result $tmp276 $const26 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:669
+# 		if (output_type > 0 && random_bright > 0.0)
+	gt		$tmp277 $const3 $const1 	%line{669} %argrw{"wrr"}
+	neq		$tmp278 $tmp277 $const1 	%argrw{"wrr"}
+	if		$tmp278 531 531 	%argrw{"r"}
+	gt		$tmp279 $const20 $const20 	%argrw{"wrr"}
+	neq		$tmp280 $tmp279 $const1 	%argrw{"wrr"}
+	assign		$tmp278 $tmp280 	%argrw{"wr"}
+	if		$tmp278 535 535 	%argrw{"r"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:671
+# 			curr_result *= mix(1,col1[0],random_bright);
+	compref		$tmp282 ___443_col1 $const1 	%line{671} %argrw{"wrr"}
+	mix		$tmp281 $const19 $tmp282 $const20 	%argrw{"wrrr"}
+	mul		___443_curr_result ___443_curr_result $tmp281 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:674
+# 		o_cell_color = mix(o_cell_color,col1,curr_mask * (1 - mask) );
+	sub		$tmp283 $const19 ___441_mask 	%line{674} %argrw{"wrr"}
+	mul		$tmp284 ___443_curr_mask $tmp283 	%argrw{"wrr"}
+	mix		___502_worley_color ___502_worley_color ___443_col1 $tmp284 	%argrw{"wrrr"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:676
+# 		if (blend_type == 0) // Over
+	eq		$tmp285 $const1 $const1 	%line{676} %argrw{"wrr"}
+	if		$tmp285 543 551 	%argrw{"r"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:678
+# 			result = mix(result,curr_result,curr_mask * (1 - mask) );
+	sub		$tmp286 $const19 ___441_mask 	%line{678} %argrw{"wrr"}
+	mul		$tmp287 ___443_curr_mask $tmp286 	%argrw{"wrr"}
+	mix		___441_result ___441_result ___443_curr_result $tmp287 	%argrw{"wrrr"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:680
+# 		else if (blend_type == 1) // Add
+	eq		$tmp288 $const1 $const2 	%line{680} %argrw{"wrr"}
+	if		$tmp288 547 551 	%argrw{"r"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:682
+# 			result += curr_result * curr_mask;
+	mul		$tmp289 ___443_curr_result ___443_curr_mask 	%line{682} %argrw{"wrr"}
+	add		___441_result ___441_result $tmp289 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:684
+# 		else if (blend_type == 2) // Lighten (Max)
+	eq		$tmp290 $const1 $const3 	%line{684} %argrw{"wrr"}
+	if		$tmp290 551 551 	%argrw{"r"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:686
+# 			result = max(result,curr_result * curr_mask);
+	mul		$tmp291 ___443_curr_result ___443_curr_mask 	%line{686} %argrw{"wrr"}
+	max		___441_result ___441_result $tmp291 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:689
+# 		mask = 1 - ((1 - mask) * (1 - curr_mask));
+	sub		$tmp292 $const19 ___441_mask 	%line{689} %argrw{"wrr"}
+	sub		$tmp293 $const19 ___443_curr_mask 	%argrw{"wrr"}
+	mul		$tmp294 $tmp292 $tmp293 	%argrw{"wrr"}
+	sub		___441_mask $const19 $tmp294 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:690
+# 		ampSum += amp;
+	add		___441_ampSum ___441_ampSum ___441_amp 	%line{690} %argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:691
+# 		amp *= octave_persistence; 
+	mul		___441_amp ___441_amp $const19 	%line{691} %argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:692
+# 		lacunarity *= freq_ratio;
+	mul		___441_lacunarity ___441_lacunarity ___441_freq_ratio 	%line{692} %argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:626
+# 	for (int i = 0; i<octaves; i+=1 ) 
+	add		___442_i ___442_i $const2 	%line{626} %argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:695
+# 	if (blend_type == 1)
+	eq		$tmp295 $const1 $const2 	%line{695} %argrw{"wrr"}
+	if		$tmp295 562 562 	%argrw{"r"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:696
+# 		result /= ampSum;
+	div		___441_result ___441_result ___441_ampSum 	%line{696} %argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:698
+# 	o_result = result;
+	assign		___502_worley_dummy ___441_result 	%line{698} %argrw{"wr"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:699
+# 	o_mask = mask;
+	assign		___502_worley_mask ___441_mask 	%line{699} %argrw{"wr"}
+# ../../osl_shaders/dlCarPaint.osl:249
+# 			float x = 0;
+	assign		___502_x $const1 	%filename{"../../osl_shaders/dlCarPaint.osl"} %line{249} %argrw{"wr"}
+# ../../osl_shaders/dlCarPaint.osl:250
+# 			float y = 0;
+	assign		___502_y $const1 	%line{250} %argrw{"wr"}
+# ../../osl_shaders/dlCarPaint.osl:252
+# 			hemisphereCosineWeighted(worley_color[0], worley_color[1], x, y);
+	compref		$tmp296 ___502_worley_color $const1 	%line{252} %argrw{"wrr"}
+	compref		$tmp297 ___502_worley_color $const2 	%argrw{"wrr"}
+	functioncall	$const58 580 	%argrw{"r"}
+# W:/r2d2\src\osl_shaders\material_common.h:331
+# 	float theta = acos(pow(1-random_1, 0.5)) ;
+	sub		$tmp299 $const19 $tmp296 	%filename{"W:/r2d2\src\osl_shaders\material_common.h"} %line{331} %argrw{"wrr"}
+	pow		$tmp298 $tmp299 $const26 	%argrw{"wrr"}
+	acos		___482_theta $tmp298 	%argrw{"wr"}
+# W:/r2d2\src\osl_shaders\material_common.h:332
+# 	float phi = 2 * M_PI * random_2 ;
+	mul		$tmp300 $const25 $const59 	%line{332} %argrw{"wrr"}
+	mul		___482_phi $tmp300 $tmp297 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\material_common.h:333
+# 	o_x = sin(theta) * cos (phi);
+	sin		$tmp301 ___482_theta 	%line{333} %argrw{"wr"}
+	cos		$tmp302 ___482_phi 	%argrw{"wr"}
+	mul		___502_x $tmp301 $tmp302 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\material_common.h:334
+# 	o_y = sin(theta) * sin (phi);
+	sin		$tmp303 ___482_theta 	%line{334} %argrw{"wr"}
+	sin		$tmp304 ___482_phi 	%argrw{"wr"}
+	mul		___502_y $tmp303 $tmp304 	%argrw{"wrr"}
+# ../../osl_shaders/dlCarPaint.osl:253
+# 			color flake_tangent = color(x+0.5,y+0.5,1);
+	add		$tmp305 ___502_x $const26 	%filename{"../../osl_shaders/dlCarPaint.osl"} %line{253} %argrw{"wrr"}
+	add		$tmp306 ___502_y $const26 	%argrw{"wrr"}
+	color		___502_flake_tangent $tmp305 $tmp306 $const19 	%argrw{"wrrr"}
+# ../../osl_shaders/dlCarPaint.osl:254
+# 			flake_tangent = mix(color(0.5,0.5,1),flake_tangent,flake_randomness * 0.25);
+	mul		$tmp308 flake_randomness $const60 	%line{254} %argrw{"wrr"}
+	mix		___502_flake_tangent $const7 ___502_flake_tangent $tmp308 	%argrw{"wrrr"}
+# ../../osl_shaders/dlCarPaint.osl:256
+# 			Nn_base = getNormalFromMap(ss,tt,Nn_base,1,flake_tangent,worley_mask);
+	functioncall	$const4 686 	%line{256} %argrw{"r"}
+# W:/r2d2\src\osl_shaders\material_common.h:265
+# 	if (i_type == 0) // Bump
+	eq		$tmp309 $const2 $const1 	%filename{"W:/r2d2\src\osl_shaders\material_common.h"} %line{265} %argrw{"wrr"}
+	if		$tmp309 603 612 	%argrw{"r"}
+# W:/r2d2\src\osl_shaders\material_common.h:267
+# 		float depth = abs( i_intensity );
+	abs		___476_depth ___502_worley_mask 	%line{267} %argrw{"wr"}
+# W:/r2d2\src\osl_shaders\material_common.h:268
+# 		float offset = clamp( i_value[0] * i_intensity, -depth, depth );
+	compref		$tmp310 ___502_flake_tangent $const1 	%line{268} %argrw{"wrr"}
+	mul		$tmp311 $tmp310 ___502_worley_mask 	%argrw{"wrr"}
+	neg		$tmp312 ___476_depth 	%argrw{"wr"}
+	functioncall	$const5 595 	%argrw{"r"}
+# W:/r2d2\src\3delight\win64-x64-release-free\osl\stdosl.h:163
+# float  clamp (float x, float minval, float maxval) { return max(min(x,maxval),minval); }
+	min		$tmp313 $tmp311 ___476_depth 	%filename{"W:/r2d2\src\3delight\win64-x64-release-free\osl\stdosl.h"} %line{163} %argrw{"wrr"}
+	max		___476_offset $tmp313 $tmp312 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\material_common.h:269
+# 		point pb = point( i_s, i_t, 0.004 * offset );
+	mul		$tmp314 $const6 ___476_offset 	%filename{"W:/r2d2\src\osl_shaders\material_common.h"} %line{269} %argrw{"wrr"}
+	point		___476_pb ss tt $tmp314 	%argrw{"wrrr"}
+# W:/r2d2\src\osl_shaders\material_common.h:270
+# 		N_result = normalize( calculatenormal( pb ) );
+	calculatenormal	$tmp315 ___476_pb 	%line{270} %argrw{"wr"} %argderivs{1}
+	normalize	___475_N_result $tmp315 	%argrw{"wr"}
+# W:/r2d2\src\osl_shaders\material_common.h:275
+# 		if ( N_result[2] < 0 )
+	compref		$tmp316 ___475_N_result $const3 	%line{275} %argrw{"wrr"}
+	lt		$tmp317 $tmp316 $const1 	%argrw{"wrr"}
+	if		$tmp317 603 603 	%argrw{"r"}
+# W:/r2d2\src\osl_shaders\material_common.h:277
+# 			N_result = -N_result;
+	neg		___475_N_result ___475_N_result 	%line{277} %argrw{"wr"}
+# W:/r2d2\src\osl_shaders\material_common.h:282
+# 		N_result = normal(normal(mix(color(0.5,0.5,1),i_value,i_intensity)) - vector(0.5));
+	mix		$tmp319 $const7 ___502_flake_tangent ___502_worley_mask 	%line{282} %argrw{"wrrr"}
+	assign		$tmp318 $tmp319 	%argrw{"wr"}
+	sub		$tmp322 $tmp318 $const8 	%argrw{"wrr"}
+	assign		___475_N_result $tmp322 	%argrw{"wr"}
+# W:/r2d2\src\osl_shaders\material_common.h:284
+# 		if (i_type == 1) // DirectX Normal Map
+	eq		$tmp323 $const2 $const2 	%line{284} %argrw{"wrr"}
+	if		$tmp323 612 612 	%argrw{"r"}
+# W:/r2d2\src\osl_shaders\material_common.h:285
+# 			N_result[1] *= -1;
+	compref		$tmp324 ___475_N_result $const2 	%line{285} %argrw{"wrr"}
+	mul		$tmp325 $tmp324 $const10 	%argrw{"wrr"}
+	compassign	___475_N_result $const2 $tmp325 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\material_common.h:289
+# 	vector basisz = i_N;
+	assign		___475_basisz Nn_base 	%line{289} %argrw{"wr"}
+# W:/r2d2\src\osl_shaders\material_common.h:292
+# 	if( getattribute("tangent:st", 0, stangent) && stangent != 0 )
+	getattribute	$tmp326 $const11 $const1 ___475_stangent 	%line{292} %argrw{"wrrw"}
+	neq		$tmp327 $tmp326 $const1 	%argrw{"wrr"}
+	if		$tmp327 619 619 	%argrw{"r"}
+	neq		$tmp328 ___475_stangent $const1 	%argrw{"wrr"}
+	neq		$tmp329 $tmp328 $const1 	%argrw{"wrr"}
+	assign		$tmp327 $tmp329 	%argrw{"wr"}
+	if		$tmp327 624 671 	%argrw{"r"}
+# W:/r2d2\src\osl_shaders\material_common.h:294
+# 		basisy = normalize( cross( basisz, stangent ) );
+	cross		$tmp330 ___475_basisz ___475_stangent 	%line{294} %argrw{"wrr"}
+	normalize	___475_basisy $tmp330 	%argrw{"wr"}
+# W:/r2d2\src\osl_shaders\material_common.h:295
+# 		basisx = normalize( cross( basisy, basisz ) );
+	cross		$tmp331 ___475_basisy ___475_basisz 	%line{295} %argrw{"wrr"}
+	normalize	___475_basisx $tmp331 	%argrw{"wr"}
+# W:/r2d2\src\osl_shaders\material_common.h:299
+# 		basisy = Du(i_t) * dPdu + Dv(i_t) * dPdv;
+	functioncall	$const12 632 	%line{299} %argrw{"r"}
+# W:/r2d2\src\osl_shaders\utils.h:232
+# 	return Dx(a)/Dx(u) + Dy(a)/Dy(u);
+	Dx		$tmp333 tt 	%filename{"W:/r2d2\src\osl_shaders\utils.h"} %line{232} %argrw{"wr"} %argderivs{1}
+	Dx		$tmp334 u 	%argrw{"wr"} %argderivs{1}
+	div		$tmp335 $tmp333 $tmp334 	%argrw{"wrr"}
+	Dy		$tmp336 tt 	%argrw{"wr"} %argderivs{1}
+	Dy		$tmp337 u 	%argrw{"wr"} %argderivs{1}
+	div		$tmp338 $tmp336 $tmp337 	%argrw{"wrr"}
+	add		$tmp332 $tmp335 $tmp338 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\material_common.h:299
+# 		basisy = Du(i_t) * dPdu + Dv(i_t) * dPdv;
+	mul		$tmp339 $tmp332 dPdu 	%filename{"W:/r2d2\src\osl_shaders\material_common.h"} %line{299} %argrw{"wrr"}
+	functioncall	$const13 641 	%argrw{"r"}
+# W:/r2d2\src\osl_shaders\utils.h:244
+# 	return Dx(a)/Dx(v) + Dy(a)/Dy(v);
+	Dx		$tmp341 tt 	%filename{"W:/r2d2\src\osl_shaders\utils.h"} %line{244} %argrw{"wr"} %argderivs{1}
+	Dx		$tmp342 v 	%argrw{"wr"} %argderivs{1}
+	div		$tmp343 $tmp341 $tmp342 	%argrw{"wrr"}
+	Dy		$tmp344 tt 	%argrw{"wr"} %argderivs{1}
+	Dy		$tmp345 v 	%argrw{"wr"} %argderivs{1}
+	div		$tmp346 $tmp344 $tmp345 	%argrw{"wrr"}
+	add		$tmp340 $tmp343 $tmp346 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\material_common.h:299
+# 		basisy = Du(i_t) * dPdu + Dv(i_t) * dPdv;
+	mul		$tmp347 $tmp340 dPdv 	%filename{"W:/r2d2\src\osl_shaders\material_common.h"} %line{299} %argrw{"wrr"}
+	add		___475_basisy $tmp339 $tmp347 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\material_common.h:300
+# 		basisy = normalize( cross(basisz, cross(basisy, basisz)) );
+	cross		$tmp349 ___475_basisy ___475_basisz 	%line{300} %argrw{"wrr"}
+	cross		$tmp348 ___475_basisz $tmp349 	%argrw{"wrr"}
+	normalize	___475_basisy $tmp348 	%argrw{"wr"}
+# W:/r2d2\src\osl_shaders\material_common.h:301
+# 		basisx = normalize( cross( basisy, basisz ) );
+	cross		$tmp350 ___475_basisy ___475_basisz 	%line{301} %argrw{"wrr"}
+	normalize	___475_basisx $tmp350 	%argrw{"wr"}
+# W:/r2d2\src\osl_shaders\material_common.h:304
+# 		vector uorient = Du(i_s) * dPdu + Dv(i_s) * dPdv;
+	functioncall	$const12 656 	%line{304} %argrw{"r"}
+# W:/r2d2\src\osl_shaders\utils.h:232
+# 	return Dx(a)/Dx(u) + Dy(a)/Dy(u);
+	Dx		$tmp352 ss 	%filename{"W:/r2d2\src\osl_shaders\utils.h"} %line{232} %argrw{"wr"} %argderivs{1}
+	Dx		$tmp353 u 	%argrw{"wr"} %argderivs{1}
+	div		$tmp354 $tmp352 $tmp353 	%argrw{"wrr"}
+	Dy		$tmp355 ss 	%argrw{"wr"} %argderivs{1}
+	Dy		$tmp356 u 	%argrw{"wr"} %argderivs{1}
+	div		$tmp357 $tmp355 $tmp356 	%argrw{"wrr"}
+	add		$tmp351 $tmp354 $tmp357 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\material_common.h:304
+# 		vector uorient = Du(i_s) * dPdu + Dv(i_s) * dPdv;
+	mul		$tmp358 $tmp351 dPdu 	%filename{"W:/r2d2\src\osl_shaders\material_common.h"} %line{304} %argrw{"wrr"}
+	functioncall	$const13 665 	%argrw{"r"}
+# W:/r2d2\src\osl_shaders\utils.h:244
+# 	return Dx(a)/Dx(v) + Dy(a)/Dy(v);
+	Dx		$tmp360 ss 	%filename{"W:/r2d2\src\osl_shaders\utils.h"} %line{244} %argrw{"wr"} %argderivs{1}
+	Dx		$tmp361 v 	%argrw{"wr"} %argderivs{1}
+	div		$tmp362 $tmp360 $tmp361 	%argrw{"wrr"}
+	Dy		$tmp363 ss 	%argrw{"wr"} %argderivs{1}
+	Dy		$tmp364 v 	%argrw{"wr"} %argderivs{1}
+	div		$tmp365 $tmp363 $tmp364 	%argrw{"wrr"}
+	add		$tmp359 $tmp362 $tmp365 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\material_common.h:304
+# 		vector uorient = Du(i_s) * dPdu + Dv(i_s) * dPdv;
+	mul		$tmp366 $tmp359 dPdv 	%filename{"W:/r2d2\src\osl_shaders\material_common.h"} %line{304} %argrw{"wrr"}
+	add		___480_uorient $tmp358 $tmp366 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\material_common.h:305
+# 		if( dot( basisx, uorient ) < 0 )
+	dot		$tmp367 ___475_basisx ___480_uorient 	%line{305} %argrw{"wrr"}
+	lt		$tmp368 $tmp367 $const1 	%argrw{"wrr"}
+	if		$tmp368 671 671 	%argrw{"r"}
+# W:/r2d2\src\osl_shaders\material_common.h:307
+# 			basisx = -basisx;
+	neg		___475_basisx ___475_basisx 	%line{307} %argrw{"wr"}
+# W:/r2d2\src\osl_shaders\material_common.h:312
+# 		N_result[0] * basisx +
+	compref		$tmp370 ___475_N_result $const1 	%line{312} %argrw{"wrr"}
+	mul		$tmp371 $tmp370 ___475_basisx 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\material_common.h:313
+# 		N_result[1] * basisy +
+	compref		$tmp372 ___475_N_result $const2 	%line{313} %argrw{"wrr"}
+	mul		$tmp373 $tmp372 ___475_basisy 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\material_common.h:312
+# 		N_result[0] * basisx +
+	add		$tmp374 $tmp371 $tmp373 	%line{312} %argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\material_common.h:314
+# 		N_result[2] * basisz ));
+	compref		$tmp375 ___475_N_result $const3 	%line{314} %argrw{"wrr"}
+	mul		$tmp376 $tmp375 ___475_basisz 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\material_common.h:313
+# 		N_result[1] * basisy +
+	add		$tmp377 $tmp374 $tmp376 	%line{313} %argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\material_common.h:311
+# 	N_result = normalize(normal(
+	assign		$tmp369 $tmp377 	%line{311} %argrw{"wr"}
+	normalize	___475_N_result $tmp369 	%argrw{"wr"}
+# W:/r2d2\src\osl_shaders\material_common.h:316
+# 	if( N_result == normal(0) )
+	eq		$tmp379 ___475_N_result $const14 	%line{316} %argrw{"wrr"}
+	if		$tmp379 685 685 	%argrw{"r"}
+# W:/r2d2\src\osl_shaders\material_common.h:317
+# 		return i_N;
+	assign		Nn_base Nn_base 	%line{317} %argrw{"wr"}
+	return
+# W:/r2d2\src\osl_shaders\material_common.h:319
+# 	return N_result;
+	assign		Nn_base ___475_N_result 	%line{319} %argrw{"wr"}
+# ../../osl_shaders/dlCarPaint.osl:258
+# 			metal_roughness = mix(metal_roughness,flake_roughness * flake_roughness,worley_mask);
+	mul		$tmp380 flake_roughness flake_roughness 	%filename{"../../osl_shaders/dlCarPaint.osl"} %line{258} %argrw{"wrr"}
+	mix		___501_metal_roughness ___501_metal_roughness $tmp380 ___502_worley_mask 	%argrw{"wrrr"}
+# ../../osl_shaders/dlCarPaint.osl:259
+# 			metal_color = mix(metal_color,flake_color * (worley_color[2] * 0.27 + 0.75),worley_mask);
+	compref		$tmp381 ___502_worley_color $const3 	%line{259} %argrw{"wrr"}
+	mul		$tmp382 $tmp381 $const61 	%argrw{"wrr"}
+	add		$tmp383 $tmp382 $const62 	%argrw{"wrr"}
+	mul		$tmp384 flake_color $tmp383 	%argrw{"wrr"}
+	mix		___501_metal_color ___501_metal_color $tmp384 ___502_worley_mask 	%argrw{"wrrr"}
+# ../../osl_shaders/dlCarPaint.osl:260
+# 			_metallic = max(metallic, worley_mask);
+	max		_metallic metallic ___502_worley_mask 	%line{260} %argrw{"wrr"}
+# ../../osl_shaders/dlCarPaint.osl:266
+# 		Gulbrandsen_Mapping(
+	functioncall	$const63 790 	%line{266} %argrw{"r"}
+# W:/r2d2\src\osl_shaders\material_common.h:52
+# 	Gulbrandsen_Mapping( i_reflectivity[0], i_gamma[0], n_r, k2_r);
+	compref		$tmp385 ___501_metal_color $const1 	%filename{"W:/r2d2\src\osl_shaders\material_common.h"} %line{52} %argrw{"wrr"}
+	compref		$tmp386 ___501_metal_color $const1 	%argrw{"wrr"}
+	functioncall	$const63 726 	%argrw{"r"}
+# W:/r2d2\src\osl_shaders\material_common.h:39
+# 	float rr = clamp(r, 0, 1 - 1e-3);
+	sub		$tmp387 $const19 $const44 	%line{39} %argrw{"wrr"}
+	functioncall	$const5 702 	%argrw{"r"}
+# W:/r2d2\src\3delight\win64-x64-release-free\osl\stdosl.h:163
+# float  clamp (float x, float minval, float maxval) { return max(min(x,maxval),minval); }
+	min		$tmp388 $tmp385 $tmp387 	%filename{"W:/r2d2\src\3delight\win64-x64-release-free\osl\stdosl.h"} %line{163} %argrw{"wrr"}
+	max		___461_rr $tmp388 $const20 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\material_common.h:42
+# 	n = get_n(rr,g);
+	functioncall	$const64 716 	%filename{"W:/r2d2\src\osl_shaders\material_common.h"} %line{42} %argrw{"r"}
+# W:/r2d2\src\osl_shaders\material_common.h:26
+# 		return n_min(r)*g + (1-g)*n_max(r);
+	functioncall	$const65 707 	%line{26} %argrw{"r"}
+# W:/r2d2\src\osl_shaders\material_common.h:17
+# 			return (1-r)/(1+r);
+	sub		$tmp390 $const19 ___461_rr 	%line{17} %argrw{"wrr"}
+	add		$tmp391 $const19 ___461_rr 	%argrw{"wrr"}
+	div		$tmp389 $tmp390 $tmp391 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\material_common.h:26
+# 		return n_min(r)*g + (1-g)*n_max(r);
+	mul		$tmp392 $tmp389 $tmp386 	%line{26} %argrw{"wrr"}
+	sub		$tmp393 $const19 $tmp386 	%argrw{"wrr"}
+	functioncall	$const66 714 	%argrw{"r"}
+# W:/r2d2\src\osl_shaders\material_common.h:22
+# 			float sqrtr = sqrt( r );
+	sqrt		___464_sqrtr ___461_rr 	%line{22} %argrw{"wr"}
+# W:/r2d2\src\osl_shaders\material_common.h:23
+# 			return (1+sqrtr)/(1-sqrtr);
+	add		$tmp395 $const19 ___464_sqrtr 	%line{23} %argrw{"wrr"}
+	sub		$tmp396 $const19 ___464_sqrtr 	%argrw{"wrr"}
+	div		$tmp394 $tmp395 $tmp396 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\material_common.h:26
+# 		return n_min(r)*g + (1-g)*n_max(r);
+	mul		$tmp397 $tmp393 $tmp394 	%line{26} %argrw{"wrr"}
+	add		___466_n_r $tmp392 $tmp397 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\material_common.h:43
+# 	k = sqrt(get_k2(rr,n));
+	functioncall	$const67 725 	%line{43} %argrw{"r"}
+# W:/r2d2\src\osl_shaders\material_common.h:32
+# 		float nplusone = n+1;
+	add		___465_nplusone ___466_n_r $const19 	%line{32} %argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\material_common.h:33
+# 		float nminusone = n-1;
+	sub		___465_nminusone ___466_n_r $const19 	%line{33} %argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\material_common.h:34
+# 		float nr = nplusone*nplusone*r - nminusone*nminusone;
+	mul		$tmp399 ___465_nplusone ___465_nplusone 	%line{34} %argrw{"wrr"}
+	mul		$tmp400 $tmp399 ___461_rr 	%argrw{"wrr"}
+	mul		$tmp401 ___465_nminusone ___465_nminusone 	%argrw{"wrr"}
+	sub		___465_nr $tmp400 $tmp401 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\material_common.h:35
+# 		return nr/(1-r);
+	sub		$tmp402 $const19 ___461_rr 	%line{35} %argrw{"wrr"}
+	div		$tmp398 ___465_nr $tmp402 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\material_common.h:43
+# 	k = sqrt(get_k2(rr,n));
+	sqrt		___466_k2_r $tmp398 	%line{43} %argrw{"wr"}
+# W:/r2d2\src\osl_shaders\material_common.h:53
+# 	Gulbrandsen_Mapping( i_reflectivity[1], i_gamma[1], n_g, k2_g);
+	compref		$tmp403 ___501_metal_color $const2 	%line{53} %argrw{"wrr"}
+	compref		$tmp404 ___501_metal_color $const2 	%argrw{"wrr"}
+	functioncall	$const63 757 	%argrw{"r"}
+# W:/r2d2\src\osl_shaders\material_common.h:39
+# 	float rr = clamp(r, 0, 1 - 1e-3);
+	sub		$tmp405 $const19 $const44 	%line{39} %argrw{"wrr"}
+	functioncall	$const5 733 	%argrw{"r"}
+# W:/r2d2\src\3delight\win64-x64-release-free\osl\stdosl.h:163
+# float  clamp (float x, float minval, float maxval) { return max(min(x,maxval),minval); }
+	min		$tmp406 $tmp403 $tmp405 	%filename{"W:/r2d2\src\3delight\win64-x64-release-free\osl\stdosl.h"} %line{163} %argrw{"wrr"}
+	max		___461_rr $tmp406 $const20 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\material_common.h:42
+# 	n = get_n(rr,g);
+	functioncall	$const64 747 	%filename{"W:/r2d2\src\osl_shaders\material_common.h"} %line{42} %argrw{"r"}
+# W:/r2d2\src\osl_shaders\material_common.h:26
+# 		return n_min(r)*g + (1-g)*n_max(r);
+	functioncall	$const65 738 	%line{26} %argrw{"r"}
+# W:/r2d2\src\osl_shaders\material_common.h:17
+# 			return (1-r)/(1+r);
+	sub		$tmp408 $const19 ___461_rr 	%line{17} %argrw{"wrr"}
+	add		$tmp409 $const19 ___461_rr 	%argrw{"wrr"}
+	div		$tmp407 $tmp408 $tmp409 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\material_common.h:26
+# 		return n_min(r)*g + (1-g)*n_max(r);
+	mul		$tmp410 $tmp407 $tmp404 	%line{26} %argrw{"wrr"}
+	sub		$tmp411 $const19 $tmp404 	%argrw{"wrr"}
+	functioncall	$const66 745 	%argrw{"r"}
+# W:/r2d2\src\osl_shaders\material_common.h:22
+# 			float sqrtr = sqrt( r );
+	sqrt		___464_sqrtr ___461_rr 	%line{22} %argrw{"wr"}
+# W:/r2d2\src\osl_shaders\material_common.h:23
+# 			return (1+sqrtr)/(1-sqrtr);
+	add		$tmp413 $const19 ___464_sqrtr 	%line{23} %argrw{"wrr"}
+	sub		$tmp414 $const19 ___464_sqrtr 	%argrw{"wrr"}
+	div		$tmp412 $tmp413 $tmp414 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\material_common.h:26
+# 		return n_min(r)*g + (1-g)*n_max(r);
+	mul		$tmp415 $tmp411 $tmp412 	%line{26} %argrw{"wrr"}
+	add		___466_n_g $tmp410 $tmp415 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\material_common.h:43
+# 	k = sqrt(get_k2(rr,n));
+	functioncall	$const67 756 	%line{43} %argrw{"r"}
+# W:/r2d2\src\osl_shaders\material_common.h:32
+# 		float nplusone = n+1;
+	add		___465_nplusone ___466_n_g $const19 	%line{32} %argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\material_common.h:33
+# 		float nminusone = n-1;
+	sub		___465_nminusone ___466_n_g $const19 	%line{33} %argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\material_common.h:34
+# 		float nr = nplusone*nplusone*r - nminusone*nminusone;
+	mul		$tmp417 ___465_nplusone ___465_nplusone 	%line{34} %argrw{"wrr"}
+	mul		$tmp418 $tmp417 ___461_rr 	%argrw{"wrr"}
+	mul		$tmp419 ___465_nminusone ___465_nminusone 	%argrw{"wrr"}
+	sub		___465_nr $tmp418 $tmp419 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\material_common.h:35
+# 		return nr/(1-r);
+	sub		$tmp420 $const19 ___461_rr 	%line{35} %argrw{"wrr"}
+	div		$tmp416 ___465_nr $tmp420 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\material_common.h:43
+# 	k = sqrt(get_k2(rr,n));
+	sqrt		___466_k2_g $tmp416 	%line{43} %argrw{"wr"}
+# W:/r2d2\src\osl_shaders\material_common.h:54
+# 	Gulbrandsen_Mapping( i_reflectivity[2], i_gamma[2], n_b, k2_b);
+	compref		$tmp421 ___501_metal_color $const3 	%line{54} %argrw{"wrr"}
+	compref		$tmp422 ___501_metal_color $const3 	%argrw{"wrr"}
+	functioncall	$const63 788 	%argrw{"r"}
+# W:/r2d2\src\osl_shaders\material_common.h:39
+# 	float rr = clamp(r, 0, 1 - 1e-3);
+	sub		$tmp423 $const19 $const44 	%line{39} %argrw{"wrr"}
+	functioncall	$const5 764 	%argrw{"r"}
+# W:/r2d2\src\3delight\win64-x64-release-free\osl\stdosl.h:163
+# float  clamp (float x, float minval, float maxval) { return max(min(x,maxval),minval); }
+	min		$tmp424 $tmp421 $tmp423 	%filename{"W:/r2d2\src\3delight\win64-x64-release-free\osl\stdosl.h"} %line{163} %argrw{"wrr"}
+	max		___461_rr $tmp424 $const20 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\material_common.h:42
+# 	n = get_n(rr,g);
+	functioncall	$const64 778 	%filename{"W:/r2d2\src\osl_shaders\material_common.h"} %line{42} %argrw{"r"}
+# W:/r2d2\src\osl_shaders\material_common.h:26
+# 		return n_min(r)*g + (1-g)*n_max(r);
+	functioncall	$const65 769 	%line{26} %argrw{"r"}
+# W:/r2d2\src\osl_shaders\material_common.h:17
+# 			return (1-r)/(1+r);
+	sub		$tmp426 $const19 ___461_rr 	%line{17} %argrw{"wrr"}
+	add		$tmp427 $const19 ___461_rr 	%argrw{"wrr"}
+	div		$tmp425 $tmp426 $tmp427 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\material_common.h:26
+# 		return n_min(r)*g + (1-g)*n_max(r);
+	mul		$tmp428 $tmp425 $tmp422 	%line{26} %argrw{"wrr"}
+	sub		$tmp429 $const19 $tmp422 	%argrw{"wrr"}
+	functioncall	$const66 776 	%argrw{"r"}
+# W:/r2d2\src\osl_shaders\material_common.h:22
+# 			float sqrtr = sqrt( r );
+	sqrt		___464_sqrtr ___461_rr 	%line{22} %argrw{"wr"}
+# W:/r2d2\src\osl_shaders\material_common.h:23
+# 			return (1+sqrtr)/(1-sqrtr);
+	add		$tmp431 $const19 ___464_sqrtr 	%line{23} %argrw{"wrr"}
+	sub		$tmp432 $const19 ___464_sqrtr 	%argrw{"wrr"}
+	div		$tmp430 $tmp431 $tmp432 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\material_common.h:26
+# 		return n_min(r)*g + (1-g)*n_max(r);
+	mul		$tmp433 $tmp429 $tmp430 	%line{26} %argrw{"wrr"}
+	add		___466_n_b $tmp428 $tmp433 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\material_common.h:43
+# 	k = sqrt(get_k2(rr,n));
+	functioncall	$const67 787 	%line{43} %argrw{"r"}
+# W:/r2d2\src\osl_shaders\material_common.h:32
+# 		float nplusone = n+1;
+	add		___465_nplusone ___466_n_b $const19 	%line{32} %argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\material_common.h:33
+# 		float nminusone = n-1;
+	sub		___465_nminusone ___466_n_b $const19 	%line{33} %argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\material_common.h:34
+# 		float nr = nplusone*nplusone*r - nminusone*nminusone;
+	mul		$tmp435 ___465_nplusone ___465_nplusone 	%line{34} %argrw{"wrr"}
+	mul		$tmp436 $tmp435 ___461_rr 	%argrw{"wrr"}
+	mul		$tmp437 ___465_nminusone ___465_nminusone 	%argrw{"wrr"}
+	sub		___465_nr $tmp436 $tmp437 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\material_common.h:35
+# 		return nr/(1-r);
+	sub		$tmp438 $const19 ___461_rr 	%line{35} %argrw{"wrr"}
+	div		$tmp434 ___465_nr $tmp438 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\material_common.h:43
+# 	k = sqrt(get_k2(rr,n));
+	sqrt		___466_k2_b $tmp434 	%line{43} %argrw{"wr"}
+# W:/r2d2\src\osl_shaders\material_common.h:56
+# 	n = color(n_r, n_g, n_b);
+	color		___501_metallic_ior ___466_n_r ___466_n_g ___466_n_b 	%line{56} %argrw{"wrrr"}
+# W:/r2d2\src\osl_shaders\material_common.h:57
+# 	k2 = color(k2_r, k2_g, k2_b);
+	color		___501_metallic_complex_ior ___466_k2_r ___466_k2_g ___466_k2_b 	%line{57} %argrw{"wrrr"}
+# ../../osl_shaders/dlCarPaint.osl:273
+# 		microfacet(
+	assign		$tmp439 $const20 	%filename{"../../osl_shaders/dlCarPaint.osl"} %line{273} %argrw{"wr"}
+	closure		c_metallic $const32 $const30 Nn_base $tmp439 ___501_metal_roughness ___501_metal_roughness $const20 $const1 $const68 $const19 $const69 $const19 $const70 ___501_metallic_ior $const71 ___501_metallic_complex_ior $const72 $const20 	%argrw{"wrrrrrrrrrrrrrrrrrr"}
+# ../../osl_shaders/dlCarPaint.osl:285
+# 		_metallic_color = 1;		
+	assign		_metallic_color $const2 	%line{285} %argrw{"wr"}
+# ../../osl_shaders/dlCarPaint.osl:291
+# 		CIEluminance(_coating_color);
+	functioncall	$const73 802 	%line{291} %argrw{"r"}
+# W:/r2d2\src\osl_shaders\utils.h:62
+# 		i_color[0] * 0.212671 +
+	compref		$tmp441 _coating_color $const1 	%filename{"W:/r2d2\src\osl_shaders\utils.h"} %line{62} %argrw{"wrr"}
+	mul		$tmp442 $tmp441 $const74 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\utils.h:63
+# 		i_color[1] * 0.715160 +
+	compref		$tmp443 _coating_color $const2 	%line{63} %argrw{"wrr"}
+	mul		$tmp444 $tmp443 $const75 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\utils.h:62
+# 		i_color[0] * 0.212671 +
+	add		$tmp445 $tmp442 $tmp444 	%line{62} %argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\utils.h:64
+# 		i_color[2] * 0.072169;
+	compref		$tmp446 _coating_color $const3 	%line{64} %argrw{"wrr"}
+	mul		$tmp447 $tmp446 $const76 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\utils.h:63
+# 		i_color[1] * 0.715160 +
+	add		$tmp440 $tmp445 $tmp447 	%line{63} %argrw{"wrr"}
+# ../../osl_shaders/dlCarPaint.osl:290
+# 		1 -
+	sub		$tmp448 $const19 $tmp440 	%filename{"../../osl_shaders/dlCarPaint.osl"} %line{290} %argrw{"wrr"}
+# ../../osl_shaders/dlCarPaint.osl:291
+# 		CIEluminance(_coating_color);
+	mul		_reflect_color _reflect_color $tmp448 	%line{291} %argrw{"wrr"}
+# ../../osl_shaders/dlCarPaint.osl:296
+# 		CIEluminance(_coating_color);
+	functioncall	$const73 813 	%line{296} %argrw{"r"}
+# W:/r2d2\src\osl_shaders\utils.h:62
+# 		i_color[0] * 0.212671 +
+	compref		$tmp450 _coating_color $const1 	%filename{"W:/r2d2\src\osl_shaders\utils.h"} %line{62} %argrw{"wrr"}
+	mul		$tmp451 $tmp450 $const74 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\utils.h:63
+# 		i_color[1] * 0.715160 +
+	compref		$tmp452 _coating_color $const2 	%line{63} %argrw{"wrr"}
+	mul		$tmp453 $tmp452 $const75 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\utils.h:62
+# 		i_color[0] * 0.212671 +
+	add		$tmp454 $tmp451 $tmp453 	%line{62} %argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\utils.h:64
+# 		i_color[2] * 0.072169;
+	compref		$tmp455 _coating_color $const3 	%line{64} %argrw{"wrr"}
+	mul		$tmp456 $tmp455 $const76 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\utils.h:63
+# 		i_color[1] * 0.715160 +
+	add		$tmp449 $tmp454 $tmp456 	%line{63} %argrw{"wrr"}
+# ../../osl_shaders/dlCarPaint.osl:295
+# 		1 -
+	sub		$tmp457 $const19 $tmp449 	%filename{"../../osl_shaders/dlCarPaint.osl"} %line{295} %argrw{"wrr"}
+# ../../osl_shaders/dlCarPaint.osl:296
+# 		CIEluminance(_coating_color);
+	mul		_metallic_color _metallic_color $tmp457 	%line{296} %argrw{"wrr"}
+# ../../osl_shaders/dlCarPaint.osl:302
+# 		CIEluminance(_reflect_color) ;
+	functioncall	$const73 824 	%line{302} %argrw{"r"}
+# W:/r2d2\src\osl_shaders\utils.h:62
+# 		i_color[0] * 0.212671 +
+	compref		$tmp459 _reflect_color $const1 	%filename{"W:/r2d2\src\osl_shaders\utils.h"} %line{62} %argrw{"wrr"}
+	mul		$tmp460 $tmp459 $const74 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\utils.h:63
+# 		i_color[1] * 0.715160 +
+	compref		$tmp461 _reflect_color $const2 	%line{63} %argrw{"wrr"}
+	mul		$tmp462 $tmp461 $const75 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\utils.h:62
+# 		i_color[0] * 0.212671 +
+	add		$tmp463 $tmp460 $tmp462 	%line{62} %argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\utils.h:64
+# 		i_color[2] * 0.072169;
+	compref		$tmp464 _reflect_color $const3 	%line{64} %argrw{"wrr"}
+	mul		$tmp465 $tmp464 $const76 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\utils.h:63
+# 		i_color[1] * 0.715160 +
+	add		$tmp458 $tmp463 $tmp465 	%line{63} %argrw{"wrr"}
+# ../../osl_shaders/dlCarPaint.osl:300
+# 		1 -
+	sub		$tmp466 $const19 $tmp458 	%filename{"../../osl_shaders/dlCarPaint.osl"} %line{300} %argrw{"wrr"}
+# ../../osl_shaders/dlCarPaint.osl:302
+# 		CIEluminance(_reflect_color) ;
+	mul		diffuse_color diffuse_color $tmp466 	%line{302} %argrw{"wrr"}
+# ../../osl_shaders/dlCarPaint.osl:304
+# 	if( raytype("shadow") )
+	raytype		$tmp467 $const77 	%line{304} %argrw{"wr"}
+	if		$tmp467 829 846 	%argrw{"r"}
+# ../../osl_shaders/dlCarPaint.osl:306
+# 		outColor = 0;
+	assign		outColor $const1 	%line{306} %argrw{"wr"}
+# ../../osl_shaders/dlCarPaint.osl:313
+# 				c_diffuse * diffuse_color * coating_absorbed * (1 - _metallic) );
+	mul		$tmp468 c_diffuse diffuse_color 	%line{313} %argrw{"wrr"}
+	mul		$tmp469 $tmp468 coating_absorbed 	%argrw{"wrr"}
+	sub		$tmp470 $const19 _metallic 	%argrw{"wrr"}
+	mul		$tmp471 $tmp469 $tmp470 	%argrw{"wrr"}
+# ../../osl_shaders/dlCarPaint.osl:311
+# 			outputvariable(
+	closure		___504_aov_diffuse $const79 $const78 $tmp471 	%line{311} %argrw{"wrrr"}
+# ../../osl_shaders/dlCarPaint.osl:318
+# 				c_coating * _coating_color +
+	mul		$tmp472 c_coating _coating_color 	%line{318} %argrw{"wrr"}
+# ../../osl_shaders/dlCarPaint.osl:319
+# 				c_reflect * _reflect_color * coating_absorbed *  (1 - _metallic) +
+	mul		$tmp473 c_reflect _reflect_color 	%line{319} %argrw{"wrr"}
+	mul		$tmp474 $tmp473 coating_absorbed 	%argrw{"wrr"}
+	sub		$tmp475 $const19 _metallic 	%argrw{"wrr"}
+	mul		$tmp476 $tmp474 $tmp475 	%argrw{"wrr"}
+# ../../osl_shaders/dlCarPaint.osl:318
+# 				c_coating * _coating_color +
+	add		$tmp477 $tmp472 $tmp476 	%line{318} %argrw{"wrr"}
+# ../../osl_shaders/dlCarPaint.osl:320
+# 				c_metallic * _metallic_color * coating_absorbed * _metallic);
+	mul		$tmp478 c_metallic _metallic_color 	%line{320} %argrw{"wrr"}
+	mul		$tmp479 $tmp478 coating_absorbed 	%argrw{"wrr"}
+	mul		$tmp480 $tmp479 _metallic 	%argrw{"wrr"}
+# ../../osl_shaders/dlCarPaint.osl:319
+# 				c_reflect * _reflect_color * coating_absorbed *  (1 - _metallic) +
+	add		$tmp481 $tmp477 $tmp480 	%line{319} %argrw{"wrr"}
+# ../../osl_shaders/dlCarPaint.osl:316
+# 			outputvariable(
+	closure		___504_aov_reflection $const79 $const80 $tmp481 	%line{316} %argrw{"wrrr"}
+# ../../osl_shaders/dlCarPaint.osl:323
+# 			aov_diffuse +
+	add		outColor ___504_aov_diffuse ___504_aov_reflection 	%line{323} %argrw{"wrr"}
+# ../../osl_shaders/dlCarPaint.osl:327
+# 	Ci = outColor;
+	assign		Ci outColor 	%line{327} %argrw{"wr"}
+	end

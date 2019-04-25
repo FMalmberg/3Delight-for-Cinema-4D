@@ -13,7 +13,8 @@ public:
 	virtual void SampleMotion(double t, long i, BaseDocument* doc, DL_SceneParser* parser){}
 };
 
-template<typename T>
+template<class T>
+
 DL_Hook* AllocateHook()
 {
     return new T();

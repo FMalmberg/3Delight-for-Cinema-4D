@@ -1,0 +1,172 @@
+OpenShadingLanguage 1.00
+# Compiled by oslc 1.11.0dev
+# options: -q -o ..\build\win64-x64-release-free\2016.5\..\osl\dlLayeredMaterial.oso -I../../osl_shaders
+surface dlLayeredMaterial	%meta{string[1],tags,"surface"} 
+param	closure color	i_color			%meta{string,label,"Top Layer"} %meta{string,attribute,"color"}  %read{10,14} %write{2147483647,-1}
+param	float	top_mask	1		%meta{string,label,"Top Mask"}  %read{11,15} %write{2147483647,-1}
+param	closure color	middle_layer			%meta{string,label,"Middle Layer"}  %read{0,0} %write{2147483647,-1}
+param	float	middle_mask	1		%meta{string,label,"Middle Mask"}  %read{1,1} %write{2147483647,-1}
+param	closure color	bottom_layer			%meta{string,label,"Bottom Layer"}  %read{12,16} %write{2147483647,-1}
+param	float	bottom_mask	1		%meta{string,label,"Bottom Mask"}  %read{13,17} %write{2147483647,-1}
+oparam	closure color	outColor			%meta{string,attribute,"outColor"}  %read{61,61} %write{60,60}
+global	closure color	Ci	%read{2147483647,-1} %write{61,61}
+local	closure color[3]	layers	%read{33,43} %write{0,16}
+local	float[3]	masks	%read{18,56} %write{1,32}
+local	closure color	last_layer	%read{41,41} %write{35,35}
+local	closure color	two_last_layers	%read{48,48} %write{42,42}
+local	closure color	composition	%read{60,60} %write{49,49}
+const	int	$const1	1		%read{0,53} %write{2147483647,-1}
+temp	int	$tmp1	%read{3,3} %write{2,2}
+temp	int	$tmp2	%read{4,9} %write{3,8}
+const	int	$const2	0		%read{3,51} %write{2147483647,-1}
+temp	int	$tmp3	%read{6,6} %write{5,5}
+const	string	$const3	"subsurface"		%read{5,5} %write{2147483647,-1}
+temp	int	$tmp4	%read{7,7} %write{6,6}
+temp	int	$tmp5	%read{8,8} %write{7,7}
+const	int	$const4	2		%read{10,56} %write{2147483647,-1}
+temp	float	$tmp6	%read{22,22} %write{21,21}
+temp	float	$tmp7	%read{20,20} %write{18,18}
+const	float	$const5	0		%read{21,31} %write{2147483647,-1}
+const	float	$const6	1		%read{20,57} %write{2147483647,-1}
+const	string	$const7	"clamp"		%read{19,29} %write{2147483647,-1}
+temp	float	$tmp8	%read{21,21} %write{20,20}
+temp	float	$tmp9	%read{27,27} %write{26,26}
+temp	float	$tmp10	%read{25,25} %write{23,23}
+temp	float	$tmp11	%read{26,26} %write{25,25}
+temp	float	$tmp12	%read{32,32} %write{31,31}
+temp	float	$tmp13	%read{30,30} %write{28,28}
+temp	float	$tmp14	%read{31,31} %write{30,30}
+temp	closure color	$tmp15	%read{35,35} %write{33,33}
+temp	float	$tmp16	%read{35,35} %write{34,34}
+temp	closure color	$tmp17	%read{39,39} %write{36,36}
+temp	float	$tmp18	%read{39,40} %write{37,37}
+const	string	$const8	"CompositeTwoLayers"		%read{38,45} %write{2147483647,-1}
+temp	closure color	$tmp19	%read{42,42} %write{39,39}
+temp	float	$tmp20	%read{41,41} %write{40,40}
+temp	closure color	$tmp21	%read{42,42} %write{41,41}
+temp	closure color	$tmp22	%read{46,46} %write{43,43}
+temp	float	$tmp23	%read{46,47} %write{44,44}
+temp	closure color	$tmp24	%read{49,49} %write{46,46}
+temp	float	$tmp25	%read{48,48} %write{47,47}
+temp	closure color	$tmp26	%read{49,49} %write{48,48}
+temp	closure color	$tmp27	%read{59,59} %write{50,50}
+const	string	$const9	"transparent"		%read{50,50} %write{2147483647,-1}
+temp	float	$tmp28	%read{52,52} %write{51,51}
+temp	float	$tmp29	%read{55,55} %write{52,52}
+temp	float	$tmp30	%read{54,54} %write{53,53}
+temp	float	$tmp31	%read{55,55} %write{54,54}
+temp	float	$tmp32	%read{58,58} %write{55,55}
+temp	float	$tmp33	%read{57,57} %write{56,56}
+temp	float	$tmp34	%read{58,58} %write{57,57}
+temp	float	$tmp35	%read{59,59} %write{58,58}
+temp	closure color	$tmp36	%read{60,60} %write{59,59}
+code ___main___
+# ../../osl_shaders/dlLayeredMaterial.osl:51
+# 	layers[1] = middle_layer; masks[1] = middle_mask;
+	aassign		layers $const1 middle_layer 	%filename{"../../osl_shaders/dlLayeredMaterial.osl"} %line{51} %argrw{"wrr"}
+	aassign		masks $const1 middle_mask 	%argrw{"wrr"}
+# ../../osl_shaders/dlLayeredMaterial.osl:58
+# 	if( backfacing() && !raytype("subsurface") )
+	backfacing	$tmp1 	%line{58} %argrw{"w"}
+	neq		$tmp2 $tmp1 $const2 	%argrw{"wrr"}
+	if		$tmp2 9 9 	%argrw{"r"}
+	raytype		$tmp3 $const3 	%argrw{"wr"}
+	eq		$tmp4 $tmp3 $const2 	%argrw{"wrr"}
+	neq		$tmp5 $tmp4 $const2 	%argrw{"wrr"}
+	assign		$tmp2 $tmp5 	%argrw{"wr"}
+	if		$tmp2 14 18 	%argrw{"r"}
+# ../../osl_shaders/dlLayeredMaterial.osl:61
+# 		layers[2] = i_color; masks[2] = top_mask;
+	aassign		layers $const4 i_color 	%line{61} %argrw{"wrr"}
+	aassign		masks $const4 top_mask 	%argrw{"wrr"}
+# ../../osl_shaders/dlLayeredMaterial.osl:62
+# 		layers[0] = bottom_layer; masks[0] = bottom_mask;
+	aassign		layers $const2 bottom_layer 	%line{62} %argrw{"wrr"}
+	aassign		masks $const2 bottom_mask 	%argrw{"wrr"}
+# ../../osl_shaders/dlLayeredMaterial.osl:67
+# 		layers[0] = i_color; masks[0] = top_mask;
+	aassign		layers $const2 i_color 	%line{67} %argrw{"wrr"}
+	aassign		masks $const2 top_mask 	%argrw{"wrr"}
+# ../../osl_shaders/dlLayeredMaterial.osl:68
+# 		layers[2] = bottom_layer; masks[2] = bottom_mask;
+	aassign		layers $const4 bottom_layer 	%line{68} %argrw{"wrr"}
+	aassign		masks $const4 bottom_mask 	%argrw{"wrr"}
+# ../../osl_shaders/dlLayeredMaterial.osl:72
+# 	masks[0] = clamp(masks[0], 0, 1);
+	aref		$tmp7 masks $const2 	%line{72} %argrw{"wrr"}
+	functioncall	$const7 22 	%argrw{"r"}
+# W:/r2d2\src\3delight\win64-x64-release-free\osl\stdosl.h:163
+# float  clamp (float x, float minval, float maxval) { return max(min(x,maxval),minval); }
+	min		$tmp8 $tmp7 $const6 	%filename{"W:/r2d2\src\3delight\win64-x64-release-free\osl\stdosl.h"} %line{163} %argrw{"wrr"}
+	max		$tmp6 $tmp8 $const5 	%argrw{"wrr"}
+# ../../osl_shaders/dlLayeredMaterial.osl:72
+# 	masks[0] = clamp(masks[0], 0, 1);
+	aassign		masks $const2 $tmp6 	%filename{"../../osl_shaders/dlLayeredMaterial.osl"} %line{72} %argrw{"wrr"}
+# ../../osl_shaders/dlLayeredMaterial.osl:73
+# 	masks[1] = clamp(masks[1], 0, 1);
+	aref		$tmp10 masks $const1 	%line{73} %argrw{"wrr"}
+	functioncall	$const7 27 	%argrw{"r"}
+# W:/r2d2\src\3delight\win64-x64-release-free\osl\stdosl.h:163
+# float  clamp (float x, float minval, float maxval) { return max(min(x,maxval),minval); }
+	min		$tmp11 $tmp10 $const6 	%filename{"W:/r2d2\src\3delight\win64-x64-release-free\osl\stdosl.h"} %line{163} %argrw{"wrr"}
+	max		$tmp9 $tmp11 $const5 	%argrw{"wrr"}
+# ../../osl_shaders/dlLayeredMaterial.osl:73
+# 	masks[1] = clamp(masks[1], 0, 1);
+	aassign		masks $const1 $tmp9 	%filename{"../../osl_shaders/dlLayeredMaterial.osl"} %line{73} %argrw{"wrr"}
+# ../../osl_shaders/dlLayeredMaterial.osl:74
+# 	masks[2] = clamp(masks[2], 0, 1);
+	aref		$tmp13 masks $const4 	%line{74} %argrw{"wrr"}
+	functioncall	$const7 32 	%argrw{"r"}
+# W:/r2d2\src\3delight\win64-x64-release-free\osl\stdosl.h:163
+# float  clamp (float x, float minval, float maxval) { return max(min(x,maxval),minval); }
+	min		$tmp14 $tmp13 $const6 	%filename{"W:/r2d2\src\3delight\win64-x64-release-free\osl\stdosl.h"} %line{163} %argrw{"wrr"}
+	max		$tmp12 $tmp14 $const5 	%argrw{"wrr"}
+# ../../osl_shaders/dlLayeredMaterial.osl:74
+# 	masks[2] = clamp(masks[2], 0, 1);
+	aassign		masks $const4 $tmp12 	%filename{"../../osl_shaders/dlLayeredMaterial.osl"} %line{74} %argrw{"wrr"}
+# ../../osl_shaders/dlLayeredMaterial.osl:84
+# 	closure color last_layer = masks[2] * layers[2];
+	aref		$tmp15 layers $const4 	%line{84} %argrw{"wrr"}
+	aref		$tmp16 masks $const4 	%argrw{"wrr"}
+	mul		last_layer $tmp15 $tmp16 	%argrw{"wrr"}
+# ../../osl_shaders/dlLayeredMaterial.osl:87
+# 		CompositeTwoLayers( layers[1], masks[1], last_layer );
+	aref		$tmp17 layers $const1 	%line{87} %argrw{"wrr"}
+	aref		$tmp18 masks $const1 	%argrw{"wrr"}
+	functioncall	$const8 43 	%argrw{"r"}
+# ../../osl_shaders/dlLayeredMaterial.osl:21
+# 	return layer1 * mask + (1 - mask) * layer2;
+	mul		$tmp19 $tmp17 $tmp18 	%line{21} %argrw{"wrr"}
+	sub		$tmp20 $const6 $tmp18 	%argrw{"wrr"}
+	mul		$tmp21 last_layer $tmp20 	%argrw{"wrr"}
+	add		two_last_layers $tmp19 $tmp21 	%argrw{"wrr"}
+# ../../osl_shaders/dlLayeredMaterial.osl:90
+# 		CompositeTwoLayers( layers[0], masks[0], two_last_layers );
+	aref		$tmp22 layers $const2 	%line{90} %argrw{"wrr"}
+	aref		$tmp23 masks $const2 	%argrw{"wrr"}
+	functioncall	$const8 50 	%argrw{"r"}
+# ../../osl_shaders/dlLayeredMaterial.osl:21
+# 	return layer1 * mask + (1 - mask) * layer2;
+	mul		$tmp24 $tmp22 $tmp23 	%line{21} %argrw{"wrr"}
+	sub		$tmp25 $const6 $tmp23 	%argrw{"wrr"}
+	mul		$tmp26 two_last_layers $tmp25 	%argrw{"wrr"}
+	add		composition $tmp24 $tmp26 	%argrw{"wrr"}
+# ../../osl_shaders/dlLayeredMaterial.osl:94
+# 		(1-masks[0])*(1-masks[1])*(1-masks[2])*transparent();
+	closure		$tmp27 $const9 	%line{94} %argrw{"wr"}
+	aref		$tmp28 masks $const2 	%argrw{"wrr"}
+	sub		$tmp29 $const6 $tmp28 	%argrw{"wrr"}
+	aref		$tmp30 masks $const1 	%argrw{"wrr"}
+	sub		$tmp31 $const6 $tmp30 	%argrw{"wrr"}
+	mul		$tmp32 $tmp29 $tmp31 	%argrw{"wrr"}
+	aref		$tmp33 masks $const4 	%argrw{"wrr"}
+	sub		$tmp34 $const6 $tmp33 	%argrw{"wrr"}
+	mul		$tmp35 $tmp32 $tmp34 	%argrw{"wrr"}
+	mul		$tmp36 $tmp27 $tmp35 	%argrw{"wrr"}
+# ../../osl_shaders/dlLayeredMaterial.osl:93
+# 		composition +
+	add		outColor composition $tmp36 	%line{93} %argrw{"wrr"}
+# ../../osl_shaders/dlLayeredMaterial.osl:92
+# 	Ci = outColor =
+	assign		Ci outColor 	%line{92} %argrw{"wr"}
+	end

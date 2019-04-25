@@ -4,7 +4,7 @@
 
 Transform::Transform(BaseObject* object, DL_SceneParser* parser, std::string parent){
 	obj=object;
-
+	
 	NSI::Context ctx(parser->GetContext());
 
 	handle=std::string(parser->GetUniqueName("transform"));

@@ -11,7 +11,7 @@ inline Vector toLinear(Vector color, BaseDocument* doc){
 	if((!lwf) || (colorprofile!=0)){
 		return color;
 	}
-	return TransformColor(color, COLORSPACETRANSFORMATION_SRGB_TO_LINEAR);
+	return TransformColor(color, COLORSPACETRANSFORMATION::SRGB_TO_LINEAR);
 }
 
 #endif
