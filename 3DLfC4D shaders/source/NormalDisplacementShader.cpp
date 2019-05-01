@@ -20,7 +20,6 @@ Bool NormalDisplacementShader::Init(GeListNode* node)
 
 	data->SetFloat(DISPLACEMENT_HEIGHT, 0.01);
 	data->SetFloat(DISPLACEMENT_STRENGTH, 1.0);
-	//data->SetBool(DISPLACEMENT_CENTERED, true);
 
 	return true;
 }

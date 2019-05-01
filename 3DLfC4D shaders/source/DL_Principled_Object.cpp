@@ -28,15 +28,15 @@ public:
 
 Bool DL_Principled_command::Execute(BaseDocument* doc)
 {
-	 AutoAlloc<BaseMaterial> material { DL_PRINCIPLED };
+	Material* material = (Material*)BaseMaterial::Alloc(DL_PRINCIPLED);
 	if (!material)
 		return false;
-	doc->InsertMaterial(material.Release());
+	doc->InsertMaterial(material);
 	return true;
 }
 
 
 Bool Register_DlPrincipled_Object(void)
 {
-	return RegisterCommandPlugin(DL_PRINCIPLED_COMMAND, "3Delight Principled"_s, 0, 0, String(),NewObjClear(DL_Principled_command));
+	return RegisterCommandPlugin(DL_PRINCIPLED_COMMAND, "3Delight Principled"_s, PLUGINFLAG_HIDE, 0, String(),NewObjClear(DL_Principled_command));
 }

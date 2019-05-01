@@ -22,17 +22,26 @@ void EnvironmentLightTranslator::CreateNSINodes(const char* ParentTransformHandl
 	BaseList2D *obj=(BaseList2D*)C4DNode;
 	BaseContainer *data = obj->GetDataInstance(); 
 
-	Bool seen_by_camera=data->GetBool(ENVIRONMENT_SEEN_BY_CAMERA);
-	int camera_visibility=0;
-	if(seen_by_camera){
-		camera_visibility=1;
-	}
+	
+
+	float intensity = data->GetFloat(ENVIRONMENT_INTENSITY);
+	float exposure = data->GetFloat(ENVIRONMENT_EXPOSURE);
+	Vector tint_c4d = data->GetVector(ENVIRONMENT_TINT);
+	float tint[3]{ tint_c4d.x, tint_c4d.y, tint_c4d.z };
+	int mapping = data->GetInt32(ENVIRONMENT_MAPPING);
+	int camera_visibility = data->GetBool(ENVIRONMENT_SEEN_BY_CAMERA);
+	int prelit = data->GetBool(ENVIRONMENT_PRELIT);
+	bool illumination = data->GetBool(ENVIRONMENT_ILLUMINATES_BY_DEFAULT);
+
+	NSI::ArgumentList attributes_args;
+	attributes_args.Add(new NSI::IntegerArg("visibility.camera", camera_visibility));
+	attributes_args.Add(new NSI::IntegerArg("prelit", prelit));
+	attributes_args.Add(new NSI::IntegerArg("visibility", illumination));
 
 	//Create an attributes node, and connect it to the mesh
 	string attributes_handle=string(parser->GetUniqueName("light_attributes"));
 	ctx.Create(attributes_handle, "attributes");
-	ctx.SetAttribute(attributes_handle,(
-		NSI::IntegerArg("visibility.camera",camera_visibility)));
+	ctx.SetAttribute(attributes_handle,attributes_args);
 	ctx.Connect(attributes_handle,"",handle,"geometryattributes");
 
 	//Create a shader for the mesh and connect it to the geometry attributes of the mesh
@@ -40,43 +49,33 @@ void EnvironmentLightTranslator::CreateNSINodes(const char* ParentTransformHandl
 	ctx.Create(shader_handle, "shader");
 	ctx.Connect(shader_handle,"",attributes_handle,"surfaceshader");
 
-	Filename shaderpath=Filename(GeGetPluginPath()+Filename("OSL")+Filename("EnvLight.oso"));
+	Filename shaderpath=Filename(GeGetPluginPath()+Filename("OSL")+Filename("dlEnvironmentShape.oso"));
 	vector<char> c_shaderpath =StringToChars(shaderpath.GetString());
 
 	Filename texturefile = data->GetFilename(ENVIRONMENT_TEXTURE);
 	string texturename=StringToStdString(texturefile.GetString());
 
+	NSI::ArgumentList shader_args;
+	shader_args.Add(new NSI::StringArg("shaderfilename", std::string(&c_shaderpath[0])));
+	shader_args.Add(new NSI::FloatArg("intensity", intensity));
+	shader_args.Add(new NSI::FloatArg("exposure", exposure));
+	shader_args.Add(new NSI::ColorArg("tint", tint));
+	shader_args.Add(new NSI::IntegerArg("mapping", mapping));
+	ctx.SetAttribute(shader_handle,shader_args);
 
-	ctx.SetAttribute(shader_handle,(
-		NSI::StringArg("shaderfilename", std::string(&c_shaderpath[0])),
-		NSI::StringArg("texname", texturename)
-		));
+
+	BaseList2D* texture_shader = data->GetLink(ENVIRONMENT_TEXTURE_SHADER, doc);
+	if (texture_shader)
+	{
+		string texture_handle = string(parser->GetAssociatedHandle(texture_shader));
+		if (texture_handle != "")
+		{
+			ctx.Connect(texture_handle, "outColor", shader_handle, "i_texture");
+		}
+	}
+
 
 	parser->SetAssociatedHandle((BaseList2D*)C4DNode, handle.c_str());
-
-	/*int nvertices=4;
-	vector<int> indices(4);
-
-	indices[0]=0; 
-	indices[1]=1;
-	indices[2]=2;
-	indices[3]=3;
-
-	NSI::Argument arg_nvertices("nvertices");
-	arg_nvertices.SetType(NSITypeInteger);
-	arg_nvertices.SetCount(1);
-	arg_nvertices.SetValuePointer((void*)&nvertices);
-
-	NSI::Argument arg_indices("P.indices");
-	arg_indices.SetType(NSITypeInteger);
-	arg_indices.SetCount(indices.size());
-	arg_indices.SetValuePointer((void*)&indices[0]);
-
-
-	ctx.SetAttribute(handle,(
-		arg_nvertices,
-		arg_indices
-		));*/
 
 }
 
@@ -86,41 +85,6 @@ void EnvironmentLightTranslator::SampleMotion(double t, long i, GeListNode* C4DN
 
 	BaseList2D *obj=(BaseList2D*)C4DNode;
 	BaseContainer *data = obj->GetDataInstance(); 
-
-	//float halfwidth=0.5*float(data->GetFloat(LIGHTCARD_WIDTH));
-	//float halfheight=0.5*float(data->GetFloat(LIGHTCARD_HEIGHT));
-
-	//float halfwidth=0.5*width;
-	//float halfheight=0.5*height;
-
-
-
-
-	float intensity=(data->GetFloat(ENVIRONMENT_INTENSITY));
-
-	intensity=intensity*pow(2,data->GetFloat(ENVIRONMENT_EXPOSURE));
-
-	//spread=data->GetFloat(LIGHTCARD_SPREAD);
-	
-	Vector color=toLinear(data->GetVector(ENVIRONMENT_TINT),doc);
-
-	float col[3];
-	col[0]=color.x;
-	col[1]=color.y;
-	col[2]=color.z;
-
-
-	double angle = maxon::RadToDeg(data->GetFloat(ENVIRONMENT_ANGLE));
-
-
-	ctx.SetAttributeAtTime(shader_handle,t,(
-		NSI::ColorArg("tint", &col[0]),
-		NSI::FloatArg("intensity",intensity)
-		));
-
-	ctx.SetAttributeAtTime(handle, t, (
-		NSI::DoubleArg("angle", angle)
-		));
 }
 
 

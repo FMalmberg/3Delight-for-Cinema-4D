@@ -40,8 +40,7 @@ void NSI_Export_Bitmap::CreateNSINodes(const char* ParentTransformHandle, GeList
 		std::string osl_parameter_name = "_" + std::to_string(BITMAPSHADER_FILENAME);
 		meta = osl_parameter_name + ".meta.colorspace";
 		args.Add(new NSI::StringArg(meta, color_space));
-
+		ctx.SetAttribute(m_shader_handle, args);
 	}
-	ctx.SetAttribute(m_shader_handle, args);
 }
 

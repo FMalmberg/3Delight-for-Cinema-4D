@@ -218,7 +218,7 @@ bool SceneParser::Parse(BaseDocument* doc, long frame){
 	for(long i=0; i<nodes.size(); i++){
 		DL_Translator* translator=nodes[i].GetTranslator();
 		if(translator){
-			translator->ConnectNSINodes(nodes[i].GetC4DNode(doc), doc, this);
+			translator->ConnectNSINodes(nodes[i].GetC4DNode(doc), doc, this);		
 		}
 	}
 
@@ -319,10 +319,10 @@ std::string SceneParser::GetIDString(BaseList2D* node){
 	const Char* mem;
 	node->FindUniqueID(MAXON_CREATOR_ID, mem,  memsize);
 	String ID_STR;
-	ApplicationOutput(ID_STR);
-	ID_STR.SetCString(mem,memsize, STRINGENCODING::UTF8);
+	ID_STR.SetCString(mem,memsize);
 	std::string result=StringToStdString(ID_STR);
 	return result;
+
 }
 
 const char* SceneParser::GetUniqueName(char* basename){
@@ -388,7 +388,6 @@ void SceneParser::TraverseShaders(BaseShader* shader, BaseDocument* doc){
 	DL_Translator* translator = n.GetTranslator();
 	if (translator){
 		nodes.push_back(n);
-		ApplicationOutput(shader->GetName());
 		translator->CreateNSINodes("", shader, doc, this);
 	}
 
@@ -433,6 +432,9 @@ void SceneParser::TraverseScene(BaseObject* obj, BaseDocument* doc,std::string p
 		}
 		tag=tag->GetNext();
 	}
+
+	BaseShader* shader = obj->GetFirstShader();
+	TraverseShaders(shader, doc);
 
 	TraverseScene(obj->GetDown(),doc,transform_handle, obj_visible);
 	TraverseScene(obj->GetNext(), doc, parent_transform, visible);

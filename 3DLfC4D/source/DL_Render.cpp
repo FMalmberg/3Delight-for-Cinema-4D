@@ -69,4 +69,3 @@ bool DL_RenderFrame(BaseDocument* doc, long frame, RENDER_MODE mode, bool progre
 	BaseDocument::Free(renderdoc);  
 	return RenderOK; 
 }
-

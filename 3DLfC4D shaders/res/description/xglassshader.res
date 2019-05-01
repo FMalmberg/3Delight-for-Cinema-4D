@@ -19,8 +19,7 @@ CONTAINER Xglassshader
 				MODE_OPACITY;
 			}
 		}
-}
-
 	}
 
 }
+

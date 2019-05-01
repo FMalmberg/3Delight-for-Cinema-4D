@@ -4,22 +4,13 @@
 #include "DL_TypeConversions.h"
 #include "DL_Utilities.h"
 #include "nsi.hpp"
-
-
-void StandardShaderTranslator::CreateNSINodes(const char* ParentTransformHandle, GeListNode* C4DNode, BaseDocument* doc, DL_SceneParser* parser){
+void StandardShaderTranslator::CreateNSINodes(const char* ParentTransformHandle, GeListNode* C4DNode, BaseDocument* doc, DL_SceneParser* parser) {
 	NSI::Context ctx(parser->GetContext());
-
-	string attributes_handle = string(parser->GetUniqueName("root_attributes"));
-	ctx.Create(attributes_handle, "attributes");
-	ctx.Connect(attributes_handle, "", ".root", "geometryattributes");
-
 
 	//Create the shader node
 	shader_handle = string(parser->GetUniqueName("standard_material"));
 	ctx.Create(shader_handle, "shader");
-	ctx.Connect(shader_handle, "", attributes_handle, "surfaceshader");
-
-
+	
 	BaseObject* obj = (BaseObject*)C4DNode;
 	BaseContainer* data = obj->GetDataInstance();
 
@@ -30,8 +21,7 @@ void StandardShaderTranslator::CreateNSINodes(const char* ParentTransformHandle,
 	//Coating parameters
 	bool coating_on = data->GetBool(COATING_ON);
 	int coating_on_int = 0;
-	if (coating_on){ coating_on_int = 1; }
-
+	if (coating_on) { coating_on_int = 1; }
 
 	Vector coating_color = toLinear(data->GetVector(COATING_COLOR), doc);
 	float coat_col[3];
@@ -74,9 +64,9 @@ void StandardShaderTranslator::CreateNSINodes(const char* ParentTransformHandle,
 	//GePrint("Anisotropy: " + String::FloatToString(specular_anisotropy));
 	Vector anisotropy_direction = data->GetVector(SPECULAR_ANISOTROPY_DIRECTION);
 	float aniso_dir[3];
-	aniso_dir[0] = 0.5*(anisotropy_direction.x+1);
-	aniso_dir[1] = 0.5*(anisotropy_direction.y+1);
-	aniso_dir[2] = 0.5*(anisotropy_direction.z+1);
+	aniso_dir[0] = 0.5*(anisotropy_direction.x + 1);
+	aniso_dir[1] = 0.5*(anisotropy_direction.y + 1);
+	aniso_dir[2] = 0.5*(anisotropy_direction.z + 1);
 
 	float specular_roughness = data->GetFloat(SPECULAR_ROUGHNESS);
 	float specular_fr = data->GetFloat(SPECULAR_FR);
@@ -85,7 +75,7 @@ void StandardShaderTranslator::CreateNSINodes(const char* ParentTransformHandle,
 	//Emission parameters
 	bool emission_on = data->GetBool(EMISSION_ON);
 	int emission_on_int = 0;
-	if (emission_on){ emission_on_int = 1; }
+	if (emission_on) { emission_on_int = 1; }
 
 
 	float emission_weight = data->GetFloat(EMISSION_WEIGHT);
@@ -120,81 +110,83 @@ void StandardShaderTranslator::CreateNSINodes(const char* ParentTransformHandle,
 	parser->SetAssociatedHandle((BaseList2D*)C4DNode, shader_handle.c_str());
 }
 
-void StandardShaderTranslator::ConnectNSINodes(GeListNode* C4DNode, BaseDocument* doc, DL_SceneParser* parser){
+void StandardShaderTranslator::ConnectNSINodes(GeListNode* C4DNode, BaseDocument* doc, DL_SceneParser* parser) {
 
 	NSI::Context ctx(parser->GetContext());
 
 	BaseShader* shadernode = (BaseShader*)C4DNode;
+	std::string str = shadernode->GetName().GetCStringCopy();
 	BaseContainer* data = shadernode->GetDataInstance();
 
 	//Diffuse color
 	BaseList2D* shader = data->GetLink(DIFFUSE_COLOR_SHADER, doc);
-	if (shader){
+	if (shader) {
 		string link_handle = string(parser->GetAssociatedHandle(shader));
-		if (link_handle != ""){
+		ApplicationOutput("Linkage @", link_handle.c_str());
+		if (link_handle != "") {
 			ctx.Connect(link_handle, "c_out", shader_handle, "diffuse_color");
 		}
 	}
 
 	//Diffuse roughness
 	shader = data->GetLink(DIFFUSE_ROUGHNESS_SHADER, doc);
-	if (shader){
+	if (shader) {
 		string link_handle = string(parser->GetAssociatedHandle(shader));
-		if (link_handle != ""){
+		if (link_handle != "") {
 			ctx.Connect(link_handle, "f_out", shader_handle, "diffuse_roughness");
 		}
 	}
 
 	//Coating color
 	shader = data->GetLink(COATING_COLOR_SHADER, doc);
-	if (shader){
+	if (shader) {
 		string link_handle = string(parser->GetAssociatedHandle(shader));
-		if (link_handle != ""){
+		if (link_handle != "") {
 			ctx.Connect(link_handle, "c_out", shader_handle, "coating_color");
 		}
 	}
 
 	//Coating roughness
 	shader = data->GetLink(COATING_ROUGHNESS_SHADER, doc);
-	if (shader){
+	if (shader) {
 		string link_handle = string(parser->GetAssociatedHandle(shader));
-		if (link_handle != ""){
+		if (link_handle != "") {
 			ctx.Connect(link_handle, "f_out", shader_handle, "coating_roughness");
 		}
 	}
 
 	//Specular color
 	shader = data->GetLink(SPECULAR_COLOR_SHADER, doc);
-	if (shader){
+	if (shader) {
 		string link_handle = string(parser->GetAssociatedHandle(shader));
-		if (link_handle != ""){
+		if (link_handle != "") {
 			ctx.Connect(link_handle, "c_out", shader_handle, "specular_color");
 		}
 	}
 
 	//Specular roughness
 	shader = data->GetLink(SPECULAR_ROUGHNESS_SHADER, doc);
-	if (shader){
+	if (shader) {
 		string link_handle = string(parser->GetAssociatedHandle(shader));
-		if (link_handle != ""){
+		if (link_handle != "") {
 			ctx.Connect(link_handle, "f_out", shader_handle, "specular_roughness");
 		}
 	}
 
 	//Specular anisotropy
 	shader = data->GetLink(SPECULAR_ANISOTROPY_SHADER, doc);
-	if (shader){
+	if (shader) {
 		string link_handle = string(parser->GetAssociatedHandle(shader));
-		if (link_handle != ""){
+		if (link_handle != "") {
 			ctx.Connect(link_handle, "f_out", shader_handle, "specular_anisotropy");
 		}
 	}
 
 	//Specular direction
 	shader = data->GetLink(SPECULAR_ANISOTROPY_DIRECTION_SHADER, doc);
-	if (shader){
+	if (shader) {
 		string link_handle = string(parser->GetAssociatedHandle(shader));
-		if (link_handle != ""){
+		if (link_handle != "") {
 			ctx.Connect(link_handle, "c_out", shader_handle, "anisotropy_direction");
 		}
 	}
@@ -202,11 +194,10 @@ void StandardShaderTranslator::ConnectNSINodes(GeListNode* C4DNode, BaseDocument
 	//Emission color
 	shader = 0;
 	shader = data->GetLink(EMISSION_COLOR_SHADER, doc);
-	if (shader){
+	if (shader) {
 		string link_handle = string(parser->GetAssociatedHandle(shader));
-		if (link_handle != ""){
+		if (link_handle != "") {
 			ctx.Connect(link_handle, "c_out", shader_handle, "emission_color");
 		}
 	}
 }
-

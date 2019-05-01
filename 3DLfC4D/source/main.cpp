@@ -2,7 +2,6 @@
 
 #include "c4d.h"
 #include <string.h>
-
 #include "c4d.h"
 #include "PluginManager.h"
 #include "BitmapDisplayDriver.h"
@@ -25,7 +24,6 @@ Bool RegisterDL_CameraTag(void);
 Bool RegisterDL_MotionBlurTag(void);
 Bool RegisterDL_VisibilityTag(void);
 Bool Register3DelightPlugin(void);
-Bool RegisterCustomGUITest(void);
 Bool RegisterCustomListView(void);
 
 Bool PluginStart(void)

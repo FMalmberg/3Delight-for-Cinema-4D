@@ -9,18 +9,12 @@
 #include "PointLightTranslator.h"
 #include "IDs.h"
 #include "c4dLightTranslator.h"
-
-Bool RegisterLightCard(void);
-Bool RegisterEnvironmentLight(void);
-Bool RegisterPointLight(void);
+#include "../../3DLfC4D shaders/source/DLSky_Translator.h"
+#include "../../3DLfC4D shaders/source/NSIExportShader.h"
+#include "../../3DLfC4D shaders/res/description/dl_sky.h"
 
 Bool PluginStart(void)
 {
-	//...do or register something...
-	if (!RegisterLightCard()) return FALSE;
-	if (!RegisterPointLight()) return FALSE;
-	if (!RegisterEnvironmentLight()) return FALSE;
-
 	return true;
 }
 
@@ -40,12 +34,7 @@ Bool PluginMessage(Int32 id, void *data)
 
 	case DL_LOAD_PLUGINS:
 		DL_PluginManager* pm = (DL_PluginManager*)data;
-		pm->RegisterTranslator(ID_LIGHTCARD, AllocateTranslator<LightCardTranslator>);
-		pm->RegisterTranslator(ID_POINTLIGHT, AllocateTranslator<PointLightTranslator>);
-		pm->RegisterTranslator(ID_ENVIRONMENTLIGHT, AllocateTranslator<EnvironmentLightTranslator>);
 		pm->RegisterTranslator(Olight, AllocateTranslator<c4dLightTranslator>);
-
-		//pm->RegisterTranslator(Opolygon, AllocateTranslator<PolygonObjectTranslator>);
 		break;
 
 	}

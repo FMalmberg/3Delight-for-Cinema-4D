@@ -250,14 +250,6 @@ void RenderOptionsHook::CreateNSINodes(BaseDocument* i_doc, DL_SceneParser* i_pa
 	std::string dir = fn.GetString().GetCStringCopy();
 	dir = dir + "\\" + docName;
 
-	BOOL bDir;
-	bDir = CreateDirectory(
-		(LPCWSTR)dir.c_str(), NULL
-	);
-
-	if (bDir)
-		ApplicationOutput("SuccesS");
-
 
 	ctx.SetAttribute(NSI_SCENE_GLOBAL,(
 		NSI::IntegerArg("quality.shadingsamples",shading_samples),

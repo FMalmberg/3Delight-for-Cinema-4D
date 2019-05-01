@@ -14,11 +14,13 @@ Bool EnvironmentLight::Init(GeListNode* node){
 	BaseObject		*op   = (BaseObject*)node;
 	BaseContainer *data = op->GetDataInstance();
 
-	data->SetFloat(ENVIRONMENT_ANGLE, 360);
-
 	data->SetFloat(ENVIRONMENT_INTENSITY,1.0);
-	data->SetFloat(ENVIRONMENT_EXPOSURE,0.0);
+	data->SetFloat(ENVIRONMENT_EXPOSURE,1.0);
 	data->SetVector(ENVIRONMENT_TINT,Vector(1,1,1));
+	data->SetInt32(ENVIRONMENT_MAPPING,ENVIRONMENT_MAPPING_SPHERICAL);
+	data->SetBool(ENVIRONMENT_SEEN_BY_CAMERA,false);
+	data->SetBool(ENVIRONMENT_PRELIT,false);
+	data->SetBool(ENVIRONMENT_ILLUMINATES_BY_DEFAULT,true);
 	/*data->SetFloat(LIGHTCARD_WIDTH,200.0);
 	data->SetFloat(LIGHTCARD_HEIGHT,200.0);
 

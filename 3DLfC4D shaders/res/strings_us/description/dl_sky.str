@@ -1,0 +1,20 @@
+STRINGTABLE dl_sky
+{
+	dl_sky "Sky";
+	SHADER_GROUP "Sky";
+	SKY_INTENSITY "Intensity";
+	SKY_INTENSITY_SHADER "Texture";
+	SKY_TURBIDITY "Turbidity";
+	SKY_GROUND_COLOR "Ground Color";
+	SKY_ELEVATION "Elevation";
+	SKY_AZIMUTH "Azimuth";
+	SKY_TINT "Sky Tint";
+	SKY_SUN_TINT "Sun Tint";
+	SKY_SUN_SIZE "Sun Size";
+	SKY_DRAW_SUN_DISK "Draw Sun Disk";
+	SKY_DRAW_GROUND "Draw Ground";
+	LINE1 " ";
+	LINE2 " ";
+	LINE3 " ";
+	
+}

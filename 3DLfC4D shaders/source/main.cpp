@@ -19,6 +19,14 @@
 #include "NSIExportBitmap.h";
 #include "DlPrincipled_translator.h";
 #include "DLGlass_Translator.h";
+#include "DLSkin_Translator.h";
+#include "DLHairAndFur_Translator.h";
+#include "DLMetal_Translator.h";
+#include "DLSubstance_Translator.h";
+#include "DLCarPaint_Translator.h";
+#include "DLSky_Translator.h";
+#include "EnvironmentLightTranslator.h";
+#include "oenvironment.h";
 
 
 #include "IDs.h"
@@ -40,8 +48,14 @@ void MySearchMenuResource(BaseContainer* bc)
 			if (dat->GetString() == String("IDM_MNEU"))
 			{
 				BaseContainer sc;
-				sc.InsData(MENURESOURCE_SUBTITLE, String("3Delight Shader"));
-				sc.InsData(MENURESOURCE_COMMAND, String("PLUGIN_CMD_123123123"));
+				sc.InsData(MENURESOURCE_SUBTITLE, String("3Delight"));
+				sc.InsData(MENURESOURCE_COMMAND, String("PLUGIN_CMD_1052718"));
+				sc.InsData(MENURESOURCE_COMMAND, String("PLUGIN_CMD_1052717"));
+				sc.InsData(MENURESOURCE_COMMAND, String("PLUGIN_CMD_1052719"));
+				sc.InsData(MENURESOURCE_COMMAND, String("PLUGIN_CMD_1052720"));
+				sc.InsData(MENURESOURCE_COMMAND, String("PLUGIN_CMD_1052721"));
+				sc.InsData(MENURESOURCE_COMMAND, String("PLUGIN_CMD_1052722"));
+				sc.InsData(MENURESOURCE_COMMAND, String("PLUGIN_CMD_1052724"));
 
 				bc->InsDataAfter(MENURESOURCE_STRING, sc, dat);
 			}
@@ -49,27 +63,47 @@ void MySearchMenuResource(BaseContainer* bc)
 	}
 }
 
-Bool RegisterDLMaterial(void);
+
 Bool RegisterDLPrincipled(void);
 Bool RegisterDLGlass(void);
-Bool RegisterStandardShader(void);
-Bool RegisterGlassShader(void);
-Bool RegisterNormalDisplacementShader(void);
-Bool RegisterRangeShader(void);
+Bool RegisterDLSkin(void);
+Bool RegisterDLHairAndFur(void);
+Bool RegisterDLMetal(void);
+Bool RegisterDLSubstance(void);
+Bool RegisterDLCarPaint(void);
+
 Bool Register_DlPrincipled_Object(void);
+Bool Register_DlGlass_Object(void);
+Bool Register_HairAndFur_Object(void);
+Bool Register_Metal_Object(void);
+Bool Register_Skin_Object(void);
+Bool Register_Substance_Object(void);
+Bool Register_CarPaint_Object(void);
+Bool RegisterSkyTexture(void);
+Bool RegisterEnvironmentLight(void);
 //Bool RegisterTextureShader(void);
 
 Bool PluginStart(void)
 {
-	if (!RegisterDLMaterial()) return FALSE;
 	if (!Register_DlPrincipled_Object()) return FALSE;
+	if (!Register_DlGlass_Object()) return FALSE;
+	if (!Register_HairAndFur_Object()) return FALSE;
+	if (!Register_Metal_Object()) return FALSE;
+	if (!Register_Skin_Object()) return FALSE;
+	if (!Register_Substance_Object()) return FALSE;
+	if (!Register_CarPaint_Object()) return FALSE;
+	if (!RegisterEnvironmentLight()) return FALSE;
+
+
 	if (!RegisterDLPrincipled()) return FALSE;
 	if (!RegisterDLGlass()) return FALSE;
-	if (!RegisterStandardShader()) return FALSE;
-	if(!RegisterGlassShader()) return FALSE;
-	if (!RegisterNormalDisplacementShader()) return FALSE;
-	if (!RegisterRangeShader()) return FALSE;
-	//if (!RegisterTextureShader()) return FALSE;
+	if (!RegisterDLSkin()) return FALSE;
+	if (!RegisterDLHairAndFur()) return FALSE;
+	if (!RegisterDLMetal()) return FALSE;
+	if (!RegisterDLSubstance()) return FALSE;
+	if (!RegisterDLCarPaint()) return FALSE;
+	if (!RegisterSkyTexture()) return FALSE;
+
 	return true;
 }
 
@@ -91,16 +125,24 @@ Bool PluginMessage(Int32 id, void *data)
 	{
 		DL_PluginManager* pm = (DL_PluginManager*)data;
 		pm->RegisterHook(AllocateHook<ShaderSettingsHook>);
-		pm->RegisterTranslator(ID_STANDARDSHADER, AllocateTranslator<StandardShaderTranslator>);
 		pm->RegisterTranslator(ID_TEXTURESHADER, AllocateTranslator<TextureShaderTranslator>);
-		pm->RegisterTranslator(ID_GLASSSHADER, AllocateTranslator<GlassShaderTranslator>);
-		pm->RegisterTranslator(ID_NORMALDISPLACEMENTSHADER, AllocateTranslator<NormalDisplacementTranslator>);
-		pm->RegisterTranslator(ID_RANGESHADER, AllocateTranslator<RangeTranslator>);
 		pm->RegisterTranslator(Mmaterial, AllocateTranslator<NSI_Export_Material>);
+		pm->RegisterTranslator(ID_ENVIRONMENTLIGHT, AllocateTranslator<EnvironmentLightTranslator>);
+
+		//3Delight Materials
 		pm->RegisterTranslator(DL_PRINCIPLED, AllocateTranslator<Delight_Principled>);
 		pm->RegisterTranslator(DL_GLASS, AllocateTranslator<Delight_Glass>);
+		pm->RegisterTranslator(DL_SKIN, AllocateTranslator<Delight_Skin>);
+		pm->RegisterTranslator(DL_HAIRANDFUR, AllocateTranslator<Delight_HairAndFur>);
+		pm->RegisterTranslator(DL_METAL, AllocateTranslator<Delight_Metal>);
+		pm->RegisterTranslator(DL_SUBSTANCE, AllocateTranslator<Delight_Substance>);
+		pm->RegisterTranslator(DL_CARPAINT, AllocateTranslator<Delight_CarPaint>);
+
+		pm->RegisterTranslator(DL_SKY, AllocateTranslator<Delight_Sky>);
+		pm->RegisterTranslator(Osky, AllocateTranslator<EnvironmentLightTranslator>);
+
 		pm->RegisterTranslator(Xcheckerboard, AllocateTranslator<NSI_Export_Shader>);
-		pm->RegisterTranslator(Xtiles, AllocateTranslator<NSI_Export_Shader>);
+		/*pm->RegisterTranslator(Xtiles, AllocateTranslator<NSI_Export_Shader>);
 		pm->RegisterTranslator(Xstar, AllocateTranslator<NSI_Export_Shader>);
 		pm->RegisterTranslator(Xbrick, AllocateTranslator<NSI_Export_Shader>);
 		pm->RegisterTranslator(Xcloud, AllocateTranslator<NSI_Export_Shader>);
@@ -149,12 +191,11 @@ Bool PluginMessage(Int32 id, void *data)
 		pm->RegisterTranslator(Xobjectcolor, AllocateTranslator<NSI_Export_Shader>);
 		pm->RegisterTranslator(Xformula, AllocateTranslator<NSI_Export_Shader>);
 		pm->RegisterTranslator(Xvariation, AllocateTranslator<NSI_Export_Shader>);
-		pm->RegisterTranslator(Xthinfilm, AllocateTranslator<NSI_Export_Shader>);
+		pm->RegisterTranslator(Xthinfilm, AllocateTranslator<NSI_Export_Shader>);*/
 
 		//pm->RegisterTranslator(ID_TEXTURESHADER, AllocateTranslator<TextureShaderTranslator>);
 		pm->RegisterTranslator(Xbitmap, AllocateTranslator<NSI_Export_Bitmap>);
 		pm->RegisterTranslator(Ttexture, AllocateTranslator<TextureTagTranslator>);
-		pm->RegisterTranslator(ID_DELIGHTMATERIAL, AllocateTranslator<DL_material_translator>);
 		break;
 
 	}

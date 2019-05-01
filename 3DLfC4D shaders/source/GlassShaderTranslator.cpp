@@ -8,11 +8,12 @@
 void GlassShaderTranslator::CreateNSINodes(const char* ParentTransformHandle, GeListNode* C4DNode, BaseDocument* doc, DL_SceneParser* parser){
 	NSI::Context ctx(parser->GetContext());
 
+	ApplicationOutput(ParentTransformHandle);
 	//Create the shader node
 	shader_handle = string(parser->GetUniqueName("glass_material"));
 	ctx.Create(shader_handle, "shader");
 
-	BaseList2D* obj = (BaseList2D*)C4DNode;
+	BaseObject* obj = (BaseObject*)C4DNode;
 	BaseContainer* data = obj->GetDataInstance();
 
 	//Shader file path
@@ -43,7 +44,7 @@ void GlassShaderTranslator::CreateNSINodes(const char* ParentTransformHandle, Ge
 
 	int use_refraction = 0;
 	Int32 mode = data->GetInt32(MODE);
-	if (mode==MODE_REFRACTION){
+	if (mode == MODE_REFRACTION) {
 		use_refraction = 1;
 	}
 
@@ -56,8 +57,7 @@ void GlassShaderTranslator::CreateNSINodes(const char* ParentTransformHandle, Ge
 		NSI::IntegerArg("use_refraction", use_refraction)
 		));
 
-	const char* hndl = shader_handle.c_str();
-	parser->SetAssociatedHandle((BaseList2D*)C4DNode, hndl);
+	parser->SetAssociatedHandle((BaseList2D*)C4DNode, shader_handle.c_str());
 }
 
 void GlassShaderTranslator::ConnectNSINodes(GeListNode* C4DNode, BaseDocument* doc, DL_SceneParser* parser){
@@ -69,7 +69,7 @@ void GlassShaderTranslator::ConnectNSINodes(GeListNode* C4DNode, BaseDocument* d
 
 	//Roughness
 	BaseList2D* shader = data->GetLink(ROUGHNESS_SHADER, doc);
-	if (shader){
+	if (shader){	
 		string link_handle = string(parser->GetAssociatedHandle(shader));
 		if (link_handle != ""){
 			ctx.Connect(link_handle, "f_out", shader_handle, "roughness");

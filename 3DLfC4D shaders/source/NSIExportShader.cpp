@@ -27,6 +27,10 @@ void NSI_Export_Shader::CreateNSINodes(const char* ParentTransformHandle, GeList
 	ctx.Create(m_shader_handle, "shader");
 	Filename shaderpath = Filename(GeGetPluginPath() + Filename("OSL") + Filename(shader->GetTypeName().GetCStringCopy()));
 	vector<char> c_shaderpath = StringToChars(shaderpath.GetString());
+
+	if (m_ids_to_names.size() > 0)
+		c_shaderpath = StringToChars(m_ids_to_names[0].second.c_str());
+	
 	ctx.SetAttribute(m_shader_handle, NSI::StringArg("shaderfilename", std::string(&c_shaderpath[0])));
 	
 	Int32 Id;
@@ -38,6 +42,9 @@ void NSI_Export_Shader::CreateNSINodes(const char* ParentTransformHandle, GeList
 	while (browse.GetNext(&Id,&data))
 	{
 		std::string osl_parameter_name = "_" + std::to_string(Id);
+		if (m_ids_to_names.count(Id) == 1)	
+			osl_parameter_name = m_ids_to_names[Id].second;
+		
 		switch (data->GetType())
 		{
 			case DA_LONG:
@@ -100,13 +107,29 @@ void NSI_Export_Shader::ConnectNSINodes(GeListNode* C4DNode, BaseDocument* doc, 
 	{
 		if (data->GetType() != DA_ALIASLINK)
 			continue;
-		std::string osl_parameter_name = "_" + std::to_string(Id);
+		std::string osl_parameter_name;
+		std::string osl_source_attr;
+
+		if (m_ids_to_names.count(Id) == 1)
+		{
+			osl_parameter_name = m_ids_to_names[Id].second;
+			osl_source_attr = m_ids_to_names[Id].first;
+		}
+		else
+		{
+			osl_parameter_name = "_" + std::to_string(Id);
+			std::string osl_parameter_name = "_" + std::to_string(Id);
+			vector<float> col = { 1,1,1 };
+			ctx.SetAttribute(m_shader_handle, NSI::ColorArg(osl_parameter_name, &col[0]));
+			osl_source_attr = "";
+		}
+
 		BaseList2D* shader = data->GetLink(doc);
 		if (!shader)
 			continue;
 
 		std::string link_shader = parser->GetAssociatedHandle(shader);
-		ctx.Connect(link_shader, "", m_shader_handle, osl_parameter_name);
+		ctx.Connect(link_shader, osl_source_attr, m_shader_handle, osl_parameter_name);
 		
 		#ifdef VERBOSE
 			ApplicationOutput("ShaderParent @ Parameter ID @, Shader @", m_shader_handle.c_str(), Id, link_shader.c_str());

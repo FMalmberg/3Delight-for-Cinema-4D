@@ -47,6 +47,7 @@ DRAWRESULT LightCard::Draw(BaseObject* op, DRAWPASS drawpass, BaseDraw* bd, Base
 		bd->SetMatrix_Matrix(NULL, m);
 
 		bd->SetPen(color);
+
 		//bd->LineNew(Vector(-width/2.0,-height/2.0,0),Vector(-width/2.0,height/2.0,0),0);
 		//bd->LineNew(Vector(-width/2.0,height/2.0,0),Vector(width/2.0,height/2.0,0),0);
 		//bd->LineNew(Vector(width/2.0,height/2.0,0),Vector(width/2.0,-height/2.0,0),0);
