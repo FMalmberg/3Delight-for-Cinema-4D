@@ -1,0 +1,23 @@
+// Supported platforms - can be [Win64;OSX]
+Platform=Win64;OSX
+
+// Type of project - can be [Lib;DLL;App]
+Type=DLL
+
+// API dependencies
+APIS=cinema.framework;misc.framework;core.framework;
+
+// C4D component
+C4D=true
+
+stylecheck.level=0
+//stylecheck.enum-registration=false
+//stylecheck.enum-class=false
+
+// Custom ID
+ModuleId=com.3delight.c4d
+
+// Additional dependencies
+AdditionalLibraryDirectories=$(DELIGHT)/lib
+AdditionalDependencies=3Delight.lib
+AdditionalIncludeDirectories=$(DELIGHT)/include;../API/include
