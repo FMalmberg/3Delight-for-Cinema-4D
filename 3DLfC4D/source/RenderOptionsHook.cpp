@@ -4,6 +4,7 @@
 #include "nsi.hpp"
 #include <algorithm>
 #include <iostream>
+#include <tuple>
 #include <Windows.h>
 #include "maxon/utilities/undef_win_macros.h"
 
