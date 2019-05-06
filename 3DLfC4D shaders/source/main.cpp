@@ -25,12 +25,19 @@
 #include "DLSubstance_Translator.h";
 #include "DLCarPaint_Translator.h";
 #include "DLSky_Translator.h";
+#include "DLWorleyNoise_Translator.h";
+#include "DLFlakes_translator.h";
 #include "EnvironmentLightTranslator.h";
 #include "oenvironment.h";
 
 
 #include "IDs.h"
-void MySearchMenuResource(BaseContainer* bc)
+/*
+	This function is used to dynamically change the structure of Create Material UI.
+	We create a SubTitle with the name 3Delight when create material is pressed.
+	Then under this Subtitle we put all our command plugins as below.
+*/
+void CreateMaterialUI(BaseContainer* bc)
 {
 	if (!bc) return;
 	BrowseContainer browse(bc);
@@ -41,7 +48,7 @@ void MySearchMenuResource(BaseContainer* bc)
 	{
 		if (id == MENURESOURCE_SUBMENU || id == MENURESOURCE_STRING)
 		{
-			MySearchMenuResource(dat->GetContainer());
+			CreateMaterialUI(dat->GetContainer());
 		}
 		else if (id == MENURESOURCE_COMMAND)
 		{
@@ -49,21 +56,29 @@ void MySearchMenuResource(BaseContainer* bc)
 			{
 				BaseContainer sc;
 				sc.InsData(MENURESOURCE_SUBTITLE, String("3Delight"));
-				sc.InsData(MENURESOURCE_COMMAND, String("PLUGIN_CMD_1052718"));
-				sc.InsData(MENURESOURCE_COMMAND, String("PLUGIN_CMD_1052717"));
-				sc.InsData(MENURESOURCE_COMMAND, String("PLUGIN_CMD_1052719"));
-				sc.InsData(MENURESOURCE_COMMAND, String("PLUGIN_CMD_1052720"));
-				sc.InsData(MENURESOURCE_COMMAND, String("PLUGIN_CMD_1052721"));
-				sc.InsData(MENURESOURCE_COMMAND, String("PLUGIN_CMD_1052722"));
-				sc.InsData(MENURESOURCE_COMMAND, String("PLUGIN_CMD_1052724"));
-
+				sc.InsData(MENURESOURCE_COMMAND, String("PLUGIN_CMD_1052718")); //DL_Principled
+				sc.InsData(MENURESOURCE_COMMAND, String("PLUGIN_CMD_1052717")); //DL_Glass
+				sc.InsData(MENURESOURCE_COMMAND, String("PLUGIN_CMD_1052719")); //DL_HAIRANDFUR
+				sc.InsData(MENURESOURCE_COMMAND, String("PLUGIN_CMD_1052720")); //DL_METAL
+				sc.InsData(MENURESOURCE_COMMAND, String("PLUGIN_CMD_1052721")); //DL_SKIN
+				sc.InsData(MENURESOURCE_COMMAND, String("PLUGIN_CMD_1052722")); //DL_SUBSTANCE
+				sc.InsData(MENURESOURCE_COMMAND, String("PLUGIN_CMD_1052724")); //DL_CARPAINT
 				bc->InsDataAfter(MENURESOURCE_STRING, sc, dat);
 			}
 		}
 	}
 }
 
+//3Delight Materials Object
+Bool Register_DlPrincipled_Object(void);
+Bool Register_DlGlass_Object(void);
+Bool Register_HairAndFur_Object(void);
+Bool Register_Metal_Object(void);
+Bool Register_Skin_Object(void);
+Bool Register_Substance_Object(void);
+Bool Register_CarPaint_Object(void);
 
+//3Delight Materials
 Bool RegisterDLPrincipled(void);
 Bool RegisterDLGlass(void);
 Bool RegisterDLSkin(void);
@@ -72,19 +87,15 @@ Bool RegisterDLMetal(void);
 Bool RegisterDLSubstance(void);
 Bool RegisterDLCarPaint(void);
 
-Bool Register_DlPrincipled_Object(void);
-Bool Register_DlGlass_Object(void);
-Bool Register_HairAndFur_Object(void);
-Bool Register_Metal_Object(void);
-Bool Register_Skin_Object(void);
-Bool Register_Substance_Object(void);
-Bool Register_CarPaint_Object(void);
+//3Delight Shaders
 Bool RegisterSkyTexture(void);
+Bool RegisterWorleyNoiseTexture(void);
+Bool RegisterFlakesTexture(void);
 Bool RegisterEnvironmentLight(void);
-//Bool RegisterTextureShader(void);
 
 Bool PluginStart(void)
 {
+	//3Delight Materials Object
 	if (!Register_DlPrincipled_Object()) return FALSE;
 	if (!Register_DlGlass_Object()) return FALSE;
 	if (!Register_HairAndFur_Object()) return FALSE;
@@ -92,9 +103,8 @@ Bool PluginStart(void)
 	if (!Register_Skin_Object()) return FALSE;
 	if (!Register_Substance_Object()) return FALSE;
 	if (!Register_CarPaint_Object()) return FALSE;
-	if (!RegisterEnvironmentLight()) return FALSE;
 
-
+	//3Delight Materials
 	if (!RegisterDLPrincipled()) return FALSE;
 	if (!RegisterDLGlass()) return FALSE;
 	if (!RegisterDLSkin()) return FALSE;
@@ -102,7 +112,12 @@ Bool PluginStart(void)
 	if (!RegisterDLMetal()) return FALSE;
 	if (!RegisterDLSubstance()) return FALSE;
 	if (!RegisterDLCarPaint()) return FALSE;
+
+	//3Delight Shaders
+	if (!RegisterEnvironmentLight()) return FALSE;
 	if (!RegisterSkyTexture()) return FALSE;
+	if (!RegisterFlakesTexture()) return FALSE;
+	if (!RegisterWorleyNoiseTexture()) return FALSE;
 
 	return true;
 }
@@ -116,97 +131,55 @@ Bool PluginMessage(Int32 id, void *data)
 {
 	switch (id)
 	{
-	case C4DPL_INIT_SYS:
-		if (!g_resource.Init()) return FALSE; // don't start plugin without resource
-		return TRUE;
-		break;
+		case C4DPL_INIT_SYS:
+			if (!g_resource.Init()) return FALSE; // don't start plugin without resource
+			return TRUE;
+			break;
 
-	case DL_LOAD_PLUGINS:
-	{
-		DL_PluginManager* pm = (DL_PluginManager*)data;
-		pm->RegisterHook(AllocateHook<ShaderSettingsHook>);
-		pm->RegisterTranslator(ID_TEXTURESHADER, AllocateTranslator<TextureShaderTranslator>);
-		pm->RegisterTranslator(Mmaterial, AllocateTranslator<NSI_Export_Material>);
-		pm->RegisterTranslator(ID_ENVIRONMENTLIGHT, AllocateTranslator<EnvironmentLightTranslator>);
+		case DL_LOAD_PLUGINS:
+		{
+			DL_PluginManager* pm = (DL_PluginManager*)data;
+			pm->RegisterHook(AllocateHook<ShaderSettingsHook>);
+			/*
+				On the translator we have only allocated the Materials and Shaders that we
+				support in our plugin. There will be others to add as we are working on it.
+			*/
 
-		//3Delight Materials
-		pm->RegisterTranslator(DL_PRINCIPLED, AllocateTranslator<Delight_Principled>);
-		pm->RegisterTranslator(DL_GLASS, AllocateTranslator<Delight_Glass>);
-		pm->RegisterTranslator(DL_SKIN, AllocateTranslator<Delight_Skin>);
-		pm->RegisterTranslator(DL_HAIRANDFUR, AllocateTranslator<Delight_HairAndFur>);
-		pm->RegisterTranslator(DL_METAL, AllocateTranslator<Delight_Metal>);
-		pm->RegisterTranslator(DL_SUBSTANCE, AllocateTranslator<Delight_Substance>);
-		pm->RegisterTranslator(DL_CARPAINT, AllocateTranslator<Delight_CarPaint>);
+			//C4D Material
+			pm->RegisterTranslator(Mmaterial, AllocateTranslator<NSI_Export_Material>);
 
-		pm->RegisterTranslator(DL_SKY, AllocateTranslator<Delight_Sky>);
-		pm->RegisterTranslator(Osky, AllocateTranslator<EnvironmentLightTranslator>);
+			//3Delight Materials
+			pm->RegisterTranslator(DL_PRINCIPLED, AllocateTranslator<Delight_Principled>);
+			pm->RegisterTranslator(DL_GLASS, AllocateTranslator<Delight_Glass>);
+			pm->RegisterTranslator(DL_SKIN, AllocateTranslator<Delight_Skin>);
+			pm->RegisterTranslator(DL_HAIRANDFUR, AllocateTranslator<Delight_HairAndFur>);
+			pm->RegisterTranslator(DL_METAL, AllocateTranslator<Delight_Metal>);
+			pm->RegisterTranslator(DL_SUBSTANCE, AllocateTranslator<Delight_Substance>);
+			pm->RegisterTranslator(DL_CARPAINT, AllocateTranslator<Delight_CarPaint>);
 
-		pm->RegisterTranslator(Xcheckerboard, AllocateTranslator<NSI_Export_Shader>);
-		/*pm->RegisterTranslator(Xtiles, AllocateTranslator<NSI_Export_Shader>);
-		pm->RegisterTranslator(Xstar, AllocateTranslator<NSI_Export_Shader>);
-		pm->RegisterTranslator(Xbrick, AllocateTranslator<NSI_Export_Shader>);
-		pm->RegisterTranslator(Xcloud, AllocateTranslator<NSI_Export_Shader>);
-		pm->RegisterTranslator(Xcolorstripes, AllocateTranslator<NSI_Export_Shader>);
-		pm->RegisterTranslator(Xcyclone, AllocateTranslator<NSI_Export_Shader>);
-		pm->RegisterTranslator(Xearth, AllocateTranslator<NSI_Export_Shader>);
-		pm->RegisterTranslator(Xfire, AllocateTranslator<NSI_Export_Shader>);
-		pm->RegisterTranslator(Xflame, AllocateTranslator<NSI_Export_Shader>);
-		pm->RegisterTranslator(Xgalaxy, AllocateTranslator<NSI_Export_Shader>);
-		pm->RegisterTranslator(Xmetal, AllocateTranslator<NSI_Export_Shader>);
-		pm->RegisterTranslator(Xsimplenoise, AllocateTranslator<NSI_Export_Shader>);
-		pm->RegisterTranslator(Xrust, AllocateTranslator<NSI_Export_Shader>);
-		pm->RegisterTranslator(Xstarfield, AllocateTranslator<NSI_Export_Shader>);
-		pm->RegisterTranslator(Xsunburst, AllocateTranslator<NSI_Export_Shader>);
-		pm->RegisterTranslator(Xsimpleturbulence, AllocateTranslator<NSI_Export_Shader>);
-		pm->RegisterTranslator(Xvenus, AllocateTranslator<NSI_Export_Shader>);
-		pm->RegisterTranslator(Xwater, AllocateTranslator<NSI_Export_Shader>);
-		pm->RegisterTranslator(Xwood, AllocateTranslator<NSI_Export_Shader>);
-		pm->RegisterTranslator(Xplanet, AllocateTranslator<NSI_Export_Shader>);
-		pm->RegisterTranslator(Xmarble, AllocateTranslator<NSI_Export_Shader>);
-		pm->RegisterTranslator(Xspectral, AllocateTranslator<NSI_Export_Shader>);
-		pm->RegisterTranslator(Xgradient, AllocateTranslator<NSI_Export_Shader>);
-		pm->RegisterTranslator(Xfresnel, AllocateTranslator<NSI_Export_Shader>);
-		pm->RegisterTranslator(Xlumas, AllocateTranslator<NSI_Export_Shader>);
-		pm->RegisterTranslator(Xproximal, AllocateTranslator<NSI_Export_Shader>);
-		pm->RegisterTranslator(Xnormaldirection, AllocateTranslator<NSI_Export_Shader>);
-		pm->RegisterTranslator(Xtranslucency, AllocateTranslator<NSI_Export_Shader>);
-		pm->RegisterTranslator(Xfusion, AllocateTranslator<NSI_Export_Shader>);
-		pm->RegisterTranslator(Xposterizer, AllocateTranslator<NSI_Export_Shader>);
-		pm->RegisterTranslator(Xcolorizer, AllocateTranslator<NSI_Export_Shader>);
-		pm->RegisterTranslator(Xdistorter, AllocateTranslator<NSI_Export_Shader>);
-		pm->RegisterTranslator(Xprojector, AllocateTranslator<NSI_Export_Shader>);
-		pm->RegisterTranslator(Xnoise, AllocateTranslator<NSI_Export_Shader>);
-		pm->RegisterTranslator(Xlayer, AllocateTranslator<NSI_Export_Shader>);
-		pm->RegisterTranslator(Xspline, AllocateTranslator<NSI_Export_Shader>);
-		pm->RegisterTranslator(Xfilter, AllocateTranslator<NSI_Export_Shader>);
-		pm->RegisterTranslator(Xripple, AllocateTranslator<NSI_Export_Shader>);
-		pm->RegisterTranslator(Xvertexmap, AllocateTranslator<NSI_Export_Shader>);
-		pm->RegisterTranslator(Xsss, AllocateTranslator<NSI_Export_Shader>);
-		pm->RegisterTranslator(Xambientocclusion, AllocateTranslator<NSI_Export_Shader>);
-		pm->RegisterTranslator(Xchanlum, AllocateTranslator<NSI_Export_Shader>);
-		pm->RegisterTranslator(Xmosaic, AllocateTranslator<NSI_Export_Shader>);
-		pm->RegisterTranslator(Xrainsampler, AllocateTranslator<NSI_Export_Shader>);
-		pm->RegisterTranslator(Xnormalizer, AllocateTranslator<NSI_Export_Shader>);
-		pm->RegisterTranslator(Xterrainmask, AllocateTranslator<NSI_Export_Shader>);
-		pm->RegisterTranslator(Xobjectcolor, AllocateTranslator<NSI_Export_Shader>);
-		pm->RegisterTranslator(Xformula, AllocateTranslator<NSI_Export_Shader>);
-		pm->RegisterTranslator(Xvariation, AllocateTranslator<NSI_Export_Shader>);
-		pm->RegisterTranslator(Xthinfilm, AllocateTranslator<NSI_Export_Shader>);*/
+			//C4D Shaders
+			pm->RegisterTranslator(Osky, AllocateTranslator<EnvironmentLightTranslator>);
+			pm->RegisterTranslator(Xcheckerboard, AllocateTranslator<NSI_Export_Shader>);
+			pm->RegisterTranslator(Xbitmap, AllocateTranslator<NSI_Export_Bitmap>);
+			pm->RegisterTranslator(Ttexture, AllocateTranslator<TextureTagTranslator>);
 
-		//pm->RegisterTranslator(ID_TEXTURESHADER, AllocateTranslator<TextureShaderTranslator>);
-		pm->RegisterTranslator(Xbitmap, AllocateTranslator<NSI_Export_Bitmap>);
-		pm->RegisterTranslator(Ttexture, AllocateTranslator<TextureTagTranslator>);
-		break;
+			//3Delight Shaders
+			pm->RegisterTranslator(DL_SKY, AllocateTranslator<Delight_Sky>);
+			pm->RegisterTranslator(DL_WorleyNoise, AllocateTranslator<Delight_WorleyNoise>);
+			pm->RegisterTranslator(DL_Flakes, AllocateTranslator<Delight_Flakes>);
+			pm->RegisterTranslator(ID_ENVIRONMENTLIGHT, AllocateTranslator<EnvironmentLightTranslator>);
+			pm->RegisterTranslator(ID_TEXTURESHADER, AllocateTranslator<TextureShaderTranslator>);
+			break;
 
+		}
+
+		case C4DPL_BUILDMENU:
+		{
+			BaseContainer* bc = GetMenuResource("M_MATERIAL_MANAGER"_s);
+			if (!bc) return FALSE;
+			CreateMaterialUI(bc);
+			break;
+		}
 	}
-
-	case C4DPL_BUILDMENU:
-	{
-		BaseContainer* bc = GetMenuResource("M_MATERIAL_MANAGER"_s);
-		if (!bc) return FALSE;
-		MySearchMenuResource(bc);
-		break;
-	}
-	}
-	return FALSE;
+		return FALSE;
 }

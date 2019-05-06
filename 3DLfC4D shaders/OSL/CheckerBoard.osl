@@ -7,7 +7,7 @@ shader CheckerBoard
     color _1000 = color(0, 0, 0)   [[  string description = "color of even squares" ]],
     color _1001 = color(1, 1, 1)   [[  string description = "color of odd squares" ]],
         
-    output color Cout = 0          [[  string description = "Output color",]]
+    output color outColor = 0          [[  string description = "Output color",]]
 
   )
 {
@@ -23,8 +23,8 @@ shader CheckerBoard
     float cs = fmod(2*s * _1003, 2);
     float ct = fmod(2*t * _1002, 2);
     if ((int(cs) ^ int(ct)) == 0)
-       Cout =_1000;
+       outColor =_1000;
     else
-       Cout =_1001;
+       outColor =_1001;
 	   
 }

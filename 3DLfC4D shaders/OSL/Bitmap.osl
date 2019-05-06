@@ -1,0 +1,44 @@
+float rgb_to_float(color c){
+	return (c[0]+c[1]+c[2])/3.0;
+}
+
+shader Bitmap(    
+    string _1000="",
+    float _2010=0,
+    int is_connected_to_sky = 0,    
+    output float f_out=0,
+    output color c_out=0,
+    output color outColor=0,    
+	output float uvCoord[2] = {0,0}
+    )
+{
+	
+	if( is_connected_to_sky == 1 )
+    {
+         vector R = normalize( I );
+        /* Sherical mapping */
+        float signed_s = atan2( R[0], R[2] ) / (2*M_PI);
+        float signed_t = atan2( R[1], sqrt( (R[0]*R[0]) + (R[2]*R[2]) ) ) / M_PI;
+
+        uvCoord[0] = (signed_s + 0.5);
+        uvCoord[1] = 1-(signed_t + 0.5);
+    }
+    else
+    {
+       getattribute( "st",uvCoord);
+    }
+	
+	if(_1000!=""){
+		c_out=texture(_1000, uvCoord[0],1-uvCoord[1]);
+		
+		int nchannels=3;
+		gettextureinfo (_1000, "channels" ,nchannels);
+		if(nchannels<3){
+			c_out[1]=c_out[0];
+			c_out[2]=c_out[0];
+		}
+		
+		f_out=rgb_to_float(c_out);
+		outColor=c_out;
+	}
+}

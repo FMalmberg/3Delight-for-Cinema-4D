@@ -35,7 +35,5 @@ Vector GlassShader::Output(BaseShader* sh, ChannelData* sd)
 
 Bool RegisterGlassShader(void)
 {
-	//GePrint("Register standard shader");
-	// be sure to use a unique ID obtained from www.plugincafe.com
 	return RegisterShaderPlugin(ID_GLASSSHADER, "DL_GlassSurface"_s, 0, GlassShader::Alloc, "Xglassshader"_s, 0);
 }

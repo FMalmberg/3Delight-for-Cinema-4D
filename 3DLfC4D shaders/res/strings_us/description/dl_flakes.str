@@ -1,0 +1,12 @@
+STRINGTABLE dl_flakes
+{
+	dl_flakes "Flakes";
+	SHADER_GROUP "Flakes";
+	FLAKES_DENSITY "Density";
+	FLAKES_DENSITY_SHADER "Texture";
+	FLAKES_SCALE "Scale";
+	FLAKES_SCALE_SHADER "Texture";
+	FLAKES_RANDOMNESS "Randomness";
+	FLAKES_RANDOMNESS_SHADER "Texture";
+	FLAKES_LAYERS "Layers";
+}

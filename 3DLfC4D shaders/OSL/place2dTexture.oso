@@ -1,0 +1,748 @@
+OpenShadingLanguage 1.00
+# Compiled by oslc 1.11.0dev
+# options: -q -o ..\build\win64-x64-release-free\2016.5\..\osl\place2dTexture.oso -I../../osl_shaders
+shader place2dTexture
+param	float[2]	uvCoord	0 0		%meta{string,widget,"null"} %meta{string,default_connection,"uvCoord"} %meta{int,skip_init,1}  %read{0,5} %write{2147483647,-1}
+param	float	coverageU	1		%meta{string,label,"Coverage U"}  %read{98,165} %write{2147483647,-1}
+param	float	coverageV	1		%meta{string,label,"Coverage V"}  %read{107,168} %write{2147483647,-1}
+param	float	translateFrameU	0		%meta{string,label,"Translate Frame U"}  %read{91,91} %write{2147483647,-1}
+param	float	translateFrameV	0		%meta{string,label,"Translate Frame V"}  %read{92,92} %write{2147483647,-1}
+param	float	rotateFrame	0		%meta{string,label,"Rotate Frame"} %meta{float,slidermin,0} %meta{float,slidermax,360}  %read{30,37} %write{2147483647,-1}
+param	int	mirrorU	0		%meta{string,label,"Mirror U"} %meta{string,widget,"checkBox"}  %read{186,186} %write{2147483647,-1}
+param	int	mirrorV	0		%meta{string,label,"Mirror V"} %meta{string,widget,"checkBox"}  %read{180,180} %write{2147483647,-1}
+param	int	wrapU	1		%meta{string,label,"Wrap U"} %meta{string,widget,"checkBox"}  %read{113,113} %write{2147483647,-1}
+param	int	wrapV	1		%meta{string,label,"Wrap V"} %meta{string,widget,"checkBox"}  %read{131,131} %write{2147483647,-1}
+param	int	stagger	0		%meta{string,label,"Stagger"} %meta{string,widget,"checkBox"}  %read{177,177} %write{2147483647,-1}
+param	float	repeatU	1		%meta{string,label,"Repeat U"}  %read{119,265} %write{2147483647,-1}
+param	float	repeatV	1		%meta{string,label,"Repeat V"}  %read{137,271} %write{2147483647,-1}
+param	float	offsetU	0		%meta{string,label,"Offset U"}  %read{166,166} %write{2147483647,-1}
+param	float	offsetV	0		%meta{string,label,"Offset V"}  %read{169,169} %write{2147483647,-1}
+param	float	rotateUV	0		%meta{string,label,"Rotate UV"} %meta{float,slidermin,0} %meta{float,slidermax,360}  %read{202,209} %write{2147483647,-1}
+param	float	noiseU	0		%meta{string,label,"Noise U"}  %read{8,10} %write{2147483647,-1}
+param	float	noiseV	0		%meta{string,label,"Noise V"}  %read{19,21} %write{2147483647,-1}
+oparam	float[2]	outUV	0 0		%read{2147483647,-1} %write{1,274} %initexpr
+local	vector	___252_axis	%read{43,217} %write{40,212}
+local	float	___252_cosang	%read{42,255} %write{41,213}
+local	float	___252_sinang	%read{53,250} %write{41,213}
+local	float	___252_cosang1	%read{52,249} %write{42,214}
+local	float	___252_x	%read{46,250} %write{43,215}
+local	float	___252_y	%read{51,248} %write{44,216}
+local	float	___252_z	%read{53,253} %write{45,217}
+local	matrix	___252_M	%read{87,259} %write{85,257}
+local	float	ss	%read{6,22} %write{4,4}
+local	float	tt	%read{7,23} %write{5,5}
+local	float	outU	%read{18,273} %write{6,266}
+local	float	outV	%read{29,274} %write{7,272}
+local	point	___357_Q	%read{86,90} %write{32,88}
+local	point	___357_P1	%read{39,88} %write{33,33}
+local	point	___357_P2	%read{39,39} %write{34,34}
+local	float	___364_axis	%read{184,185} %write{183,183}
+local	float	___365_axis	%read{200,201} %write{199,199}
+local	point	___366_Q	%read{258,267} %write{204,260}
+local	point	___366_P1	%read{211,260} %write{205,205}
+local	point	___366_P2	%read{211,211} %write{206,206}
+const	int	$const1	0		%read{0,273} %write{2147483647,-1}
+temp	float	$tmp1	%read{1,1} %write{0,0}
+const	int	$const2	1		%read{2,274} %write{2147483647,-1}
+temp	float	$tmp2	%read{3,3} %write{2,2}
+const	float	$const3	0		%read{8,257} %write{2147483647,-1}
+temp	int	$tmp3	%read{9,9} %write{8,8}
+const	float	$const4	1.25		%read{10,21} %write{2147483647,-1}
+temp	float	$tmp4	%read{17,17} %write{10,10}
+temp	float	$tmp5	%read{15,15} %write{14,14}
+temp	point	$tmp6	%read{14,14} %write{13,13}
+temp	float	$tmp7	%read{13,13} %write{11,11}
+const	float	$const6	18		%read{11,23} %write{2147483647,-1}
+temp	float	$tmp8	%read{13,13} %write{12,12}
+const	point	$const7	18 18 18		%read{14,25} %write{2147483647,-1}
+const	int	$const8	2		%read{45,217} %write{2147483647,-1}
+temp	float	$tmp10	%read{16,16} %write{15,15}
+const	float	$const9	2		%read{15,192} %write{2147483647,-1}
+temp	float	$tmp11	%read{17,17} %write{16,16}
+const	float	$const10	1		%read{16,257} %write{2147483647,-1}
+temp	float	$tmp12	%read{18,18} %write{17,17}
+temp	int	$tmp13	%read{20,20} %write{19,19}
+temp	float	$tmp14	%read{28,28} %write{21,21}
+temp	float	$tmp15	%read{26,26} %write{25,25}
+temp	point	$tmp16	%read{25,25} %write{24,24}
+temp	float	$tmp17	%read{24,24} %write{22,22}
+temp	float	$tmp18	%read{24,24} %write{23,23}
+temp	float	$tmp20	%read{27,27} %write{26,26}
+temp	float	$tmp21	%read{28,28} %write{27,27}
+temp	float	$tmp22	%read{29,29} %write{28,28}
+temp	int	$tmp23	%read{31,31} %write{30,30}
+const	point	$const11	0.5 0.5 0		%read{33,205} %write{2147483647,-1}
+const	point	$const12	0.5 0.5 1		%read{34,206} %write{2147483647,-1}
+temp	float	$tmp24	%read{41,41} %write{37,37}
+const	string	$const13	"radians"		%read{35,207} %write{2147483647,-1}
+const	float	$const14	3.14159274		%read{36,208} %write{2147483647,-1}
+const	float	$const15	180		%read{36,208} %write{2147483647,-1}
+temp	float	$tmp25	%read{37,37} %write{36,36}
+const	string	$const16	"rotate"		%read{38,210} %write{2147483647,-1}
+temp	vector	$tmp26	%read{40,40} %write{39,39}
+temp	float	$tmp27	%read{50,50} %write{46,46}
+temp	float	$tmp28	%read{48,48} %write{47,47}
+temp	float	$tmp29	%read{49,49} %write{48,48}
+temp	float	$tmp30	%read{50,50} %write{49,49}
+temp	float	$tmp31	%read{85,85} %write{50,50}
+temp	float	$tmp32	%read{52,52} %write{51,51}
+temp	float	$tmp33	%read{54,54} %write{52,52}
+temp	float	$tmp34	%read{54,54} %write{53,53}
+temp	float	$tmp35	%read{85,85} %write{54,54}
+temp	float	$tmp36	%read{56,56} %write{55,55}
+temp	float	$tmp37	%read{58,58} %write{56,56}
+temp	float	$tmp38	%read{58,58} %write{57,57}
+temp	float	$tmp39	%read{85,85} %write{58,58}
+temp	float	$tmp40	%read{60,60} %write{59,59}
+temp	float	$tmp41	%read{62,62} %write{60,60}
+temp	float	$tmp42	%read{62,62} %write{61,61}
+temp	float	$tmp43	%read{85,85} %write{62,62}
+temp	float	$tmp44	%read{67,67} %write{63,63}
+temp	float	$tmp45	%read{65,65} %write{64,64}
+temp	float	$tmp46	%read{66,66} %write{65,65}
+temp	float	$tmp47	%read{67,67} %write{66,66}
+temp	float	$tmp48	%read{85,85} %write{67,67}
+temp	float	$tmp49	%read{69,69} %write{68,68}
+temp	float	$tmp50	%read{71,71} %write{69,69}
+temp	float	$tmp51	%read{71,71} %write{70,70}
+temp	float	$tmp52	%read{85,85} %write{71,71}
+temp	float	$tmp53	%read{73,73} %write{72,72}
+temp	float	$tmp54	%read{75,75} %write{73,73}
+temp	float	$tmp55	%read{75,75} %write{74,74}
+temp	float	$tmp56	%read{85,85} %write{75,75}
+temp	float	$tmp57	%read{77,77} %write{76,76}
+temp	float	$tmp58	%read{79,79} %write{77,77}
+temp	float	$tmp59	%read{79,79} %write{78,78}
+temp	float	$tmp60	%read{85,85} %write{79,79}
+temp	float	$tmp61	%read{84,84} %write{80,80}
+temp	float	$tmp62	%read{82,82} %write{81,81}
+temp	float	$tmp63	%read{83,83} %write{82,82}
+temp	float	$tmp64	%read{84,84} %write{83,83}
+temp	float	$tmp65	%read{85,85} %write{84,84}
+temp	vector	$tmp66	%read{88,88} %write{87,87}
+temp	vector	$tmp67	%read{87,87} %write{86,86}
+temp	float	$tmp68	%read{98,98} %write{97,97}
+const	float	$const17	1.00000095		%read{94,105} %write{2147483647,-1}
+const	string	$const18	"mod"		%read{93,268} %write{2147483647,-1}
+temp	float	$tmp69	%read{96,96} %write{95,95}
+temp	float	$tmp70	%read{95,95} %write{94,94}
+temp	float	$tmp71	%read{97,97} %write{96,96}
+temp	float	$tmp72	%read{99,99} %write{98,98}
+const	float	$const19	9.99999997e-07		%read{99,140} %write{2147483647,-1}
+temp	int	$tmp73	%read{100,100} %write{99,99}
+temp	int	$tmp74	%read{101,111} %write{100,110}
+temp	float	$tmp75	%read{107,107} %write{106,106}
+temp	float	$tmp76	%read{105,105} %write{104,104}
+temp	float	$tmp77	%read{104,104} %write{103,103}
+temp	float	$tmp78	%read{106,106} %write{105,105}
+temp	float	$tmp79	%read{108,108} %write{107,107}
+temp	int	$tmp80	%read{109,109} %write{108,108}
+temp	int	$tmp81	%read{110,110} %write{109,109}
+temp	int	$tmp82	%read{112,129} %write{111,128}
+temp	int	$tmp83	%read{114,114} %write{113,113}
+temp	int	$tmp84	%read{115,127} %write{114,126}
+temp	int	$tmp85	%read{117,117} %write{116,116}
+temp	int	$tmp86	%read{118,125} %write{117,124}
+temp	float	$tmp87	%read{120,120} %write{119,119}
+temp	float	$tmp88	%read{121,121} %write{120,120}
+temp	float	$tmp89	%read{122,122} %write{121,121}
+temp	int	$tmp90	%read{123,123} %write{122,122}
+temp	int	$tmp91	%read{124,124} %write{123,123}
+temp	int	$tmp92	%read{126,126} %write{125,125}
+temp	int	$tmp93	%read{128,128} %write{127,127}
+temp	int	$tmp94	%read{130,147} %write{129,146}
+temp	int	$tmp95	%read{132,132} %write{131,131}
+temp	int	$tmp96	%read{133,145} %write{132,144}
+temp	int	$tmp97	%read{135,135} %write{134,134}
+temp	int	$tmp98	%read{136,143} %write{135,142}
+temp	float	$tmp99	%read{138,138} %write{137,137}
+temp	float	$tmp100	%read{139,139} %write{138,138}
+temp	float	$tmp101	%read{140,140} %write{139,139}
+temp	int	$tmp102	%read{141,141} %write{140,140}
+temp	int	$tmp103	%read{142,142} %write{141,141}
+temp	int	$tmp104	%read{144,144} %write{143,143}
+temp	int	$tmp105	%read{146,146} %write{145,145}
+const	int	$const20	-10000000		%read{148,149} %write{2147483647,-1}
+temp	int	$tmp106	%read{151,151} %write{150,150}
+temp	float	$tmp107	%read{155,155} %write{154,154}
+temp	float	$tmp108	%read{154,154} %write{153,153}
+temp	float	$tmp109	%read{156,156} %write{155,155}
+temp	int	$tmp110	%read{158,158} %write{157,157}
+temp	float	$tmp111	%read{162,162} %write{161,161}
+temp	float	$tmp112	%read{161,161} %write{160,160}
+temp	float	$tmp113	%read{163,163} %write{162,162}
+temp	float	$tmp114	%read{165,165} %write{164,164}
+temp	float	$tmp115	%read{166,166} %write{165,165}
+temp	float	$tmp116	%read{168,168} %write{167,167}
+temp	float	$tmp117	%read{169,169} %write{168,168}
+temp	float	$tmp118	%read{175,175} %write{174,174}
+temp	float	$tmp119	%read{173,173} %write{172,172}
+temp	float	$tmp120	%read{172,172} %write{171,171}
+temp	float	$tmp121	%read{174,174} %write{173,173}
+temp	int	$tmp122	%read{176,176} %write{175,175}
+temp	int	$tmp123	%read{178,178} %write{177,177}
+const	float	$const21	0.5		%read{179,199} %write{2147483647,-1}
+temp	int	$tmp124	%read{181,181} %write{180,180}
+temp	float	$tmp125	%read{183,183} %write{182,182}
+temp	float	$tmp126	%read{185,185} %write{184,184}
+temp	int	$tmp127	%read{187,187} %write{186,186}
+temp	int	$tmp128	%read{188,197} %write{187,196}
+temp	float	$tmp129	%read{194,194} %write{193,193}
+temp	float	$tmp130	%read{192,192} %write{191,191}
+temp	float	$tmp131	%read{191,191} %write{190,190}
+temp	float	$tmp132	%read{193,193} %write{192,192}
+temp	int	$tmp133	%read{195,195} %write{194,194}
+temp	int	$tmp134	%read{196,196} %write{195,195}
+temp	float	$tmp135	%read{199,199} %write{198,198}
+temp	float	$tmp136	%read{201,201} %write{200,200}
+temp	int	$tmp137	%read{203,203} %write{202,202}
+temp	float	$tmp138	%read{213,213} %write{209,209}
+temp	float	$tmp139	%read{209,209} %write{208,208}
+temp	vector	$tmp140	%read{212,212} %write{211,211}
+temp	float	$tmp141	%read{222,222} %write{218,218}
+temp	float	$tmp142	%read{220,220} %write{219,219}
+temp	float	$tmp143	%read{221,221} %write{220,220}
+temp	float	$tmp144	%read{222,222} %write{221,221}
+temp	float	$tmp145	%read{257,257} %write{222,222}
+temp	float	$tmp146	%read{224,224} %write{223,223}
+temp	float	$tmp147	%read{226,226} %write{224,224}
+temp	float	$tmp148	%read{226,226} %write{225,225}
+temp	float	$tmp149	%read{257,257} %write{226,226}
+temp	float	$tmp150	%read{228,228} %write{227,227}
+temp	float	$tmp151	%read{230,230} %write{228,228}
+temp	float	$tmp152	%read{230,230} %write{229,229}
+temp	float	$tmp153	%read{257,257} %write{230,230}
+temp	float	$tmp154	%read{232,232} %write{231,231}
+temp	float	$tmp155	%read{234,234} %write{232,232}
+temp	float	$tmp156	%read{234,234} %write{233,233}
+temp	float	$tmp157	%read{257,257} %write{234,234}
+temp	float	$tmp158	%read{239,239} %write{235,235}
+temp	float	$tmp159	%read{237,237} %write{236,236}
+temp	float	$tmp160	%read{238,238} %write{237,237}
+temp	float	$tmp161	%read{239,239} %write{238,238}
+temp	float	$tmp162	%read{257,257} %write{239,239}
+temp	float	$tmp163	%read{241,241} %write{240,240}
+temp	float	$tmp164	%read{243,243} %write{241,241}
+temp	float	$tmp165	%read{243,243} %write{242,242}
+temp	float	$tmp166	%read{257,257} %write{243,243}
+temp	float	$tmp167	%read{245,245} %write{244,244}
+temp	float	$tmp168	%read{247,247} %write{245,245}
+temp	float	$tmp169	%read{247,247} %write{246,246}
+temp	float	$tmp170	%read{257,257} %write{247,247}
+temp	float	$tmp171	%read{249,249} %write{248,248}
+temp	float	$tmp172	%read{251,251} %write{249,249}
+temp	float	$tmp173	%read{251,251} %write{250,250}
+temp	float	$tmp174	%read{257,257} %write{251,251}
+temp	float	$tmp175	%read{256,256} %write{252,252}
+temp	float	$tmp176	%read{254,254} %write{253,253}
+temp	float	$tmp177	%read{255,255} %write{254,254}
+temp	float	$tmp178	%read{256,256} %write{255,255}
+temp	float	$tmp179	%read{257,257} %write{256,256}
+temp	vector	$tmp180	%read{260,260} %write{259,259}
+temp	vector	$tmp181	%read{259,259} %write{258,258}
+temp	float	$tmp182	%read{263,266} %write{261,261}
+temp	float	$tmp183	%read{265,265} %write{264,264}
+temp	float	$tmp184	%read{264,264} %write{263,263}
+temp	float	$tmp185	%read{266,266} %write{265,265}
+temp	float	$tmp186	%read{269,272} %write{267,267}
+temp	float	$tmp187	%read{271,271} %write{270,270}
+temp	float	$tmp188	%read{270,270} %write{269,269}
+temp	float	$tmp189	%read{272,272} %write{271,271}
+code outUV
+# ../../osl_shaders/place2dTexture.osl:74
+# 		output float outUV[2] = { uvCoord[0], uvCoord[1] } )
+	aref		$tmp1 uvCoord $const1 	%filename{"../../osl_shaders/place2dTexture.osl"} %line{74} %argrw{"wrr"}
+	aassign		outUV $const1 $tmp1 	%argrw{"wrr"}
+	aref		$tmp2 uvCoord $const2 	%argrw{"wrr"}
+	aassign		outUV $const2 $tmp2 	%argrw{"wrr"}
+code ___main___
+# ../../osl_shaders/place2dTexture.osl:76
+# 	float ss = uvCoord[0];
+	aref		ss uvCoord $const1 	%filename{"../../osl_shaders/place2dTexture.osl"} %line{76} %argrw{"wrr"}
+# ../../osl_shaders/place2dTexture.osl:77
+# 	float tt = uvCoord[1];
+	aref		tt uvCoord $const2 	%line{77} %argrw{"wrr"}
+# ../../osl_shaders/place2dTexture.osl:79
+# 	float outU = ss;
+	assign		outU ss 	%line{79} %argrw{"wr"}
+# ../../osl_shaders/place2dTexture.osl:80
+# 	float outV = tt;
+	assign		outV tt 	%line{80} %argrw{"wr"}
+# ../../osl_shaders/place2dTexture.osl:82
+# 	if(noiseU > 0.0)
+	gt		$tmp3 noiseU $const3 	%line{82} %argrw{"wrr"}
+	if		$tmp3 19 19 	%argrw{"r"}
+# ../../osl_shaders/place2dTexture.osl:84
+# 		outU += 1.25 * noiseU * (pnoise(point(ss * 18, tt * 18, 0), 
+	mul		$tmp4 $const4 noiseU 	%line{84} %argrw{"wrr"}
+	mul		$tmp7 ss $const6 	%argrw{"wrr"}
+	mul		$tmp8 tt $const6 	%argrw{"wrr"}
+	point		$tmp6 $tmp7 $tmp8 $const3 	%argrw{"wrrr"}
+	pnoise		$tmp5 $tmp6 $const7 	%argrw{"wrr"}
+# ../../osl_shaders/place2dTexture.osl:85
+# 					point(18, 18, 18)) * 2 - 1);
+	mul		$tmp10 $tmp5 $const9 	%line{85} %argrw{"wrr"}
+	sub		$tmp11 $tmp10 $const10 	%argrw{"wrr"}
+# ../../osl_shaders/place2dTexture.osl:84
+# 		outU += 1.25 * noiseU * (pnoise(point(ss * 18, tt * 18, 0), 
+	mul		$tmp12 $tmp4 $tmp11 	%line{84} %argrw{"wrr"}
+# ../../osl_shaders/place2dTexture.osl:85
+# 					point(18, 18, 18)) * 2 - 1);
+	add		outU outU $tmp12 	%line{85} %argrw{"wrr"}
+# ../../osl_shaders/place2dTexture.osl:88
+# 	if(noiseV > 0.0)
+	gt		$tmp13 noiseV $const3 	%line{88} %argrw{"wrr"}
+	if		$tmp13 30 30 	%argrw{"r"}
+# ../../osl_shaders/place2dTexture.osl:90
+# 		outV += 1.25 * noiseV * (pnoise(point(ss * 18, tt * 18, 1), 
+	mul		$tmp14 $const4 noiseV 	%line{90} %argrw{"wrr"}
+	mul		$tmp17 ss $const6 	%argrw{"wrr"}
+	mul		$tmp18 tt $const6 	%argrw{"wrr"}
+	point		$tmp16 $tmp17 $tmp18 $const10 	%argrw{"wrrr"}
+	pnoise		$tmp15 $tmp16 $const7 	%argrw{"wrr"}
+# ../../osl_shaders/place2dTexture.osl:91
+# 					point(18, 18, 18)) * 2 - 1);
+	mul		$tmp20 $tmp15 $const9 	%line{91} %argrw{"wrr"}
+	sub		$tmp21 $tmp20 $const10 	%argrw{"wrr"}
+# ../../osl_shaders/place2dTexture.osl:90
+# 		outV += 1.25 * noiseV * (pnoise(point(ss * 18, tt * 18, 1), 
+	mul		$tmp22 $tmp14 $tmp21 	%line{90} %argrw{"wrr"}
+# ../../osl_shaders/place2dTexture.osl:91
+# 					point(18, 18, 18)) * 2 - 1);
+	add		outV outV $tmp22 	%line{91} %argrw{"wrr"}
+# ../../osl_shaders/place2dTexture.osl:94
+# 	if(rotateFrame != 0.0)
+	neq		$tmp23 rotateFrame $const3 	%line{94} %argrw{"wrr"}
+	if		$tmp23 91 91 	%argrw{"r"}
+# ../../osl_shaders/place2dTexture.osl:96
+# 		point Q = point(outU, outV, 0.0);
+	point		___357_Q outU outV $const3 	%line{96} %argrw{"wrrr"}
+# ../../osl_shaders/place2dTexture.osl:97
+# 		point P1 = point(0.5, 0.5, 0.0);
+	assign		___357_P1 $const11 	%line{97} %argrw{"wr"}
+# ../../osl_shaders/place2dTexture.osl:98
+# 		point P2 = point(0.5, 0.5, 1.0);
+	assign		___357_P2 $const12 	%line{98} %argrw{"wr"}
+# ../../osl_shaders/place2dTexture.osl:100
+# 		Q = rotate(Q, radians(rotateFrame), P1, P2);
+	functioncall	$const13 38 	%line{100} %argrw{"r"}
+# W:/r2d2\src\3delight\win64-x64-release-free\osl\stdosl.h:88
+# float  radians (float x)  { return x*(M_PI/180.0); }
+	div		$tmp25 $const14 $const15 	%filename{"W:/r2d2\src\3delight\win64-x64-release-free\osl\stdosl.h"} %line{88} %argrw{"wrr"}
+	mul		$tmp24 rotateFrame $tmp25 	%argrw{"wrr"}
+# ../../osl_shaders/place2dTexture.osl:100
+# 		Q = rotate(Q, radians(rotateFrame), P1, P2);
+	functioncall	$const16 89 	%filename{"../../osl_shaders/place2dTexture.osl"} %line{100} %argrw{"r"}
+# W:/r2d2\src\3delight\win64-x64-release-free\osl\stdosl.h:292
+#     vector axis = normalize (b - a);
+	sub		$tmp26 ___357_P2 ___357_P1 	%filename{"W:/r2d2\src\3delight\win64-x64-release-free\osl\stdosl.h"} %line{292} %argrw{"wrr"}
+	normalize	___252_axis $tmp26 	%argrw{"wr"}
+# W:/r2d2\src\3delight\win64-x64-release-free\osl\stdosl.h:294
+#     sincos (angle, sinang, cosang);
+	sincos		$tmp24 ___252_sinang ___252_cosang 	%line{294} %argrw{"rww"}
+# W:/r2d2\src\3delight\win64-x64-release-free\osl\stdosl.h:295
+#     float cosang1 = 1.0 - cosang;
+	sub		___252_cosang1 $const10 ___252_cosang 	%line{295} %argrw{"wrr"}
+# W:/r2d2\src\3delight\win64-x64-release-free\osl\stdosl.h:296
+#     float x = axis[0], y = axis[1], z = axis[2];
+	compref		___252_x ___252_axis $const1 	%line{296} %argrw{"wrr"}
+	compref		___252_y ___252_axis $const2 	%argrw{"wrr"}
+	compref		___252_z ___252_axis $const8 	%argrw{"wrr"}
+# W:/r2d2\src\3delight\win64-x64-release-free\osl\stdosl.h:297
+#     matrix M = matrix (x * x + (1.0 - x * x) * cosang,
+	mul		$tmp27 ___252_x ___252_x 	%line{297} %argrw{"wrr"}
+	mul		$tmp28 ___252_x ___252_x 	%argrw{"wrr"}
+	sub		$tmp29 $const10 $tmp28 	%argrw{"wrr"}
+	mul		$tmp30 $tmp29 ___252_cosang 	%argrw{"wrr"}
+	add		$tmp31 $tmp27 $tmp30 	%argrw{"wrr"}
+# W:/r2d2\src\3delight\win64-x64-release-free\osl\stdosl.h:298
+#                        x * y * cosang1 + z * sinang,
+	mul		$tmp32 ___252_x ___252_y 	%line{298} %argrw{"wrr"}
+	mul		$tmp33 $tmp32 ___252_cosang1 	%argrw{"wrr"}
+	mul		$tmp34 ___252_z ___252_sinang 	%argrw{"wrr"}
+	add		$tmp35 $tmp33 $tmp34 	%argrw{"wrr"}
+# W:/r2d2\src\3delight\win64-x64-release-free\osl\stdosl.h:299
+#                        x * z * cosang1 - y * sinang,
+	mul		$tmp36 ___252_x ___252_z 	%line{299} %argrw{"wrr"}
+	mul		$tmp37 $tmp36 ___252_cosang1 	%argrw{"wrr"}
+	mul		$tmp38 ___252_y ___252_sinang 	%argrw{"wrr"}
+	sub		$tmp39 $tmp37 $tmp38 	%argrw{"wrr"}
+# W:/r2d2\src\3delight\win64-x64-release-free\osl\stdosl.h:301
+#                        x * y * cosang1 - z * sinang,
+	mul		$tmp40 ___252_x ___252_y 	%line{301} %argrw{"wrr"}
+	mul		$tmp41 $tmp40 ___252_cosang1 	%argrw{"wrr"}
+	mul		$tmp42 ___252_z ___252_sinang 	%argrw{"wrr"}
+	sub		$tmp43 $tmp41 $tmp42 	%argrw{"wrr"}
+# W:/r2d2\src\3delight\win64-x64-release-free\osl\stdosl.h:302
+#                        y * y + (1.0 - y * y) * cosang,
+	mul		$tmp44 ___252_y ___252_y 	%line{302} %argrw{"wrr"}
+	mul		$tmp45 ___252_y ___252_y 	%argrw{"wrr"}
+	sub		$tmp46 $const10 $tmp45 	%argrw{"wrr"}
+	mul		$tmp47 $tmp46 ___252_cosang 	%argrw{"wrr"}
+	add		$tmp48 $tmp44 $tmp47 	%argrw{"wrr"}
+# W:/r2d2\src\3delight\win64-x64-release-free\osl\stdosl.h:303
+#                        y * z * cosang1 + x * sinang,
+	mul		$tmp49 ___252_y ___252_z 	%line{303} %argrw{"wrr"}
+	mul		$tmp50 $tmp49 ___252_cosang1 	%argrw{"wrr"}
+	mul		$tmp51 ___252_x ___252_sinang 	%argrw{"wrr"}
+	add		$tmp52 $tmp50 $tmp51 	%argrw{"wrr"}
+# W:/r2d2\src\3delight\win64-x64-release-free\osl\stdosl.h:305
+#                        x * z * cosang1 + y * sinang,
+	mul		$tmp53 ___252_x ___252_z 	%line{305} %argrw{"wrr"}
+	mul		$tmp54 $tmp53 ___252_cosang1 	%argrw{"wrr"}
+	mul		$tmp55 ___252_y ___252_sinang 	%argrw{"wrr"}
+	add		$tmp56 $tmp54 $tmp55 	%argrw{"wrr"}
+# W:/r2d2\src\3delight\win64-x64-release-free\osl\stdosl.h:306
+#                        y * z * cosang1 - x * sinang,
+	mul		$tmp57 ___252_y ___252_z 	%line{306} %argrw{"wrr"}
+	mul		$tmp58 $tmp57 ___252_cosang1 	%argrw{"wrr"}
+	mul		$tmp59 ___252_x ___252_sinang 	%argrw{"wrr"}
+	sub		$tmp60 $tmp58 $tmp59 	%argrw{"wrr"}
+# W:/r2d2\src\3delight\win64-x64-release-free\osl\stdosl.h:307
+#                        z * z + (1.0 - z * z) * cosang,
+	mul		$tmp61 ___252_z ___252_z 	%line{307} %argrw{"wrr"}
+	mul		$tmp62 ___252_z ___252_z 	%argrw{"wrr"}
+	sub		$tmp63 $const10 $tmp62 	%argrw{"wrr"}
+	mul		$tmp64 $tmp63 ___252_cosang 	%argrw{"wrr"}
+	add		$tmp65 $tmp61 $tmp64 	%argrw{"wrr"}
+# W:/r2d2\src\3delight\win64-x64-release-free\osl\stdosl.h:297
+#     matrix M = matrix (x * x + (1.0 - x * x) * cosang,
+	matrix		___252_M $tmp31 $tmp35 $tmp39 $const3 $tmp43 $tmp48 $tmp52 $const3 $tmp56 $tmp60 $tmp65 $const3 $const3 $const3 $const3 $const10 	%line{297} %argrw{"wrrrrrrrrrrrrrrrr"}
+# W:/r2d2\src\3delight\win64-x64-release-free\osl\stdosl.h:310
+#     return transform (M, p-a) + a;
+	sub		$tmp67 ___357_Q ___357_P1 	%line{310} %argrw{"wrr"}
+	transformv	$tmp66 ___252_M $tmp67 	%argrw{"wrr"}
+	add		___357_Q $tmp66 ___357_P1 	%argrw{"wrr"}
+# ../../osl_shaders/place2dTexture.osl:101
+# 		outU = Q[0];
+	compref		outU ___357_Q $const1 	%filename{"../../osl_shaders/place2dTexture.osl"} %line{101} %argrw{"wrr"}
+# ../../osl_shaders/place2dTexture.osl:102
+# 		outV = Q[1];
+	compref		outV ___357_Q $const2 	%line{102} %argrw{"wrr"}
+# ../../osl_shaders/place2dTexture.osl:105
+# 	outU -= translateFrameU;
+	sub		outU outU translateFrameU 	%line{105} %argrw{"wrr"}
+# ../../osl_shaders/place2dTexture.osl:106
+# 	outV -= translateFrameV;
+	sub		outV outV translateFrameV 	%line{106} %argrw{"wrr"}
+# ../../osl_shaders/place2dTexture.osl:108
+# 	if( mod(outU, WRAPMAX) - coverageU > EPSILON|| 
+	functioncall	$const18 98 	%line{108} %argrw{"r"}
+# W:/r2d2\src\3delight\win64-x64-release-free\osl\stdosl.h:154
+# float  mod (float  a, float  b) { return a - b*floor(a/b); }
+	div		$tmp70 outU $const17 	%filename{"W:/r2d2\src\3delight\win64-x64-release-free\osl\stdosl.h"} %line{154} %argrw{"wrr"}
+	floor		$tmp69 $tmp70 	%argrw{"wr"}
+	mul		$tmp71 $const17 $tmp69 	%argrw{"wrr"}
+	sub		$tmp68 outU $tmp71 	%argrw{"wrr"}
+# ../../osl_shaders/place2dTexture.osl:108
+# 	if( mod(outU, WRAPMAX) - coverageU > EPSILON|| 
+	sub		$tmp72 $tmp68 coverageU 	%filename{"../../osl_shaders/place2dTexture.osl"} %line{108} %argrw{"wrr"}
+	gt		$tmp73 $tmp72 $const19 	%argrw{"wrr"}
+	neq		$tmp74 $tmp73 $const1 	%argrw{"wrr"}
+	if		$tmp74 102 111 	%argrw{"r"}
+# ../../osl_shaders/place2dTexture.osl:109
+# 		mod(outV, WRAPMAX) - coverageV > EPSILON ||
+	functioncall	$const18 107 	%line{109} %argrw{"r"}
+# W:/r2d2\src\3delight\win64-x64-release-free\osl\stdosl.h:154
+# float  mod (float  a, float  b) { return a - b*floor(a/b); }
+	div		$tmp77 outV $const17 	%filename{"W:/r2d2\src\3delight\win64-x64-release-free\osl\stdosl.h"} %line{154} %argrw{"wrr"}
+	floor		$tmp76 $tmp77 	%argrw{"wr"}
+	mul		$tmp78 $const17 $tmp76 	%argrw{"wrr"}
+	sub		$tmp75 outV $tmp78 	%argrw{"wrr"}
+# ../../osl_shaders/place2dTexture.osl:109
+# 		mod(outV, WRAPMAX) - coverageV > EPSILON ||
+	sub		$tmp79 $tmp75 coverageV 	%filename{"../../osl_shaders/place2dTexture.osl"} %line{109} %argrw{"wrr"}
+	gt		$tmp80 $tmp79 $const19 	%argrw{"wrr"}
+	neq		$tmp81 $tmp80 $const1 	%argrw{"wrr"}
+# ../../osl_shaders/place2dTexture.osl:108
+# 	if( mod(outU, WRAPMAX) - coverageU > EPSILON|| 
+	assign		$tmp74 $tmp81 	%line{108} %argrw{"wr"}
+	neq		$tmp82 $tmp74 $const1 	%argrw{"wrr"}
+# ../../osl_shaders/place2dTexture.osl:109
+# 		mod(outV, WRAPMAX) - coverageV > EPSILON ||
+	if		$tmp82 113 129 	%line{109} %argrw{"r"}
+# ../../osl_shaders/place2dTexture.osl:110
+# 		(wrapU == 0 && 
+	eq		$tmp83 wrapU $const1 	%line{110} %argrw{"wrr"}
+	neq		$tmp84 $tmp83 $const1 	%argrw{"wrr"}
+	if		$tmp84 127 127 	%argrw{"r"}
+# ../../osl_shaders/place2dTexture.osl:111
+# 			(outU < 0 || (outU * repeatU / coverageU) - repeatU > EPSILON)) ||
+	lt		$tmp85 outU $const1 	%line{111} %argrw{"wrr"}
+	neq		$tmp86 $tmp85 $const1 	%argrw{"wrr"}
+	if		$tmp86 119 125 	%argrw{"r"}
+	mul		$tmp87 outU repeatU 	%argrw{"wrr"}
+	div		$tmp88 $tmp87 coverageU 	%argrw{"wrr"}
+	sub		$tmp89 $tmp88 repeatU 	%argrw{"wrr"}
+	gt		$tmp90 $tmp89 $const19 	%argrw{"wrr"}
+	neq		$tmp91 $tmp90 $const1 	%argrw{"wrr"}
+	assign		$tmp86 $tmp91 	%argrw{"wr"}
+	neq		$tmp92 $tmp86 $const1 	%argrw{"wrr"}
+# ../../osl_shaders/place2dTexture.osl:110
+# 		(wrapU == 0 && 
+	assign		$tmp84 $tmp92 	%line{110} %argrw{"wr"}
+	neq		$tmp93 $tmp84 $const1 	%argrw{"wrr"}
+# ../../osl_shaders/place2dTexture.osl:109
+# 		mod(outV, WRAPMAX) - coverageV > EPSILON ||
+	assign		$tmp82 $tmp93 	%line{109} %argrw{"wr"}
+	neq		$tmp94 $tmp82 $const1 	%argrw{"wrr"}
+# ../../osl_shaders/place2dTexture.osl:111
+# 			(outU < 0 || (outU * repeatU / coverageU) - repeatU > EPSILON)) ||
+	if		$tmp94 131 147 	%line{111} %argrw{"r"}
+# ../../osl_shaders/place2dTexture.osl:112
+# 		(wrapV == 0 && 
+	eq		$tmp95 wrapV $const1 	%line{112} %argrw{"wrr"}
+	neq		$tmp96 $tmp95 $const1 	%argrw{"wrr"}
+	if		$tmp96 145 145 	%argrw{"r"}
+# ../../osl_shaders/place2dTexture.osl:113
+# 			(outV < 0 || (outV * repeatV / coverageV) - repeatV > EPSILON)))
+	lt		$tmp97 outV $const1 	%line{113} %argrw{"wrr"}
+	neq		$tmp98 $tmp97 $const1 	%argrw{"wrr"}
+	if		$tmp98 137 143 	%argrw{"r"}
+	mul		$tmp99 outV repeatV 	%argrw{"wrr"}
+	div		$tmp100 $tmp99 coverageV 	%argrw{"wrr"}
+	sub		$tmp101 $tmp100 repeatV 	%argrw{"wrr"}
+	gt		$tmp102 $tmp101 $const19 	%argrw{"wrr"}
+	neq		$tmp103 $tmp102 $const1 	%argrw{"wrr"}
+	assign		$tmp98 $tmp103 	%argrw{"wr"}
+	neq		$tmp104 $tmp98 $const1 	%argrw{"wrr"}
+# ../../osl_shaders/place2dTexture.osl:112
+# 		(wrapV == 0 && 
+	assign		$tmp96 $tmp104 	%line{112} %argrw{"wr"}
+	neq		$tmp105 $tmp96 $const1 	%argrw{"wrr"}
+# ../../osl_shaders/place2dTexture.osl:111
+# 			(outU < 0 || (outU * repeatU / coverageU) - repeatU > EPSILON)) ||
+	assign		$tmp94 $tmp105 	%line{111} %argrw{"wr"}
+# ../../osl_shaders/place2dTexture.osl:108
+# 	if( mod(outU, WRAPMAX) - coverageU > EPSILON|| 
+	if		$tmp94 150 275 	%line{108} %argrw{"r"}
+# ../../osl_shaders/place2dTexture.osl:115
+# 		outUV[0] = UNDEFINED_UV;
+	aassign		outUV $const1 $const20 	%line{115} %argrw{"wrr"}
+# ../../osl_shaders/place2dTexture.osl:116
+# 		outUV[1] = UNDEFINED_UV;
+	aassign		outUV $const2 $const20 	%line{116} %argrw{"wrr"}
+# ../../osl_shaders/place2dTexture.osl:120
+# 		if(coverageU < 1.0)
+	lt		$tmp106 coverageU $const10 	%line{120} %argrw{"wrr"}
+	if		$tmp106 157 157 	%argrw{"r"}
+# ../../osl_shaders/place2dTexture.osl:122
+# 			outU = mod(outU, 1);
+	functioncall	$const18 157 	%line{122} %argrw{"r"}
+# W:/r2d2\src\3delight\win64-x64-release-free\osl\stdosl.h:154
+# float  mod (float  a, float  b) { return a - b*floor(a/b); }
+	div		$tmp108 outU $const10 	%filename{"W:/r2d2\src\3delight\win64-x64-release-free\osl\stdosl.h"} %line{154} %argrw{"wrr"}
+	floor		$tmp107 $tmp108 	%argrw{"wr"}
+	mul		$tmp109 $const10 $tmp107 	%argrw{"wrr"}
+	sub		outU outU $tmp109 	%argrw{"wrr"}
+# ../../osl_shaders/place2dTexture.osl:125
+# 		if(coverageV < 1.0)
+	lt		$tmp110 coverageV $const10 	%filename{"../../osl_shaders/place2dTexture.osl"} %line{125} %argrw{"wrr"}
+	if		$tmp110 164 164 	%argrw{"r"}
+# ../../osl_shaders/place2dTexture.osl:127
+# 			outV = mod(outV, 1);
+	functioncall	$const18 164 	%line{127} %argrw{"r"}
+# W:/r2d2\src\3delight\win64-x64-release-free\osl\stdosl.h:154
+# float  mod (float  a, float  b) { return a - b*floor(a/b); }
+	div		$tmp112 outV $const10 	%filename{"W:/r2d2\src\3delight\win64-x64-release-free\osl\stdosl.h"} %line{154} %argrw{"wrr"}
+	floor		$tmp111 $tmp112 	%argrw{"wr"}
+	mul		$tmp113 $const10 $tmp111 	%argrw{"wrr"}
+	sub		outV outV $tmp113 	%argrw{"wrr"}
+# ../../osl_shaders/place2dTexture.osl:130
+# 		outU = outU * repeatU / coverageU + offsetU;
+	mul		$tmp114 outU repeatU 	%filename{"../../osl_shaders/place2dTexture.osl"} %line{130} %argrw{"wrr"}
+	div		$tmp115 $tmp114 coverageU 	%argrw{"wrr"}
+	add		outU $tmp115 offsetU 	%argrw{"wrr"}
+# ../../osl_shaders/place2dTexture.osl:131
+# 		outV = outV * repeatV / coverageV + offsetV;	
+	mul		$tmp116 outV repeatV 	%line{131} %argrw{"wrr"}
+	div		$tmp117 $tmp116 coverageV 	%argrw{"wrr"}
+	add		outV $tmp117 offsetV 	%argrw{"wrr"}
+# ../../osl_shaders/place2dTexture.osl:133
+# 		if(mod(outV, 2) >= 1)
+	functioncall	$const18 175 	%line{133} %argrw{"r"}
+# W:/r2d2\src\3delight\win64-x64-release-free\osl\stdosl.h:154
+# float  mod (float  a, float  b) { return a - b*floor(a/b); }
+	div		$tmp120 outV $const9 	%filename{"W:/r2d2\src\3delight\win64-x64-release-free\osl\stdosl.h"} %line{154} %argrw{"wrr"}
+	floor		$tmp119 $tmp120 	%argrw{"wr"}
+	mul		$tmp121 $const9 $tmp119 	%argrw{"wrr"}
+	sub		$tmp118 outV $tmp121 	%argrw{"wrr"}
+# ../../osl_shaders/place2dTexture.osl:133
+# 		if(mod(outV, 2) >= 1)
+	ge		$tmp122 $tmp118 $const2 	%filename{"../../osl_shaders/place2dTexture.osl"} %line{133} %argrw{"wrr"}
+	if		$tmp122 186 186 	%argrw{"r"}
+# ../../osl_shaders/place2dTexture.osl:135
+# 			if(stagger != 0)
+	neq		$tmp123 stagger $const1 	%line{135} %argrw{"wrr"}
+	if		$tmp123 180 180 	%argrw{"r"}
+# ../../osl_shaders/place2dTexture.osl:137
+# 				outU += 0.5;
+	add		outU outU $const21 	%line{137} %argrw{"wrr"}
+# ../../osl_shaders/place2dTexture.osl:140
+# 			if(mirrorV != 0)
+	neq		$tmp124 mirrorV $const1 	%line{140} %argrw{"wrr"}
+	if		$tmp124 186 186 	%argrw{"r"}
+# ../../osl_shaders/place2dTexture.osl:142
+# 				float axis = floor(outV) + 0.5;
+	floor		$tmp125 outV 	%line{142} %argrw{"wr"}
+	add		___364_axis $tmp125 $const21 	%argrw{"wrr"}
+# ../../osl_shaders/place2dTexture.osl:143
+# 				outV = axis - (outV - axis);
+	sub		$tmp126 outV ___364_axis 	%line{143} %argrw{"wrr"}
+	sub		outV ___364_axis $tmp126 	%argrw{"wrr"}
+# ../../osl_shaders/place2dTexture.osl:147
+# 		if(mirrorU != 0.0 && mod(outU, 2) >= 1)
+	neq		$tmp127 mirrorU $const3 	%line{147} %argrw{"wrr"}
+	neq		$tmp128 $tmp127 $const1 	%argrw{"wrr"}
+	if		$tmp128 197 197 	%argrw{"r"}
+	functioncall	$const18 194 	%argrw{"r"}
+# W:/r2d2\src\3delight\win64-x64-release-free\osl\stdosl.h:154
+# float  mod (float  a, float  b) { return a - b*floor(a/b); }
+	div		$tmp131 outU $const9 	%filename{"W:/r2d2\src\3delight\win64-x64-release-free\osl\stdosl.h"} %line{154} %argrw{"wrr"}
+	floor		$tmp130 $tmp131 	%argrw{"wr"}
+	mul		$tmp132 $const9 $tmp130 	%argrw{"wrr"}
+	sub		$tmp129 outU $tmp132 	%argrw{"wrr"}
+# ../../osl_shaders/place2dTexture.osl:147
+# 		if(mirrorU != 0.0 && mod(outU, 2) >= 1)
+	ge		$tmp133 $tmp129 $const2 	%filename{"../../osl_shaders/place2dTexture.osl"} %line{147} %argrw{"wrr"}
+	neq		$tmp134 $tmp133 $const1 	%argrw{"wrr"}
+	assign		$tmp128 $tmp134 	%argrw{"wr"}
+	if		$tmp128 202 202 	%argrw{"r"}
+# ../../osl_shaders/place2dTexture.osl:149
+# 			float axis = floor(outU) + 0.5;
+	floor		$tmp135 outU 	%line{149} %argrw{"wr"}
+	add		___365_axis $tmp135 $const21 	%argrw{"wrr"}
+# ../../osl_shaders/place2dTexture.osl:150
+# 			outU = axis - (outU - axis);
+	sub		$tmp136 outU ___365_axis 	%line{150} %argrw{"wrr"}
+	sub		outU ___365_axis $tmp136 	%argrw{"wrr"}
+# ../../osl_shaders/place2dTexture.osl:153
+# 		if(rotateUV != 0.0)
+	neq		$tmp137 rotateUV $const3 	%line{153} %argrw{"wrr"}
+	if		$tmp137 273 273 	%argrw{"r"}
+# ../../osl_shaders/place2dTexture.osl:155
+# 			point Q = point(outU, outV, 0.0);
+	point		___366_Q outU outV $const3 	%line{155} %argrw{"wrrr"}
+# ../../osl_shaders/place2dTexture.osl:156
+# 			point P1 = point(0.5, 0.5, 0.0);
+	assign		___366_P1 $const11 	%line{156} %argrw{"wr"}
+# ../../osl_shaders/place2dTexture.osl:157
+# 			point P2 = point(0.5, 0.5, 1.0);
+	assign		___366_P2 $const12 	%line{157} %argrw{"wr"}
+# ../../osl_shaders/place2dTexture.osl:159
+# 			Q = rotate(Q, radians(rotateUV), P1, P2);
+	functioncall	$const13 210 	%line{159} %argrw{"r"}
+# W:/r2d2\src\3delight\win64-x64-release-free\osl\stdosl.h:88
+# float  radians (float x)  { return x*(M_PI/180.0); }
+	div		$tmp139 $const14 $const15 	%filename{"W:/r2d2\src\3delight\win64-x64-release-free\osl\stdosl.h"} %line{88} %argrw{"wrr"}
+	mul		$tmp138 rotateUV $tmp139 	%argrw{"wrr"}
+# ../../osl_shaders/place2dTexture.osl:159
+# 			Q = rotate(Q, radians(rotateUV), P1, P2);
+	functioncall	$const16 261 	%filename{"../../osl_shaders/place2dTexture.osl"} %line{159} %argrw{"r"}
+# W:/r2d2\src\3delight\win64-x64-release-free\osl\stdosl.h:292
+#     vector axis = normalize (b - a);
+	sub		$tmp140 ___366_P2 ___366_P1 	%filename{"W:/r2d2\src\3delight\win64-x64-release-free\osl\stdosl.h"} %line{292} %argrw{"wrr"}
+	normalize	___252_axis $tmp140 	%argrw{"wr"}
+# W:/r2d2\src\3delight\win64-x64-release-free\osl\stdosl.h:294
+#     sincos (angle, sinang, cosang);
+	sincos		$tmp138 ___252_sinang ___252_cosang 	%line{294} %argrw{"rww"}
+# W:/r2d2\src\3delight\win64-x64-release-free\osl\stdosl.h:295
+#     float cosang1 = 1.0 - cosang;
+	sub		___252_cosang1 $const10 ___252_cosang 	%line{295} %argrw{"wrr"}
+# W:/r2d2\src\3delight\win64-x64-release-free\osl\stdosl.h:296
+#     float x = axis[0], y = axis[1], z = axis[2];
+	compref		___252_x ___252_axis $const1 	%line{296} %argrw{"wrr"}
+	compref		___252_y ___252_axis $const2 	%argrw{"wrr"}
+	compref		___252_z ___252_axis $const8 	%argrw{"wrr"}
+# W:/r2d2\src\3delight\win64-x64-release-free\osl\stdosl.h:297
+#     matrix M = matrix (x * x + (1.0 - x * x) * cosang,
+	mul		$tmp141 ___252_x ___252_x 	%line{297} %argrw{"wrr"}
+	mul		$tmp142 ___252_x ___252_x 	%argrw{"wrr"}
+	sub		$tmp143 $const10 $tmp142 	%argrw{"wrr"}
+	mul		$tmp144 $tmp143 ___252_cosang 	%argrw{"wrr"}
+	add		$tmp145 $tmp141 $tmp144 	%argrw{"wrr"}
+# W:/r2d2\src\3delight\win64-x64-release-free\osl\stdosl.h:298
+#                        x * y * cosang1 + z * sinang,
+	mul		$tmp146 ___252_x ___252_y 	%line{298} %argrw{"wrr"}
+	mul		$tmp147 $tmp146 ___252_cosang1 	%argrw{"wrr"}
+	mul		$tmp148 ___252_z ___252_sinang 	%argrw{"wrr"}
+	add		$tmp149 $tmp147 $tmp148 	%argrw{"wrr"}
+# W:/r2d2\src\3delight\win64-x64-release-free\osl\stdosl.h:299
+#                        x * z * cosang1 - y * sinang,
+	mul		$tmp150 ___252_x ___252_z 	%line{299} %argrw{"wrr"}
+	mul		$tmp151 $tmp150 ___252_cosang1 	%argrw{"wrr"}
+	mul		$tmp152 ___252_y ___252_sinang 	%argrw{"wrr"}
+	sub		$tmp153 $tmp151 $tmp152 	%argrw{"wrr"}
+# W:/r2d2\src\3delight\win64-x64-release-free\osl\stdosl.h:301
+#                        x * y * cosang1 - z * sinang,
+	mul		$tmp154 ___252_x ___252_y 	%line{301} %argrw{"wrr"}
+	mul		$tmp155 $tmp154 ___252_cosang1 	%argrw{"wrr"}
+	mul		$tmp156 ___252_z ___252_sinang 	%argrw{"wrr"}
+	sub		$tmp157 $tmp155 $tmp156 	%argrw{"wrr"}
+# W:/r2d2\src\3delight\win64-x64-release-free\osl\stdosl.h:302
+#                        y * y + (1.0 - y * y) * cosang,
+	mul		$tmp158 ___252_y ___252_y 	%line{302} %argrw{"wrr"}
+	mul		$tmp159 ___252_y ___252_y 	%argrw{"wrr"}
+	sub		$tmp160 $const10 $tmp159 	%argrw{"wrr"}
+	mul		$tmp161 $tmp160 ___252_cosang 	%argrw{"wrr"}
+	add		$tmp162 $tmp158 $tmp161 	%argrw{"wrr"}
+# W:/r2d2\src\3delight\win64-x64-release-free\osl\stdosl.h:303
+#                        y * z * cosang1 + x * sinang,
+	mul		$tmp163 ___252_y ___252_z 	%line{303} %argrw{"wrr"}
+	mul		$tmp164 $tmp163 ___252_cosang1 	%argrw{"wrr"}
+	mul		$tmp165 ___252_x ___252_sinang 	%argrw{"wrr"}
+	add		$tmp166 $tmp164 $tmp165 	%argrw{"wrr"}
+# W:/r2d2\src\3delight\win64-x64-release-free\osl\stdosl.h:305
+#                        x * z * cosang1 + y * sinang,
+	mul		$tmp167 ___252_x ___252_z 	%line{305} %argrw{"wrr"}
+	mul		$tmp168 $tmp167 ___252_cosang1 	%argrw{"wrr"}
+	mul		$tmp169 ___252_y ___252_sinang 	%argrw{"wrr"}
+	add		$tmp170 $tmp168 $tmp169 	%argrw{"wrr"}
+# W:/r2d2\src\3delight\win64-x64-release-free\osl\stdosl.h:306
+#                        y * z * cosang1 - x * sinang,
+	mul		$tmp171 ___252_y ___252_z 	%line{306} %argrw{"wrr"}
+	mul		$tmp172 $tmp171 ___252_cosang1 	%argrw{"wrr"}
+	mul		$tmp173 ___252_x ___252_sinang 	%argrw{"wrr"}
+	sub		$tmp174 $tmp172 $tmp173 	%argrw{"wrr"}
+# W:/r2d2\src\3delight\win64-x64-release-free\osl\stdosl.h:307
+#                        z * z + (1.0 - z * z) * cosang,
+	mul		$tmp175 ___252_z ___252_z 	%line{307} %argrw{"wrr"}
+	mul		$tmp176 ___252_z ___252_z 	%argrw{"wrr"}
+	sub		$tmp177 $const10 $tmp176 	%argrw{"wrr"}
+	mul		$tmp178 $tmp177 ___252_cosang 	%argrw{"wrr"}
+	add		$tmp179 $tmp175 $tmp178 	%argrw{"wrr"}
+# W:/r2d2\src\3delight\win64-x64-release-free\osl\stdosl.h:297
+#     matrix M = matrix (x * x + (1.0 - x * x) * cosang,
+	matrix		___252_M $tmp145 $tmp149 $tmp153 $const3 $tmp157 $tmp162 $tmp166 $const3 $tmp170 $tmp174 $tmp179 $const3 $const3 $const3 $const3 $const10 	%line{297} %argrw{"wrrrrrrrrrrrrrrrr"}
+# W:/r2d2\src\3delight\win64-x64-release-free\osl\stdosl.h:310
+#     return transform (M, p-a) + a;
+	sub		$tmp181 ___366_Q ___366_P1 	%line{310} %argrw{"wrr"}
+	transformv	$tmp180 ___252_M $tmp181 	%argrw{"wrr"}
+	add		___366_Q $tmp180 ___366_P1 	%argrw{"wrr"}
+# ../../osl_shaders/place2dTexture.osl:160
+# 			outU = mod(Q[0], repeatU);
+	compref		$tmp182 ___366_Q $const1 	%filename{"../../osl_shaders/place2dTexture.osl"} %line{160} %argrw{"wrr"}
+	functioncall	$const18 267 	%argrw{"r"}
+# W:/r2d2\src\3delight\win64-x64-release-free\osl\stdosl.h:154
+# float  mod (float  a, float  b) { return a - b*floor(a/b); }
+	div		$tmp184 $tmp182 repeatU 	%filename{"W:/r2d2\src\3delight\win64-x64-release-free\osl\stdosl.h"} %line{154} %argrw{"wrr"}
+	floor		$tmp183 $tmp184 	%argrw{"wr"}
+	mul		$tmp185 repeatU $tmp183 	%argrw{"wrr"}
+	sub		outU $tmp182 $tmp185 	%argrw{"wrr"}
+# ../../osl_shaders/place2dTexture.osl:161
+# 			outV = mod(Q[1], repeatV);
+	compref		$tmp186 ___366_Q $const2 	%filename{"../../osl_shaders/place2dTexture.osl"} %line{161} %argrw{"wrr"}
+	functioncall	$const18 273 	%argrw{"r"}
+# W:/r2d2\src\3delight\win64-x64-release-free\osl\stdosl.h:154
+# float  mod (float  a, float  b) { return a - b*floor(a/b); }
+	div		$tmp188 $tmp186 repeatV 	%filename{"W:/r2d2\src\3delight\win64-x64-release-free\osl\stdosl.h"} %line{154} %argrw{"wrr"}
+	floor		$tmp187 $tmp188 	%argrw{"wr"}
+	mul		$tmp189 repeatV $tmp187 	%argrw{"wrr"}
+	sub		outV $tmp186 $tmp189 	%argrw{"wrr"}
+# ../../osl_shaders/place2dTexture.osl:164
+# 		outUV[0] = outU;
+	aassign		outUV $const1 outU 	%filename{"../../osl_shaders/place2dTexture.osl"} %line{164} %argrw{"wrr"}
+# ../../osl_shaders/place2dTexture.osl:165
+# 		outUV[1] = outV;
+	aassign		outUV $const2 outV 	%line{165} %argrw{"wrr"}
+	end

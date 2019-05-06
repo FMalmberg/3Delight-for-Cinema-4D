@@ -28,7 +28,6 @@ void NSI_Export_Material::CreateNSINodes(const char* ParentTransformHandle, GeLi
 	ctx.Create(m_material_handle, "shader");
 	m_material_attributes = string(parser->GetUniqueName("c4d_material_attribute"));
 	ctx.Create(m_material_attributes, "attributes");
-	ctx.SetAttribute(m_material_attributes, NSI::FloatArg("displacementbound",150));
 
 	BaseMaterial* material = (BaseMaterial*)C4DNode;
 	BaseContainer* material_container = material->GetDataInstance();
@@ -122,7 +121,7 @@ void NSI_Export_Material::ConnectNSINodes(GeListNode* C4DNode, BaseDocument* doc
 			vector<float> col = { 1,1,1 };
 			ctx.SetAttribute(m_material_handle, NSI::ColorArg(osl_parameter_name, &col[0]));
 			ctx.SetAttribute(m_material_handle, NSI::IntegerArg(use_shader, 1));
-			osl_source_attr = "Cout";
+			osl_source_attr = "outColor";
 		}
 		std::string link_shader = parser->GetAssociatedHandle(shader);
 		ctx.Connect(link_shader, osl_source_attr, m_material_handle, osl_parameter_name);

@@ -14,7 +14,7 @@ Delight_Sky::Delight_Sky()
 	vector<char> c_shaderpath = StringToChars(shaderpath.GetString());
 	m_ids_to_names[Shader_Path] = pair("", &c_shaderpath[0]);
 	m_ids_to_names[SKY_INTENSITY] = pair("", "intensity");
-	m_ids_to_names[SKY_INTENSITY_SHADER] = pair("Cout[0]", "intensity");
+	m_ids_to_names[SKY_INTENSITY_SHADER] = pair("outColor[0]", "intensity");
 	m_ids_to_names[SKY_TURBIDITY] = pair("", "turbidity");
 	m_ids_to_names[SKY_GROUND_COLOR] = pair("", "ground_albedo");
 	m_ids_to_names[SKY_ELEVATION] = pair("", "elevation");

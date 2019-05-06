@@ -49,7 +49,6 @@ Bool DL_Glass::Init(GeListNode* node)
 	data->SetFloat(INCADESCENCE_INTENSITY, 1);
 	data->SetInt32(BUMP_TYPE, BUMP_MAP);
 	data->SetFloat(BUMP_INTENSITY, 1);
-	//color = data->GetVector(SIMPLEMATERIAL_COLOR);
 	return true;
 }
 
@@ -117,11 +116,6 @@ Bool DL_Glass::Message(GeListNode *node, Int32 type, void *data)
 {
 	if (!node)
 		return false;
-	/*BaseDocument* doc = GetActiveDocument();
-	BaseContainer* dldata = ((BaseMaterial*)node)->GetDataInstance();
-	if (dldata->GetLink(COATING_LAYER_THICKNESS_SHADER, doc))
-		dldata->SetFloat(COATING_LAYER_THICKNESS, 0.5);
-*/  
 	return true;
 }
 

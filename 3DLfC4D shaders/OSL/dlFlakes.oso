@@ -1,0 +1,780 @@
+OpenShadingLanguage 1.00
+# Compiled by oslc 1.11.0dev
+# options: -q -o ..\build\win64-x64-release-free\2016.5\..\osl\dlFlakes.oso -I../../osl_shaders
+shader dlFlakes	%meta{string,maya_typeID,"0x001254A3"} %meta{string,maya_classification,"texture/3d"} %meta{string,niceName,"Flakes"} %meta{int,maya_generateAETemplate,0} 
+param	float	density	0.5		%meta{string,label,"Density"} %meta{float,min,0} %meta{float,slidermin,0} %meta{float,slidermax,1}  %read{178,178} %write{2147483647,-1}
+param	float	scale	1		%meta{string,label,"Scale"} %meta{float,min,0} %meta{float,slidermin,0} %meta{float,slidermax,1}  %read{18,18} %write{2147483647,-1}
+param	float	randomness	0.5		%meta{string,label,"Randomness"} %meta{float,min,0} %meta{float,slidermin,0} %meta{float,slidermax,1}  %read{272,272} %write{2147483647,-1}
+param	int	layers	1		%meta{string,label,"Layers"} %meta{int,min,1} %meta{int,slidermin,1} %meta{int,slidermax,8}  %read{34,176} %write{2147483647,-1}
+param	matrix	placementMatrix	1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1		%read{16,16} %write{2147483647,-1}
+oparam	color	outColor	0 0 0		%read{276,278} %write{274,274}
+oparam	float	outColorR	0		%meta{string,attribute,"outColorR"}  %read{2147483647,-1} %write{276,276}
+oparam	float	outColorG	0		%meta{string,attribute,"outColorG"}  %read{2147483647,-1} %write{277,277}
+oparam	float	outColorB	0		%meta{string,attribute,"outColorB"}  %read{2147483647,-1} %write{278,278}
+oparam	float	outAlpha	0		%read{2147483647,-1} %write{275,275}
+global	point	P	%read{7,13} %write{2147483647,-1}
+local	point	___329_Pref	%read{9,15} %write{1,1}
+local	int	___329_have_Pref	%read{4,10} %write{1,1}
+local	point	___329_pp	%read{16,16} %write{7,15}
+local	point	___329_pq	%read{17,17} %write{16,16}
+local	float	___379_t	%read{34,247} %write{34,247}
+local	float	___379_tbase	%read{34,247} %write{34,247}
+local	point	___379_n1	%read{34,247} %write{34,247}
+local	float	___379_d	%read{34,247} %write{34,247}
+local	point	___379_n2	%read{34,247} %write{34,247}
+local	float	___425_dist	%read{34,247} %write{34,247}
+local	float	___426_dist	%read{34,247} %write{34,247}
+local	vector	___427_diff	%read{34,247} %write{34,247}
+local	float	___427_dist	%read{34,247} %write{34,247}
+local	point	___428_thiscell	%read{34,247} %write{34,247}
+local	int	___429_i	%read{34,247} %write{34,247}
+local	int	___431_j	%read{34,247} %write{34,247}
+local	int	___433_k	%read{34,247} %write{34,247}
+local	point	___434_testcell	%read{34,247} %write{34,247}
+local	point	___434_cell_noise	%read{34,247} %write{34,247}
+local	point	___434_pos	%read{34,247} %write{34,247}
+local	float	___434_dist	%read{34,247} %write{34,247}
+local	vector	___435_offset	%read{34,247} %write{34,247}
+local	float	___441_result	%read{34,251} %write{24,250}
+local	float	___441_freq_ratio	%read{34,247} %write{26,26}
+local	float	___441_lacunarity	%read{34,247} %write{27,247}
+local	float	___441_sum	%read{2147483647,-1} %write{28,28}
+local	float	___441_amp	%read{34,247} %write{29,247}
+local	float	___441_ampSum	%read{34,250} %write{30,247}
+local	float	___441_mask	%read{34,252} %write{31,247}
+local	int	___442_i	%read{34,247} %write{33,247}
+local	float	___443_curr_result	%read{34,247} %write{34,247}
+local	float	___443_f1	%read{34,247} %write{34,247}
+local	float	___443_f2	%read{34,247} %write{34,247}
+local	point	___443_pos1	%read{34,247} %write{34,247}
+local	point	___443_pos2	%read{34,247} %write{34,247}
+local	color	___443_col1	%read{34,247} %write{34,247}
+local	float	___443_curr_mask	%read{34,247} %write{34,247}
+local	float	___445_edge_factor	%read{34,247} %write{34,247}
+local	float	___482_theta	%read{263,266} %write{260,260}
+local	float	___482_phi	%read{264,267} %write{262,262}
+local	point	pp	%read{34,247} %write{19,19}
+local	float	worley_float	%read{2147483647,-1} %write{20,251}
+local	color	worley_color	%read{34,256} %write{21,247}
+local	float	worley_mask	%read{275,275} %write{22,252}
+local	float	x	%read{269,269} %write{253,265}
+local	float	y	%read{270,270} %write{254,268}
+local	color	flakes	%read{273,274} %write{271,273}
+temp	point	$tmp1	%read{19,19} %write{17,17}
+const	int	$const1	1		%read{2,277} %write{2147483647,-1}
+const	string	$const2	"transformP"		%read{0,0} %write{2147483647,-1}
+const	string	$const3	"Pref"		%read{1,1} %write{2147483647,-1}
+const	int	$const4	0		%read{2,276} %write{2147483647,-1}
+temp	int	$tmp2	%read{3,3} %write{2,2}
+temp	int	$tmp3	%read{5,5} %write{4,4}
+const	string	$const5	"object"		%read{7,9} %write{2147483647,-1}
+const	string	$const6	"transform"		%read{6,14} %write{2147483647,-1}
+const	string	$const7	"common"		%read{7,15} %write{2147483647,-1}
+temp	int	$tmp4	%read{11,11} %write{10,10}
+const	string	$const8	"world"		%read{13,15} %write{2147483647,-1}
+temp	float	$tmp5	%read{19,19} %write{18,18}
+const	float	$const9	9.99999975e-06		%read{18,18} %write{2147483647,-1}
+const	int	$const10	2		%read{58,278} %write{2147483647,-1}
+const	float	$const11	1		%read{26,271} %write{2147483647,-1}
+const	float	$const12	0		%read{50,222} %write{2147483647,-1}
+const	float	$const13	0.800000012		%read{25,25} %write{2147483647,-1}
+const	string	$const14	"worley_noise_multilevel"		%read{23,23} %write{2147483647,-1}
+temp	float	$tmp6	%read{26,26} %write{25,25}
+const	float	$const15	0.00100000005		%read{25,153} %write{2147483647,-1}
+temp	int	$tmp7	%read{34,247} %write{34,247}
+temp	int	$tmp8	%read{32,247} %write{33,247}
+temp	point	$tmp9	%read{34,247} %write{34,247}
+temp	point	$tmp10	%read{34,247} %write{34,247}
+const	int	$const16	1000		%read{44,48} %write{2147483647,-1}
+temp	int	$tmp11	%read{34,247} %write{34,247}
+temp	float	$tmp12	%read{34,247} %write{34,247}
+temp	point	$tmp13	%read{34,247} %write{34,247}
+temp	int	$tmp14	%read{34,247} %write{34,247}
+temp	float	$tmp15	%read{34,247} %write{34,247}
+temp	float	$tmp16	%read{34,247} %write{34,247}
+const	string	$const17	"worley_noise"		%read{51,51} %write{2147483647,-1}
+temp	float	$tmp17	%read{34,247} %write{34,247}
+temp	float	$tmp18	%read{34,247} %write{34,247}
+const	float	$const18	0.5		%read{54,270} %write{2147483647,-1}
+temp	float	$tmp19	%read{34,247} %write{34,247}
+temp	float	$tmp20	%read{34,247} %write{34,247}
+temp	float	$tmp21	%read{34,247} %write{34,247}
+temp	float	$tmp22	%read{34,247} %write{34,247}
+temp	float	$tmp23	%read{34,247} %write{34,247}
+temp	float	$tmp24	%read{34,247} %write{34,247}
+temp	float	$tmp25	%read{34,247} %write{34,247}
+const	int	$const19	1000000		%read{62,63} %write{2147483647,-1}
+const	int	$const20	-1		%read{65,73} %write{2147483647,-1}
+temp	int	$tmp26	%read{34,247} %write{34,247}
+temp	int	$tmp27	%read{34,247} %write{34,247}
+temp	int	$tmp28	%read{34,247} %write{34,247}
+temp	int	$tmp29	%read{34,247} %write{34,247}
+temp	int	$tmp30	%read{34,247} %write{34,247}
+temp	int	$tmp31	%read{34,247} %write{34,247}
+temp	vector	$tmp32	%read{34,247} %write{34,247}
+temp	float	$tmp33	%read{34,247} %write{34,247}
+temp	float	$tmp34	%read{34,247} %write{34,247}
+temp	float	$tmp35	%read{34,247} %write{34,247}
+const	float	$const21	0.0399999991		%read{81,81} %write{2147483647,-1}
+temp	float	$tmp36	%read{34,247} %write{34,247}
+const	string	$const22	"animatedcellnoise"		%read{82,82} %write{2147483647,-1}
+temp	float	$tmp37	%read{34,247} %write{34,247}
+temp	float	$tmp38	%read{34,247} %write{34,247}
+temp	vector	$tmp39	%read{34,247} %write{34,247}
+temp	vector	$tmp40	%read{34,247} %write{34,247}
+temp	point	$tmp41	%read{34,247} %write{34,247}
+temp	point	$tmp42	%read{34,247} %write{34,247}
+temp	int	$tmp43	%read{34,247} %write{34,247}
+temp	int	$tmp44	%read{34,247} %write{34,247}
+const	string	$const23	"distance_manhattan"		%read{104,104} %write{2147483647,-1}
+temp	float	$tmp45	%read{34,247} %write{34,247}
+temp	float	$tmp46	%read{34,247} %write{34,247}
+temp	float	$tmp47	%read{34,247} %write{34,247}
+temp	float	$tmp48	%read{34,247} %write{34,247}
+temp	float	$tmp49	%read{34,247} %write{34,247}
+temp	float	$tmp50	%read{34,247} %write{34,247}
+temp	float	$tmp51	%read{34,247} %write{34,247}
+temp	float	$tmp52	%read{34,247} %write{34,247}
+temp	float	$tmp53	%read{34,247} %write{34,247}
+temp	float	$tmp54	%read{34,247} %write{34,247}
+temp	float	$tmp55	%read{34,247} %write{34,247}
+temp	float	$tmp56	%read{34,247} %write{34,247}
+temp	float	$tmp57	%read{34,247} %write{34,247}
+temp	int	$tmp58	%read{34,247} %write{34,247}
+const	string	$const24	"distance_chebyshev"		%read{122,122} %write{2147483647,-1}
+temp	float	$tmp59	%read{34,247} %write{34,247}
+temp	float	$tmp60	%read{34,247} %write{34,247}
+temp	float	$tmp61	%read{34,247} %write{34,247}
+temp	float	$tmp62	%read{34,247} %write{34,247}
+temp	float	$tmp63	%read{34,247} %write{34,247}
+temp	float	$tmp64	%read{34,247} %write{34,247}
+temp	float	$tmp65	%read{34,247} %write{34,247}
+const	int	$const25	3		%read{133,204} %write{2147483647,-1}
+temp	int	$tmp66	%read{34,247} %write{34,247}
+const	string	$const26	"distance_minkowski"		%read{135,135} %write{2147483647,-1}
+temp	float	$tmp67	%read{34,247} %write{34,247}
+temp	float	$tmp68	%read{34,247} %write{34,247}
+temp	float	$tmp69	%read{34,247} %write{34,247}
+temp	float	$tmp70	%read{34,247} %write{34,247}
+temp	float	$tmp71	%read{34,247} %write{34,247}
+temp	float	$tmp72	%read{34,247} %write{34,247}
+temp	float	$tmp73	%read{34,247} %write{34,247}
+temp	float	$tmp74	%read{34,247} %write{34,247}
+temp	float	$tmp75	%read{34,247} %write{34,247}
+temp	float	$tmp76	%read{34,247} %write{34,247}
+temp	float	$tmp77	%read{34,247} %write{34,247}
+temp	float	$tmp78	%read{34,247} %write{34,247}
+temp	float	$tmp79	%read{34,247} %write{34,247}
+temp	float	$tmp80	%read{34,247} %write{34,247}
+temp	float	$tmp81	%read{34,247} %write{34,247}
+temp	float	$tmp82	%read{34,247} %write{34,247}
+temp	float	$tmp83	%read{34,247} %write{34,247}
+temp	float	$tmp84	%read{34,247} %write{34,247}
+temp	int	$tmp85	%read{34,247} %write{34,247}
+const	string	$const27	"hash"		%read{164,166} %write{2147483647,-1}
+const	vector	$const28	2 13 511		%read{163,163} %write{2147483647,-1}
+temp	point	$tmp87	%read{34,247} %write{34,247}
+const	vector	$const29	1 7 1023		%read{165,165} %write{2147483647,-1}
+temp	point	$tmp89	%read{34,247} %write{34,247}
+temp	int	$tmp90	%read{34,247} %write{34,247}
+const	float	$const30	1.20000005		%read{174,175} %write{2147483647,-1}
+temp	float	$tmp91	%read{34,247} %write{34,247}
+temp	float	$tmp92	%read{34,247} %write{34,247}
+temp	float	$tmp93	%read{34,247} %write{34,247}
+temp	float	$tmp94	%read{34,247} %write{34,247}
+temp	float	$tmp95	%read{34,247} %write{34,247}
+temp	int	$tmp96	%read{34,247} %write{34,247}
+temp	int	$tmp97	%read{34,247} %write{34,247}
+temp	float	$tmp98	%read{34,247} %write{34,247}
+temp	float	$tmp99	%read{34,247} %write{34,247}
+temp	float	$tmp100	%read{34,247} %write{34,247}
+temp	float	$tmp101	%read{34,247} %write{34,247}
+temp	int	$tmp102	%read{34,247} %write{34,247}
+temp	int	$tmp103	%read{34,247} %write{34,247}
+const	int	$const31	4		%read{194,207} %write{2147483647,-1}
+temp	float	$tmp104	%read{34,247} %write{34,247}
+temp	float	$tmp105	%read{34,247} %write{34,247}
+temp	float	$tmp106	%read{34,247} %write{34,247}
+temp	int	$tmp107	%read{34,247} %write{34,247}
+temp	int	$tmp108	%read{34,247} %write{34,247}
+temp	int	$tmp109	%read{34,247} %write{34,247}
+const	int	$const32	5		%read{210,210} %write{2147483647,-1}
+temp	int	$tmp110	%read{34,247} %write{34,247}
+temp	float	$tmp111	%read{34,247} %write{34,247}
+temp	int	$tmp112	%read{34,247} %write{34,247}
+temp	int	$tmp113	%read{34,247} %write{34,247}
+temp	int	$tmp114	%read{34,247} %write{34,247}
+temp	int	$tmp115	%read{34,247} %write{34,247}
+temp	float	$tmp116	%read{34,247} %write{34,247}
+temp	float	$tmp117	%read{34,247} %write{34,247}
+temp	float	$tmp118	%read{34,247} %write{34,247}
+temp	float	$tmp119	%read{34,247} %write{34,247}
+temp	int	$tmp120	%read{34,247} %write{34,247}
+temp	float	$tmp121	%read{34,247} %write{34,247}
+temp	float	$tmp122	%read{34,247} %write{34,247}
+temp	int	$tmp123	%read{34,247} %write{34,247}
+temp	float	$tmp124	%read{34,247} %write{34,247}
+temp	int	$tmp125	%read{34,247} %write{34,247}
+temp	float	$tmp126	%read{34,247} %write{34,247}
+temp	float	$tmp127	%read{34,247} %write{34,247}
+temp	float	$tmp128	%read{34,247} %write{34,247}
+temp	float	$tmp129	%read{34,247} %write{34,247}
+temp	int	$tmp130	%read{249,249} %write{248,248}
+temp	float	$tmp131	%read{258,258} %write{255,255}
+temp	float	$tmp132	%read{262,262} %write{256,256}
+const	string	$const33	"hemisphereCosineWeighted"		%read{257,257} %write{2147483647,-1}
+temp	float	$tmp133	%read{260,260} %write{259,259}
+temp	float	$tmp134	%read{259,259} %write{258,258}
+const	float	$const34	3.14159274		%read{261,261} %write{2147483647,-1}
+temp	float	$tmp135	%read{262,262} %write{261,261}
+const	float	$const35	2		%read{261,261} %write{2147483647,-1}
+temp	float	$tmp136	%read{265,265} %write{263,263}
+temp	float	$tmp137	%read{265,265} %write{264,264}
+temp	float	$tmp138	%read{268,268} %write{266,266}
+temp	float	$tmp139	%read{268,268} %write{267,267}
+temp	float	$tmp140	%read{271,271} %write{269,269}
+temp	float	$tmp141	%read{271,271} %write{270,270}
+const	color	$const36	0.5 0.5 1		%read{273,273} %write{2147483647,-1}
+const	float	$const37	0.25		%read{272,272} %write{2147483647,-1}
+temp	float	$tmp143	%read{273,273} %write{272,272}
+code ___main___
+# ../../osl_shaders/dlFlakes.osl:53
+# 	point pp = transformP(1 /*Local(Objs Space)*/ , placementMatrix ) / max(scale,0.00001);
+	functioncall	$const2 18 	%filename{"../../osl_shaders/dlFlakes.osl"} %line{53} %argrw{"r"}
+# W:/r2d2\src\osl_shaders\texture3d.h:84
+# 	int have_Pref = getattribute("Pref", Pref);
+	getattribute	___329_have_Pref $const3 ___329_Pref 	%filename{"W:/r2d2\src\osl_shaders\texture3d.h"} %line{84} %argrw{"wrw"}
+# W:/r2d2\src\osl_shaders\texture3d.h:88
+# 	if(i_local != 0)
+	neq		$tmp2 $const1 $const4 	%line{88} %argrw{"wrr"}
+	if		$tmp2 10 16 	%argrw{"r"}
+# W:/r2d2\src\osl_shaders\texture3d.h:90
+# 		if( !have_Pref )
+	eq		$tmp3 ___329_have_Pref $const4 	%line{90} %argrw{"wrr"}
+	if		$tmp3 8 10 	%argrw{"r"}
+# W:/r2d2\src\osl_shaders\texture3d.h:91
+# 			pp = transform("object", P);
+	functioncall	$const6 8 	%line{91} %argrw{"r"}
+# W:/r2d2\src\3delight\win64-x64-release-free\osl\stdosl.h:285
+# point  transform (string to, point p)  { return transform("common",to,p); }
+	transform	___329_pp $const7 $const5 P 	%filename{"W:/r2d2\src\3delight\win64-x64-release-free\osl\stdosl.h"} %line{285} %argrw{"wrrr"}
+# W:/r2d2\src\osl_shaders\texture3d.h:93
+# 			pp = transform("object", Pref);
+	functioncall	$const6 10 	%filename{"W:/r2d2\src\osl_shaders\texture3d.h"} %line{93} %argrw{"r"}
+# W:/r2d2\src\3delight\win64-x64-release-free\osl\stdosl.h:285
+# point  transform (string to, point p)  { return transform("common",to,p); }
+	transform	___329_pp $const7 $const5 ___329_Pref 	%filename{"W:/r2d2\src\3delight\win64-x64-release-free\osl\stdosl.h"} %line{285} %argrw{"wrrr"}
+# W:/r2d2\src\osl_shaders\texture3d.h:97
+# 		if( !have_Pref )
+	eq		$tmp4 ___329_have_Pref $const4 	%filename{"W:/r2d2\src\osl_shaders\texture3d.h"} %line{97} %argrw{"wrr"}
+	if		$tmp4 14 16 	%argrw{"r"}
+# W:/r2d2\src\osl_shaders\texture3d.h:98
+# 			pp = transform("world", P);
+	functioncall	$const6 14 	%line{98} %argrw{"r"}
+# W:/r2d2\src\3delight\win64-x64-release-free\osl\stdosl.h:285
+# point  transform (string to, point p)  { return transform("common",to,p); }
+	transform	___329_pp $const7 $const8 P 	%filename{"W:/r2d2\src\3delight\win64-x64-release-free\osl\stdosl.h"} %line{285} %argrw{"wrrr"}
+# W:/r2d2\src\osl_shaders\texture3d.h:100
+# 			pp = transform("world", Pref);
+	functioncall	$const6 16 	%filename{"W:/r2d2\src\osl_shaders\texture3d.h"} %line{100} %argrw{"r"}
+# W:/r2d2\src\3delight\win64-x64-release-free\osl\stdosl.h:285
+# point  transform (string to, point p)  { return transform("common",to,p); }
+	transform	___329_pp $const7 $const8 ___329_Pref 	%filename{"W:/r2d2\src\3delight\win64-x64-release-free\osl\stdosl.h"} %line{285} %argrw{"wrrr"}
+# W:/r2d2\src\osl_shaders\texture3d.h:103
+# 	point pq = transform(i_placementMatrix, pp);
+	transform	___329_pq placementMatrix ___329_pp 	%filename{"W:/r2d2\src\osl_shaders\texture3d.h"} %line{103} %argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\texture3d.h:105
+# 	return pq;
+	assign		$tmp1 ___329_pq 	%line{105} %argrw{"wr"}
+# ../../osl_shaders/dlFlakes.osl:53
+# 	point pp = transformP(1 /*Local(Objs Space)*/ , placementMatrix ) / max(scale,0.00001);
+	max		$tmp5 scale $const9 	%filename{"../../osl_shaders/dlFlakes.osl"} %line{53} %argrw{"wrr"}
+	div		pp $tmp1 $tmp5 	%argrw{"wrr"}
+# ../../osl_shaders/dlFlakes.osl:55
+# 	float worley_float = 0;
+	assign		worley_float $const4 	%line{55} %argrw{"wr"}
+# ../../osl_shaders/dlFlakes.osl:56
+# 	color worley_color = 0;
+	assign		worley_color $const4 	%line{56} %argrw{"wr"}
+# ../../osl_shaders/dlFlakes.osl:57
+# 	float worley_mask = 0;
+	assign		worley_mask $const4 	%line{57} %argrw{"wr"}
+# ../../osl_shaders/dlFlakes.osl:59
+# 	worley_noise_multilevel(
+	functioncall	$const14 253 	%line{59} %argrw{"r"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:617
+# 	float result = 0;
+	assign		___441_result $const4 	%filename{"W:/r2d2\src\osl_shaders\noise_utils.h"} %line{617} %argrw{"wr"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:619
+# 	float freq_ratio = 1 / max(octave_scale,0.001); 
+	max		$tmp6 $const13 $const15 	%line{619} %argrw{"wrr"}
+	div		___441_freq_ratio $const11 $tmp6 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:620
+# 	float lacunarity = 1;
+	assign		___441_lacunarity $const1 	%line{620} %argrw{"wr"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:621
+# 	float sum = 0;
+	assign		___441_sum $const4 	%line{621} %argrw{"wr"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:622
+# 	float amp = 1;
+	assign		___441_amp $const1 	%line{622} %argrw{"wr"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:623
+# 	float ampSum = 0;
+	assign		___441_ampSum $const4 	%line{623} %argrw{"wr"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:624
+# 	float mask = 0;
+	assign		___441_mask $const4 	%line{624} %argrw{"wr"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:626
+# 	for (int i = 0; i<octaves; i+=1 ) 
+	for		$tmp8 34 36 247 248 	%line{626} %argrw{"r"}
+	assign		___442_i $const4 	%argrw{"wr"}
+	lt		$tmp7 ___442_i layers 	%argrw{"wrr"}
+	neq		$tmp8 $tmp7 $const4 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:628
+# 		float curr_result = 0;
+	assign		___443_curr_result $const4 	%line{628} %argrw{"wr"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:630
+# 		float f1 = 0;
+	assign		___443_f1 $const4 	%line{630} %argrw{"wr"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:631
+# 		float f2 = 0;
+	assign		___443_f2 $const4 	%line{631} %argrw{"wr"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:632
+# 		point pos1 = 0;
+	assign		___443_pos1 $const4 	%line{632} %argrw{"wr"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:633
+# 		point pos2 = 0;
+	assign		___443_pos2 $const4 	%line{633} %argrw{"wr"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:634
+# 		color col1 = 0;
+	assign		___443_col1 $const4 	%line{634} %argrw{"wr"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:635
+# 		float curr_mask = 0;
+	assign		___443_curr_mask $const4 	%line{635} %argrw{"wr"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:637
+# 		worley_noise(i_p * lacunarity + point(1000 * i), dist_type, minkowski_k, random_pos, i_time + 1000 * i,
+	mul		$tmp9 pp ___441_lacunarity 	%line{637} %argrw{"wrr"}
+	mul		$tmp11 $const16 ___442_i 	%argrw{"wrr"}
+	assign		$tmp12 $tmp11 	%argrw{"wr"}
+	assign		$tmp10 $tmp12 	%argrw{"wr"}
+	add		$tmp13 $tmp9 $tmp10 	%argrw{"wrr"}
+	mul		$tmp14 $const16 ___442_i 	%argrw{"wrr"}
+	assign		$tmp16 $tmp14 	%argrw{"wr"}
+	add		$tmp15 $const12 $tmp16 	%argrw{"wrr"}
+	functioncall	$const17 176 	%argrw{"r"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:538
+# 	point thiscell = point (floor(i_p[0])+0.5, floor(i_p[1])+0.5, floor(i_p[2])+0.5);
+	compref		$tmp18 $tmp13 $const4 	%line{538} %argrw{"wrr"}
+	floor		$tmp17 $tmp18 	%argrw{"wr"}
+	add		$tmp19 $tmp17 $const18 	%argrw{"wrr"}
+	compref		$tmp21 $tmp13 $const1 	%argrw{"wrr"}
+	floor		$tmp20 $tmp21 	%argrw{"wr"}
+	add		$tmp22 $tmp20 $const18 	%argrw{"wrr"}
+	compref		$tmp24 $tmp13 $const10 	%argrw{"wrr"}
+	floor		$tmp23 $tmp24 	%argrw{"wr"}
+	add		$tmp25 $tmp23 $const18 	%argrw{"wrr"}
+	point		___428_thiscell $tmp19 $tmp22 $tmp25 	%argrw{"wrrr"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:540
+# 	f1 = 1000000;
+	assign		___443_f1 $const19 	%line{540} %argrw{"wr"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:541
+# 	f2 = 1000000;
+	assign		___443_f2 $const19 	%line{541} %argrw{"wr"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:543
+# 	for (int i = -1;  i <= 1;  i += 1)
+	for		$tmp27 66 68 173 174 	%line{543} %argrw{"r"}
+	assign		___429_i $const20 	%argrw{"wr"}
+	le		$tmp26 ___429_i $const1 	%argrw{"wrr"}
+	neq		$tmp27 $tmp26 $const4 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:545
+# 		for (int j = -1;  j <= 1;  j += 1)
+	for		$tmp29 70 72 172 173 	%line{545} %argrw{"r"}
+	assign		___431_j $const20 	%argrw{"wr"}
+	le		$tmp28 ___431_j $const1 	%argrw{"wrr"}
+	neq		$tmp29 $tmp28 $const4 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:547
+# 			for (int k = -1;  k <= 1;  k += 1)
+	for		$tmp31 74 76 171 172 	%line{547} %argrw{"r"}
+	assign		___433_k $const20 	%argrw{"wr"}
+	le		$tmp30 ___433_k $const1 	%argrw{"wrr"}
+	neq		$tmp31 $tmp30 $const4 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:549
+# 				point testcell = thiscell + vector(i,j,k);
+	assign		$tmp33 ___429_i 	%line{549} %argrw{"wr"}
+	assign		$tmp34 ___431_j 	%argrw{"wr"}
+	assign		$tmp35 ___433_k 	%argrw{"wr"}
+	vector		$tmp32 $tmp33 $tmp34 $tmp35 	%argrw{"wrrr"}
+	add		___434_testcell ___428_thiscell $tmp32 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:551
+# 				point cell_noise = animatedcellnoise(testcell, i_time * 0.04);
+	mul		$tmp36 $tmp15 $const21 	%line{551} %argrw{"wrr"}
+	functioncall	$const22 94 	%argrw{"r"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:185
+# 	float t = cellnoise(i_p) + i_t;
+	cellnoise	$tmp37 ___434_testcell 	%line{185} %argrw{"wr"}
+	add		___379_t $tmp37 $tmp36 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:187
+# 	float tbase = floor(t);
+	floor		___379_tbase ___379_t 	%line{187} %argrw{"wr"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:189
+# 	point n1 = cellnoise( i_p, tbase );
+	cellnoise	___379_n1 ___434_testcell ___379_tbase 	%line{189} %argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:190
+# 	float d = t - tbase;
+	sub		___379_d ___379_t ___379_tbase 	%line{190} %argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:191
+# 	point n2 = cellnoise( i_p, tbase + 1 );
+	add		$tmp38 ___379_tbase $const11 	%line{191} %argrw{"wrr"}
+	cellnoise	___379_n2 ___434_testcell $tmp38 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:192
+# 	n1 += d * (n2 - n1);
+	sub		$tmp39 ___379_n2 ___379_n1 	%line{192} %argrw{"wrr"}
+	mul		$tmp40 ___379_d $tmp39 	%argrw{"wrr"}
+	add		___379_n1 ___379_n1 $tmp40 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:194
+# 	return n1;
+	assign		___434_cell_noise ___379_n1 	%line{194} %argrw{"wr"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:554
+# 				point pos = testcell + (cell_noise - 0.5) * jitter;
+	sub		$tmp41 ___434_cell_noise $const18 	%line{554} %argrw{"wrr"}
+	mul		$tmp42 $tmp41 $const11 	%argrw{"wrr"}
+	add		___434_pos ___434_testcell $tmp42 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:555
+# 				float dist = 0;
+	assign		___434_dist $const4 	%line{555} %argrw{"wr"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:557
+# 				if (dist_type == 0) // Euclidean Squared
+	eq		$tmp43 $const4 $const4 	%line{557} %argrw{"wrr"}
+	if		$tmp43 102 157 	%argrw{"r"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:559
+# 					vector offset = pos - i_p;
+	sub		___435_offset ___434_pos $tmp13 	%line{559} %argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:560
+# 					dist = dot(offset,offset); /* actually dist^2 */
+	dot		___434_dist ___435_offset ___435_offset 	%line{560} %argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:562
+# 				else if (dist_type == 1) // Manhattan
+	eq		$tmp44 $const4 $const1 	%line{562} %argrw{"wrr"}
+	if		$tmp44 120 157 	%argrw{"r"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:564
+# 					dist = distance_manhattan(pos, i_p);
+	functioncall	$const23 120 	%line{564} %argrw{"r"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:499
+# 	float dist = abs(A[0] - B[0]) + abs(A[1] - B[1]) +  abs(A[2] - B[2]);
+	compref		$tmp46 ___434_pos $const4 	%line{499} %argrw{"wrr"}
+	compref		$tmp47 $tmp13 $const4 	%argrw{"wrr"}
+	sub		$tmp48 $tmp46 $tmp47 	%argrw{"wrr"}
+	abs		$tmp45 $tmp48 	%argrw{"wr"}
+	compref		$tmp50 ___434_pos $const1 	%argrw{"wrr"}
+	compref		$tmp51 $tmp13 $const1 	%argrw{"wrr"}
+	sub		$tmp52 $tmp50 $tmp51 	%argrw{"wrr"}
+	abs		$tmp49 $tmp52 	%argrw{"wr"}
+	add		$tmp53 $tmp45 $tmp49 	%argrw{"wrr"}
+	compref		$tmp55 ___434_pos $const10 	%argrw{"wrr"}
+	compref		$tmp56 $tmp13 $const10 	%argrw{"wrr"}
+	sub		$tmp57 $tmp55 $tmp56 	%argrw{"wrr"}
+	abs		$tmp54 $tmp57 	%argrw{"wr"}
+	add		___425_dist $tmp53 $tmp54 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:500
+# 	return dist; 
+	assign		___434_dist ___425_dist 	%line{500} %argrw{"wr"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:566
+# 				else if (dist_type == 2) // Chebyshev
+	eq		$tmp58 $const4 $const10 	%line{566} %argrw{"wrr"}
+	if		$tmp58 133 157 	%argrw{"r"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:568
+# 					dist = distance_chebyshev(pos, i_p);
+	functioncall	$const24 133 	%line{568} %argrw{"r"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:519
+# 	vector diff = A - B;
+	sub		___427_diff ___434_pos $tmp13 	%line{519} %argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:520
+# 	float dist = max( max( abs(diff[0]), abs(diff[1])), abs(diff[2]));
+	compref		$tmp61 ___427_diff $const4 	%line{520} %argrw{"wrr"}
+	abs		$tmp60 $tmp61 	%argrw{"wr"}
+	compref		$tmp63 ___427_diff $const1 	%argrw{"wrr"}
+	abs		$tmp62 $tmp63 	%argrw{"wr"}
+	max		$tmp59 $tmp60 $tmp62 	%argrw{"wrr"}
+	compref		$tmp65 ___427_diff $const10 	%argrw{"wrr"}
+	abs		$tmp64 $tmp65 	%argrw{"wr"}
+	max		___427_dist $tmp59 $tmp64 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:521
+# 	return dist; 
+	assign		___434_dist ___427_dist 	%line{521} %argrw{"wr"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:570
+# 				else if (dist_type == 3) // Minkowski
+	eq		$tmp66 $const4 $const25 	%line{570} %argrw{"wrr"}
+	if		$tmp66 157 157 	%argrw{"r"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:572
+# 					dist = distance_minkowski(pos, i_p, minkowski_k);
+	functioncall	$const26 157 	%line{572} %argrw{"r"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:509
+# 	float dist = pow(abs(A[0] - B[0]),k) + pow(abs(A[1] - B[1]),k) + pow(abs(A[2] - B[2]),k);
+	compref		$tmp69 ___434_pos $const4 	%line{509} %argrw{"wrr"}
+	compref		$tmp70 $tmp13 $const4 	%argrw{"wrr"}
+	sub		$tmp71 $tmp69 $tmp70 	%argrw{"wrr"}
+	abs		$tmp68 $tmp71 	%argrw{"wr"}
+	pow		$tmp67 $tmp68 $const11 	%argrw{"wrr"}
+	compref		$tmp74 ___434_pos $const1 	%argrw{"wrr"}
+	compref		$tmp75 $tmp13 $const1 	%argrw{"wrr"}
+	sub		$tmp76 $tmp74 $tmp75 	%argrw{"wrr"}
+	abs		$tmp73 $tmp76 	%argrw{"wr"}
+	pow		$tmp72 $tmp73 $const11 	%argrw{"wrr"}
+	add		$tmp77 $tmp67 $tmp72 	%argrw{"wrr"}
+	compref		$tmp80 ___434_pos $const10 	%argrw{"wrr"}
+	compref		$tmp81 $tmp13 $const10 	%argrw{"wrr"}
+	sub		$tmp82 $tmp80 $tmp81 	%argrw{"wrr"}
+	abs		$tmp79 $tmp82 	%argrw{"wr"}
+	pow		$tmp78 $tmp79 $const11 	%argrw{"wrr"}
+	add		___426_dist $tmp77 $tmp78 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:510
+# 	dist = pow(dist, 1/max(k,0.001) );
+	max		$tmp83 $const11 $const15 	%line{510} %argrw{"wrr"}
+	div		$tmp84 $const11 $tmp83 	%argrw{"wrr"}
+	pow		___426_dist ___426_dist $tmp84 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:511
+# 	return dist; 
+	assign		___434_dist ___426_dist 	%line{511} %argrw{"wr"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:575
+# 				if (dist < f1)
+	lt		$tmp85 ___434_dist ___443_f1 	%line{575} %argrw{"wrr"}
+	if		$tmp85 167 171 	%argrw{"r"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:577
+# 					f2 = f1;
+	assign		___443_f2 ___443_f1 	%line{577} %argrw{"wr"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:578
+# 					pos2 = pos1;
+	assign		___443_pos2 ___443_pos1 	%line{578} %argrw{"wr"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:580
+# 					f1 = dist;
+	assign		___443_f1 ___434_dist 	%line{580} %argrw{"wr"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:581
+# 					pos1 = pos;
+	assign		___443_pos1 ___434_pos 	%line{581} %argrw{"wr"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:583
+# 					col1 = noise("hash",testcell+vector(2, 13, 511));
+	add		$tmp87 ___434_testcell $const28 	%line{583} %argrw{"wrr"}
+	noise		___443_col1 $const27 $tmp87 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:584
+# 					mask = noise("hash",testcell+vector(1, 7, 1023));
+	add		$tmp89 ___434_testcell $const29 	%line{584} %argrw{"wrr"}
+	noise		___443_curr_mask $const27 $tmp89 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:586
+# 				else if (dist < f2)
+	lt		$tmp90 ___434_dist ___443_f2 	%line{586} %argrw{"wrr"}
+	if		$tmp90 171 171 	%argrw{"r"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:588
+# 					f2 = dist;
+	assign		___443_f2 ___434_dist 	%line{588} %argrw{"wr"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:589
+# 					pos2 = pos;
+	assign		___443_pos2 ___434_pos 	%line{589} %argrw{"wr"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:547
+# 			for (int k = -1;  k <= 1;  k += 1)
+	add		___433_k ___433_k $const1 	%line{547} %argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:545
+# 		for (int j = -1;  j <= 1;  j += 1)
+	add		___431_j ___431_j $const1 	%line{545} %argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:543
+# 	for (int i = -1;  i <= 1;  i += 1)
+	add		___429_i ___429_i $const1 	%line{543} %argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:595
+# 	f1 /= 1.2;
+	div		___443_f1 ___443_f1 $const30 	%line{595} %argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:596
+# 	f2 /= 1.2;
+	div		___443_f2 ___443_f2 $const30 	%line{596} %argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:640
+# 		curr_mask = step( 1 - density / sqrt(octaves), curr_mask) * amp;
+	assign		$tmp93 layers 	%line{640} %argrw{"wr"}
+	sqrt		$tmp92 $tmp93 	%argrw{"wr"}
+	div		$tmp94 density $tmp92 	%argrw{"wrr"}
+	sub		$tmp95 $const11 $tmp94 	%argrw{"wrr"}
+	step		$tmp91 $tmp95 ___443_curr_mask 	%argrw{"wrr"}
+	mul		___443_curr_mask $tmp91 ___441_amp 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:642
+# 		if (output_type == 0) // Cell Value
+	eq		$tmp96 $const10 $const4 	%line{642} %argrw{"wrr"}
+	if		$tmp96 185 201 	%argrw{"r"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:644
+# 			curr_result = col1[0];
+	compref		___443_curr_result ___443_col1 $const4 	%line{644} %argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:646
+# 		else if (output_type == 1) // Borders
+	eq		$tmp97 $const10 $const1 	%line{646} %argrw{"wrr"}
+	if		$tmp97 201 201 	%argrw{"r"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:648
+# 			float edge_factor = distance(pos1,pos2) / (distance(pos1,i_p)+distance(i_p,pos2));
+	distance	$tmp98 ___443_pos1 ___443_pos2 	%line{648} %argrw{"wrr"}
+	distance	$tmp99 ___443_pos1 pp 	%argrw{"wrr"}
+	distance	$tmp100 pp ___443_pos2 	%argrw{"wrr"}
+	add		$tmp101 $tmp99 $tmp100 	%argrw{"wrr"}
+	div		___445_edge_factor $tmp98 $tmp101 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:649
+# 			edge_factor *= (dist_type == 3) ? 4 : 1; // Increase the thickness for Minkowski 
+	eq		$tmp103 $const4 $const25 	%line{649} %argrw{"wrr"}
+	if		$tmp103 195 196 	%argrw{"r"}
+	assign		$tmp102 $const31 	%argrw{"wr"}
+	assign		$tmp102 $const1 	%argrw{"wr"}
+	assign		$tmp104 $tmp102 	%argrw{"wr"}
+	mul		___445_edge_factor ___445_edge_factor $tmp104 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:650
+# 			curr_result = step(0.5 * edge_factor, f2-f1);
+	mul		$tmp105 $const18 ___445_edge_factor 	%line{650} %argrw{"wrr"}
+	sub		$tmp106 ___443_f2 ___443_f1 	%argrw{"wrr"}
+	step		___443_curr_result $tmp105 $tmp106 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:652
+# 		if (output_type == 2) // Voronoi 1 (F1)
+	eq		$tmp107 $const10 $const10 	%line{652} %argrw{"wrr"}
+	if		$tmp107 204 204 	%argrw{"r"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:654
+# 			curr_result = f1;
+	assign		___443_curr_result ___443_f1 	%line{654} %argrw{"wr"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:656
+# 		if (output_type == 3) // Voronoi 2 (F2)
+	eq		$tmp108 $const10 $const25 	%line{656} %argrw{"wrr"}
+	if		$tmp108 207 207 	%argrw{"r"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:658
+# 			curr_result = f2;
+	assign		___443_curr_result ___443_f2 	%line{658} %argrw{"wr"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:660
+# 		if (output_type == 4) // Voronoi 3 (F2 - F1)
+	eq		$tmp109 $const10 $const31 	%line{660} %argrw{"wrr"}
+	if		$tmp109 210 214 	%argrw{"r"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:662
+# 			curr_result = f2 - f1;
+	sub		___443_curr_result ___443_f2 ___443_f1 	%line{662} %argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:664
+# 		else if (output_type == 5) // Voronoi 4 (F1 + F2)
+	eq		$tmp110 $const10 $const32 	%line{664} %argrw{"wrr"}
+	if		$tmp110 214 214 	%argrw{"r"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:666
+# 			curr_result = (f2 + f1) * 0.5;
+	add		$tmp111 ___443_f2 ___443_f1 	%line{666} %argrw{"wrr"}
+	mul		___443_curr_result $tmp111 $const18 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:669
+# 		if (output_type > 0 && random_bright > 0.0)
+	gt		$tmp112 $const10 $const4 	%line{669} %argrw{"wrr"}
+	neq		$tmp113 $tmp112 $const4 	%argrw{"wrr"}
+	if		$tmp113 220 220 	%argrw{"r"}
+	gt		$tmp114 $const12 $const12 	%argrw{"wrr"}
+	neq		$tmp115 $tmp114 $const4 	%argrw{"wrr"}
+	assign		$tmp113 $tmp115 	%argrw{"wr"}
+	if		$tmp113 224 224 	%argrw{"r"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:671
+# 			curr_result *= mix(1,col1[0],random_bright);
+	compref		$tmp117 ___443_col1 $const4 	%line{671} %argrw{"wrr"}
+	mix		$tmp116 $const11 $tmp117 $const12 	%argrw{"wrrr"}
+	mul		___443_curr_result ___443_curr_result $tmp116 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:674
+# 		o_cell_color = mix(o_cell_color,col1,curr_mask * (1 - mask) );
+	sub		$tmp118 $const11 ___441_mask 	%line{674} %argrw{"wrr"}
+	mul		$tmp119 ___443_curr_mask $tmp118 	%argrw{"wrr"}
+	mix		worley_color worley_color ___443_col1 $tmp119 	%argrw{"wrrr"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:676
+# 		if (blend_type == 0) // Over
+	eq		$tmp120 $const4 $const4 	%line{676} %argrw{"wrr"}
+	if		$tmp120 232 240 	%argrw{"r"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:678
+# 			result = mix(result,curr_result,curr_mask * (1 - mask) );
+	sub		$tmp121 $const11 ___441_mask 	%line{678} %argrw{"wrr"}
+	mul		$tmp122 ___443_curr_mask $tmp121 	%argrw{"wrr"}
+	mix		___441_result ___441_result ___443_curr_result $tmp122 	%argrw{"wrrr"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:680
+# 		else if (blend_type == 1) // Add
+	eq		$tmp123 $const4 $const1 	%line{680} %argrw{"wrr"}
+	if		$tmp123 236 240 	%argrw{"r"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:682
+# 			result += curr_result * curr_mask;
+	mul		$tmp124 ___443_curr_result ___443_curr_mask 	%line{682} %argrw{"wrr"}
+	add		___441_result ___441_result $tmp124 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:684
+# 		else if (blend_type == 2) // Lighten (Max)
+	eq		$tmp125 $const4 $const10 	%line{684} %argrw{"wrr"}
+	if		$tmp125 240 240 	%argrw{"r"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:686
+# 			result = max(result,curr_result * curr_mask);
+	mul		$tmp126 ___443_curr_result ___443_curr_mask 	%line{686} %argrw{"wrr"}
+	max		___441_result ___441_result $tmp126 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:689
+# 		mask = 1 - ((1 - mask) * (1 - curr_mask));
+	sub		$tmp127 $const11 ___441_mask 	%line{689} %argrw{"wrr"}
+	sub		$tmp128 $const11 ___443_curr_mask 	%argrw{"wrr"}
+	mul		$tmp129 $tmp127 $tmp128 	%argrw{"wrr"}
+	sub		___441_mask $const11 $tmp129 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:690
+# 		ampSum += amp;
+	add		___441_ampSum ___441_ampSum ___441_amp 	%line{690} %argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:691
+# 		amp *= octave_persistence; 
+	mul		___441_amp ___441_amp $const11 	%line{691} %argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:692
+# 		lacunarity *= freq_ratio;
+	mul		___441_lacunarity ___441_lacunarity ___441_freq_ratio 	%line{692} %argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:626
+# 	for (int i = 0; i<octaves; i+=1 ) 
+	add		___442_i ___442_i $const1 	%line{626} %argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:695
+# 	if (blend_type == 1)
+	eq		$tmp130 $const4 $const1 	%line{695} %argrw{"wrr"}
+	if		$tmp130 251 251 	%argrw{"r"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:696
+# 		result /= ampSum;
+	div		___441_result ___441_result ___441_ampSum 	%line{696} %argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:698
+# 	o_result = result;
+	assign		worley_float ___441_result 	%line{698} %argrw{"wr"}
+# W:/r2d2\src\osl_shaders\noise_utils.h:699
+# 	o_mask = mask;
+	assign		worley_mask ___441_mask 	%line{699} %argrw{"wr"}
+# ../../osl_shaders/dlFlakes.osl:74
+# 	float x = 0;
+	assign		x $const4 	%filename{"../../osl_shaders/dlFlakes.osl"} %line{74} %argrw{"wr"}
+# ../../osl_shaders/dlFlakes.osl:75
+# 	float y = 0;
+	assign		y $const4 	%line{75} %argrw{"wr"}
+# ../../osl_shaders/dlFlakes.osl:77
+# 	hemisphereCosineWeighted(worley_color[0], worley_color[1], x, y);
+	compref		$tmp131 worley_color $const4 	%line{77} %argrw{"wrr"}
+	compref		$tmp132 worley_color $const1 	%argrw{"wrr"}
+	functioncall	$const33 269 	%argrw{"r"}
+# W:/r2d2\src\osl_shaders\material_common.h:331
+# 	float theta = acos(pow(1-random_1, 0.5)) ;
+	sub		$tmp134 $const11 $tmp131 	%filename{"W:/r2d2\src\osl_shaders\material_common.h"} %line{331} %argrw{"wrr"}
+	pow		$tmp133 $tmp134 $const18 	%argrw{"wrr"}
+	acos		___482_theta $tmp133 	%argrw{"wr"}
+# W:/r2d2\src\osl_shaders\material_common.h:332
+# 	float phi = 2 * M_PI * random_2 ;
+	mul		$tmp135 $const35 $const34 	%line{332} %argrw{"wrr"}
+	mul		___482_phi $tmp135 $tmp132 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\material_common.h:333
+# 	o_x = sin(theta) * cos (phi);
+	sin		$tmp136 ___482_theta 	%line{333} %argrw{"wr"}
+	cos		$tmp137 ___482_phi 	%argrw{"wr"}
+	mul		x $tmp136 $tmp137 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\material_common.h:334
+# 	o_y = sin(theta) * sin (phi);
+	sin		$tmp138 ___482_theta 	%line{334} %argrw{"wr"}
+	sin		$tmp139 ___482_phi 	%argrw{"wr"}
+	mul		y $tmp138 $tmp139 	%argrw{"wrr"}
+# ../../osl_shaders/dlFlakes.osl:79
+# 	color flakes = color(x+0.5,y+0.5,1);
+	add		$tmp140 x $const18 	%filename{"../../osl_shaders/dlFlakes.osl"} %line{79} %argrw{"wrr"}
+	add		$tmp141 y $const18 	%argrw{"wrr"}
+	color		flakes $tmp140 $tmp141 $const11 	%argrw{"wrrr"}
+# ../../osl_shaders/dlFlakes.osl:81
+# 	flakes = mix(color(0.5,0.5,1),flakes,randomness * 0.25);
+	mul		$tmp143 randomness $const37 	%line{81} %argrw{"wrr"}
+	mix		flakes $const36 flakes $tmp143 	%argrw{"wrrr"}
+# ../../osl_shaders/dlFlakes.osl:83
+# 	outColor = flakes;
+	assign		outColor flakes 	%line{83} %argrw{"wr"}
+# ../../osl_shaders/dlFlakes.osl:84
+# 	outAlpha = worley_mask;
+	assign		outAlpha worley_mask 	%line{84} %argrw{"wr"}
+# ../../osl_shaders/dlFlakes.osl:86
+# 	ASSIGN_COMPONENTS(outColor);
+	compref		outColorR outColor $const4 	%line{86} %argrw{"wrr"}
+	compref		outColorG outColor $const1 	%argrw{"wrr"}
+	compref		outColorB outColor $const10 	%argrw{"wrr"}
+	end

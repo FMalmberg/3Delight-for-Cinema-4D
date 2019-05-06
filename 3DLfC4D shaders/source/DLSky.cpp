@@ -1,5 +1,3 @@
-// example for a complex channel shader with custom areas
-// and animated preview
 #include "c4d.h"
 #include "c4d_symbols.h"
 #include "dl_sky.h"
@@ -38,7 +36,5 @@ Vector DLPlace2DTexture::Output(BaseShader* sh, ChannelData* sd)
 
 Bool RegisterSkyTexture(void)
 {
-	//GePrint("Register standard shader");
-	// be sure to use a unique ID obtained from www.plugincafe.com
 	return RegisterShaderPlugin(DL_SKY, "Sky"_s, 0, DLPlace2DTexture::Alloc, "dl_sky"_s, 0);
 }

@@ -35,8 +35,8 @@ void EnvironmentLightTranslator::CreateNSINodes(const char* ParentTransformHandl
 	NSI::Context ctx(parser->GetContext());
 
 	//Create a mesh and connect it to the parent transform
-	handle=string(parser->GetUniqueName("environment_light"));
-	transform_handle=string(ParentTransformHandle);
+	m_handle=string(parser->GetUniqueName("environment_light"));
+	m_transform_handle=string(ParentTransformHandle);
 
 
 	std::string transform_handle2 = string(parser->GetUniqueName("transform"));
@@ -56,10 +56,10 @@ void EnvironmentLightTranslator::CreateNSINodes(const char* ParentTransformHandl
 	ctx.SetAttribute(transform_handle2, xform);
 
 
-	ctx.Connect(transform_handle2, "", transform_handle, "objects");
+	ctx.Connect(transform_handle2, "", m_transform_handle, "objects");
 
-	ctx.Create(handle, "environment");
-	ctx.Connect(handle,"",transform_handle2,"objects");
+	ctx.Create(m_handle, "environment");
+	ctx.Connect(m_handle,"",transform_handle2,"objects");
 
 	BaseList2D *obj=(BaseList2D*)C4DNode;
 	BaseContainer *data = obj->GetDataInstance(); 
@@ -82,12 +82,12 @@ void EnvironmentLightTranslator::CreateNSINodes(const char* ParentTransformHandl
 	string attributes_handle=string(parser->GetUniqueName("light_attributes"));
 	ctx.Create(attributes_handle, "attributes");
 	ctx.SetAttribute(attributes_handle,attributes_args);
-	ctx.Connect(attributes_handle,"",handle,"geometryattributes");
+	ctx.Connect(attributes_handle,"",m_handle,"geometryattributes");
 
 	//Create a shader for the mesh and connect it to the geometry attributes of the mesh
-	shader_handle=string(parser->GetUniqueName("environmentlight_shader"));
-	ctx.Create(shader_handle, "shader");
-	ctx.Connect(shader_handle,"",attributes_handle,"surfaceshader");
+	m_shader_handle=string(parser->GetUniqueName("environmentlight_shader"));
+	ctx.Create(m_shader_handle, "shader");
+	ctx.Connect(m_shader_handle,"",attributes_handle,"surfaceshader");
 
 	Filename shaderpath=Filename(GeGetPluginPath()+Filename("OSL")+Filename("dlEnvironmentShape.oso"));
 	vector<char> c_shaderpath =StringToChars(shaderpath.GetString());
@@ -101,9 +101,9 @@ void EnvironmentLightTranslator::CreateNSINodes(const char* ParentTransformHandl
 	shader_args.Add(new NSI::FloatArg("exposure", exposure));
 	shader_args.Add(new NSI::ColorArg("tint", tint));
 	shader_args.Add(new NSI::IntegerArg("mapping", mapping));
-	ctx.SetAttribute(shader_handle,shader_args);
+	ctx.SetAttribute(m_shader_handle,shader_args);
 
-	parser->SetAssociatedHandle((BaseList2D*)C4DNode, handle.c_str());
+	parser->SetAssociatedHandle((BaseList2D*)C4DNode, m_handle.c_str());
 
 }
 
@@ -136,7 +136,7 @@ void EnvironmentLightTranslator::SampleMotion(double t, long i, GeListNode* C4DN
 	std::string material_handle = parser->GetAssociatedHandle((BaseList2D*)material);
 	std::string to_erase = "attribute_";
 	eraseSubStr(material_handle, to_erase);
-	ctx.Connect(material_handle, "Cout", shader_handle, "i_texture");
+	ctx.Connect(material_handle, "outColor", m_shader_handle, "i_texture");
 
 	
 }

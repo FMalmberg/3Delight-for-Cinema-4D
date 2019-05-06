@@ -14,22 +14,22 @@ Delight_Skin::Delight_Skin()
 	vector<char> c_shaderpath = StringToChars(shaderpath.GetString());
 
 	m_ids_to_names[Shader_Path] = pair("", &c_shaderpath[0]);
-	m_ids_to_names[SKIN_COLOR] = pair("Cout", "skin_color");
-	m_ids_to_names[SKIN_COLOR_SHADER] = pair("Cout", "skin_color");
-	m_ids_to_names[SKIN_ROUGHNESS] = pair("Cout[0]", "roughness");
-	m_ids_to_names[SKIN_ROUGHNESS_SHADER] = pair("Cout[0]", "roughness");
-	m_ids_to_names[SKIN_SPECULAR_LEVEL] = pair("Cout[0]", "specular_level");
-	m_ids_to_names[SKIN_SPECULAR_LEVEL_SHADER] = pair("Cout[0]", "specular_level");
+	m_ids_to_names[SKIN_COLOR] = pair("", "skin_color");
+	m_ids_to_names[SKIN_COLOR_SHADER] = pair("outColor", "skin_color");
+	m_ids_to_names[SKIN_ROUGHNESS] = pair("", "roughness");
+	m_ids_to_names[SKIN_ROUGHNESS_SHADER] = pair("outColor[0]", "roughness");
+	m_ids_to_names[SKIN_SPECULAR_LEVEL] = pair("", "specular_level");
+	m_ids_to_names[SKIN_SPECULAR_LEVEL_SHADER] = pair("outColor[0]", "specular_level");
 
-	m_ids_to_names[SUBSURFACE_COLOR] = pair("Cout", "sss_color");
-	m_ids_to_names[SUBSURFACE_COLOR_SHADER] = pair("Cout", "sss_color");
-	m_ids_to_names[SUBSURFACE_SCALE] = pair("Cout[0]", "sss_scale");
-	m_ids_to_names[SUBSURFACE_SCALE_SHADER] = pair("Cout[0]", "sss_scale");
-	m_ids_to_names[SUBSURFACE_IOR] = pair("Cout[0]", "sss_ior");
-	m_ids_to_names[SUBSURFACE_IOR_SHADER] = pair("Cout[0]", "sss_ior");
+	m_ids_to_names[SUBSURFACE_COLOR] = pair("", "sss_color");
+	m_ids_to_names[SUBSURFACE_COLOR_SHADER] = pair("outColor", "sss_color");
+	m_ids_to_names[SUBSURFACE_SCALE] = pair("", "sss_scale");
+	m_ids_to_names[SUBSURFACE_SCALE_SHADER] = pair("outColor[0]", "sss_scale");
+	m_ids_to_names[SUBSURFACE_IOR] = pair("", "sss_ior");
+	m_ids_to_names[SUBSURFACE_IOR_SHADER] = pair("outColor[0]", "sss_ior");
 
 	m_ids_to_names[BUMP_TYPE] = pair("", "disp_normal_bump_type");
-	m_ids_to_names[BUMP_VALUE] = pair("Cout", "disp_normal_bump_value");
+	m_ids_to_names[BUMP_VALUE] = pair("outColor", "disp_normal_bump_value");
 	m_ids_to_names[BUMP_INTENSITY] = pair("", "disp_normal_bump_intensity");
 }
 
