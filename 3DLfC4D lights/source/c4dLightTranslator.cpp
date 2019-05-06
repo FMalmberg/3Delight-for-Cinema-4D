@@ -7,6 +7,7 @@
 #include "nsi.hpp"
 #define _USE_MATH_DEFINES
 #include <math.h>
+#include <tuple>
 
 /**
 	We use the c4dLightTranslator class to convert the Cinema4D lights to
