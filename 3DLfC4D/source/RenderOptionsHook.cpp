@@ -4,11 +4,11 @@
 #include "nsi.hpp"
 #include <algorithm>
 #include <iostream>
-#include <tuple>
 #include <Windows.h>
 #include "maxon/utilities/undef_win_macros.h"
 
 #include <string.h>
+#include <tuple>
 #include <assert.h>
 #include "DL_TypeConversions.h"
 

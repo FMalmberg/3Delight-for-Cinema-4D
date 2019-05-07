@@ -13,40 +13,40 @@ Delight_CarPaint::Delight_CarPaint()
 {
 	Filename shaderpath = Filename(GeGetPluginPath() + Filename("OSL") + Filename("dlCarPaint.oso"));
 	vector<char> c_shaderpath = StringToChars(shaderpath.GetString());
-	m_ids_to_names[Shader_Path] = pair("", &c_shaderpath[0]);
-	m_ids_to_names[COATING_LAYER_THICKNESS] = pair("", "coating_thickness");
-	m_ids_to_names[COATING_LAYER_THICKNESS_SHADER] = pair("outColor[0]", "coating_thickness");
-	m_ids_to_names[COATING_LAYER_COLOR] = pair("", "coating_color");
-	m_ids_to_names[COATING_LAYER_COLOR_SHADER] = pair("outColor", "coating_color");
-	m_ids_to_names[COATING_LAYER_ROUGHNESS] = pair("", "coating_roughness");
-	m_ids_to_names[COATING_LAYER_ROUGHNESS_SHADER] = pair("outColor[0]", "coating_roughness");
-	m_ids_to_names[COATING_LAYER_SPECULAR_LEVEL] = pair("", "coating_specular_level");
-	m_ids_to_names[COATING_LAYER_SPECULAR_LEVEL_SHADER] = pair("outColor[0]", "coating_specular_level");
+	m_ids_to_names[Shader_Path] = make_pair("", &c_shaderpath[0]);
+	m_ids_to_names[COATING_LAYER_THICKNESS] = make_pair("", "coating_thickness");
+	m_ids_to_names[COATING_LAYER_THICKNESS_SHADER] = make_pair("outColor[0]", "coating_thickness");
+	m_ids_to_names[COATING_LAYER_COLOR] = make_pair("", "coating_color");
+	m_ids_to_names[COATING_LAYER_COLOR_SHADER] = make_pair("outColor", "coating_color");
+	m_ids_to_names[COATING_LAYER_ROUGHNESS] = make_pair("", "coating_roughness");
+	m_ids_to_names[COATING_LAYER_ROUGHNESS_SHADER] = make_pair("outColor[0]", "coating_roughness");
+	m_ids_to_names[COATING_LAYER_SPECULAR_LEVEL] = make_pair("", "coating_specular_level");
+	m_ids_to_names[COATING_LAYER_SPECULAR_LEVEL_SHADER] = make_pair("outColor[0]", "coating_specular_level");
 
-	m_ids_to_names[FLAKES_DENSITY] = pair("", "flake_density");
-	m_ids_to_names[FLAKES_DENSITY_SHADER] = pair("outColor[0]", "flake_density");
-	m_ids_to_names[FLAKES_COLOR] = pair("", "flake_color");
-	m_ids_to_names[FLAKES_COLOR_SHADER] = pair("outColor", "flake_color");
-	m_ids_to_names[FLAKES_ROUGHNESS] = pair("", "flake_roughness");
-	m_ids_to_names[FLAKES_ROUGHNESS_SHADER] = pair("outColor[0]", "flake_roughness");
-	m_ids_to_names[FLAKES_SCALE] = pair("", "flake_scale");
-	m_ids_to_names[FLAKES_SCALE_SHADER] = pair("outColor[0]", "flake_scale");
-	m_ids_to_names[FLAKES_RANDOMNESS] = pair("", "flake_randomness");
-	m_ids_to_names[FLAKES_RANDOMNESS_SHADER] = pair("outColor[0]", "flake_randomness");
+	m_ids_to_names[FLAKES_DENSITY] = make_pair("", "flake_density");
+	m_ids_to_names[FLAKES_DENSITY_SHADER] = make_pair("outColor[0]", "flake_density");
+	m_ids_to_names[FLAKES_COLOR] = make_pair("", "flake_color");
+	m_ids_to_names[FLAKES_COLOR_SHADER] = make_pair("outColor", "flake_color");
+	m_ids_to_names[FLAKES_ROUGHNESS] = make_pair("", "flake_roughness");
+	m_ids_to_names[FLAKES_ROUGHNESS_SHADER] = make_pair("outColor[0]", "flake_roughness");
+	m_ids_to_names[FLAKES_SCALE] = make_pair("", "flake_scale");
+	m_ids_to_names[FLAKES_SCALE_SHADER] = make_pair("outColor[0]", "flake_scale");
+	m_ids_to_names[FLAKES_RANDOMNESS] = make_pair("", "flake_randomness");
+	m_ids_to_names[FLAKES_RANDOMNESS_SHADER] = make_pair("outColor[0]", "flake_randomness");
 
-	m_ids_to_names[BASE_LAYER_COLOR] = pair("", "i_color");
-	m_ids_to_names[BASE_LAYER_COLOR_SHADER] = pair("outColor", "i_color");
-	m_ids_to_names[BASE_LAYER_ROUGHNESS] = pair("", "roughness");
-	m_ids_to_names[BASE_LAYER_ROUGHNESS_SHADER] = pair("outColor", "roughness");
-	m_ids_to_names[BASE_LAYER_SPECULAR_LEVEL] = pair("", "specular_level");
-	m_ids_to_names[BASE_LAYER_SPECULAR_LEVEL_SHADER] = pair("outColor[0]", "specular_level");
-	m_ids_to_names[BASE_LAYER_METALLIC] = pair("", "metallic");
-	m_ids_to_names[BASE_LAYER_METALLIC_SHADER] = pair("outColor[0]", "metallic");
+	m_ids_to_names[BASE_LAYER_COLOR] = make_pair("", "i_color");
+	m_ids_to_names[BASE_LAYER_COLOR_SHADER] = make_pair("outColor", "i_color");
+	m_ids_to_names[BASE_LAYER_ROUGHNESS] = make_pair("", "roughness");
+	m_ids_to_names[BASE_LAYER_ROUGHNESS_SHADER] = make_pair("outColor", "roughness");
+	m_ids_to_names[BASE_LAYER_SPECULAR_LEVEL] = make_pair("", "specular_level");
+	m_ids_to_names[BASE_LAYER_SPECULAR_LEVEL_SHADER] = make_pair("outColor[0]", "specular_level");
+	m_ids_to_names[BASE_LAYER_METALLIC] = make_pair("", "metallic");
+	m_ids_to_names[BASE_LAYER_METALLIC_SHADER] = make_pair("outColor[0]", "metallic");
 
-	m_ids_to_names[BUMP_TYPE] = pair("", "disp_normal_bump_type");
-	m_ids_to_names[BUMP_VALUE] = pair("outColor", "disp_normal_bump_value");
-	m_ids_to_names[BUMP_INTENSITY] = pair("", "disp_normal_bump_intensity");
-	m_ids_to_names[BUMP_LAYERS_AFFECTED] = pair("", "normal_bump_affect_layer");
+	m_ids_to_names[BUMP_TYPE] = make_pair("", "disp_normal_bump_type");
+	m_ids_to_names[BUMP_VALUE] = make_pair("outColor", "disp_normal_bump_value");
+	m_ids_to_names[BUMP_INTENSITY] = make_pair("", "disp_normal_bump_intensity");
+	m_ids_to_names[BUMP_LAYERS_AFFECTED] = make_pair("", "normal_bump_affect_layer");
 
 }
 

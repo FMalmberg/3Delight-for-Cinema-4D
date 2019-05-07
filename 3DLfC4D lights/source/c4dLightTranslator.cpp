@@ -9,6 +9,7 @@
 #include <math.h>
 #include <tuple>
 
+
 /**
 	We use the c4dLightTranslator class to convert the Cinema4D lights to
 	3Delight lights.  GeData is a container class, used to store data of all

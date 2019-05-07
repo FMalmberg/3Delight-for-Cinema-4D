@@ -12,13 +12,13 @@ Delight_Flakes::Delight_Flakes()
 {
 	Filename shaderpath = Filename(GeGetPluginPath() + Filename("OSL") + Filename("dlFlakes.oso"));
 	vector<char> c_shaderpath = StringToChars(shaderpath.GetString());
-	m_ids_to_names[Shader_Path] = pair("", &c_shaderpath[0]);
-	m_ids_to_names[FLAKES_DENSITY] = pair("", "density");
-	m_ids_to_names[FLAKES_DENSITY_SHADER] = pair("outColor[0]", "density");
-	m_ids_to_names[FLAKES_SCALE] = pair("", "scale");
-	m_ids_to_names[FLAKES_SCALE_SHADER] = pair("outColor[0]", "scale");
-	m_ids_to_names[FLAKES_RANDOMNESS] = pair("", "randomness");
-	m_ids_to_names[FLAKES_RANDOMNESS_SHADER] = pair("outColor[0]", "randomness");
-	m_ids_to_names[FLAKES_LAYERS] = pair("", "layers");
+	m_ids_to_names[Shader_Path] = make_pair("", &c_shaderpath[0]);
+	m_ids_to_names[FLAKES_DENSITY] = make_pair("", "density");
+	m_ids_to_names[FLAKES_DENSITY_SHADER] = make_pair("outColor[0]", "density");
+	m_ids_to_names[FLAKES_SCALE] = make_pair("", "scale");
+	m_ids_to_names[FLAKES_SCALE_SHADER] = make_pair("outColor[0]", "scale");
+	m_ids_to_names[FLAKES_RANDOMNESS] = make_pair("", "randomness");
+	m_ids_to_names[FLAKES_RANDOMNESS_SHADER] = make_pair("outColor[0]", "randomness");
+	m_ids_to_names[FLAKES_LAYERS] = make_pair("", "layers");
 }
 

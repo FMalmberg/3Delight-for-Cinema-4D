@@ -13,24 +13,24 @@ Delight_Substance::Delight_Substance()
 	Filename shaderpath = Filename(GeGetPluginPath() + Filename("OSL") + Filename("dlSubstance.oso"));
 	vector<char> c_shaderpath = StringToChars(shaderpath.GetString());
 
-	m_ids_to_names[Shader_Path] = pair("", &c_shaderpath[0]);
-	m_ids_to_names[SUBSTANCE_COLOR] = pair("", "i_color");
-	m_ids_to_names[SUBSTANCE_COLOR_SHADER] = pair("outColor", "i_color");
-	m_ids_to_names[SUBSTANCE_ROUGHNESS] = pair("", "roughness");
-	m_ids_to_names[SUBSTANCE_ROUGHNESS_SHADER] = pair("outColor[0]", "roughness");
-	m_ids_to_names[SUBSTANCE_SPECULAR_LEVEL] = pair("", "specular_level");
-	m_ids_to_names[SUBSTANCE_SPECULAR_LEVEL_SHADER] = pair("outColor[0]", "specular_level");
-	m_ids_to_names[SUBSTANCE_METALLIC] = pair("", "metallic");
-	m_ids_to_names[SUBSTANCE_METALLIC_SHADER] = pair("outColor[0]", "metallic");
-	m_ids_to_names[SUBSTANCE_OPACITY] = pair("", "opacity");
-	m_ids_to_names[SUBSTANCE_OPACITY_SHADER] = pair("outColor[0]", "opacity");
+	m_ids_to_names[Shader_Path] = make_pair("", &c_shaderpath[0]);
+	m_ids_to_names[SUBSTANCE_COLOR] = make_pair("", "i_color");
+	m_ids_to_names[SUBSTANCE_COLOR_SHADER] = make_pair("outColor", "i_color");
+	m_ids_to_names[SUBSTANCE_ROUGHNESS] = make_pair("", "roughness");
+	m_ids_to_names[SUBSTANCE_ROUGHNESS_SHADER] = make_pair("outColor[0]", "roughness");
+	m_ids_to_names[SUBSTANCE_SPECULAR_LEVEL] = make_pair("", "specular_level");
+	m_ids_to_names[SUBSTANCE_SPECULAR_LEVEL_SHADER] = make_pair("outColor[0]", "specular_level");
+	m_ids_to_names[SUBSTANCE_METALLIC] = make_pair("", "metallic");
+	m_ids_to_names[SUBSTANCE_METALLIC_SHADER] = make_pair("outColor[0]", "metallic");
+	m_ids_to_names[SUBSTANCE_OPACITY] = make_pair("", "opacity");
+	m_ids_to_names[SUBSTANCE_OPACITY_SHADER] = make_pair("outColor[0]", "opacity");
 
-	m_ids_to_names[EMISSIVE_COLOR] = pair("", "emissive");
-	m_ids_to_names[EMISSIVE_COLOR_SHADER] = pair("outColor", "emissive");
-	m_ids_to_names[EMISSIVE_INTENSITY] = pair("", "emissive_intensity");
+	m_ids_to_names[EMISSIVE_COLOR] = make_pair("", "emissive");
+	m_ids_to_names[EMISSIVE_COLOR_SHADER] = make_pair("outColor", "emissive");
+	m_ids_to_names[EMISSIVE_INTENSITY] = make_pair("", "emissive_intensity");
 
-	m_ids_to_names[BUMP_TYPE] = pair("", "disp_normal_bump_type");
-	m_ids_to_names[BUMP_VALUE] = pair("outColor", "disp_normal_bump_value");
-	m_ids_to_names[BUMP_INTENSITY] = pair("", "disp_normal_bump_intensity");
+	m_ids_to_names[BUMP_TYPE] = make_pair("", "disp_normal_bump_type");
+	m_ids_to_names[BUMP_VALUE] = make_pair("outColor", "disp_normal_bump_value");
+	m_ids_to_names[BUMP_INTENSITY] = make_pair("", "disp_normal_bump_intensity");
 }
 

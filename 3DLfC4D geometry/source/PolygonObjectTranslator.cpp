@@ -4,6 +4,8 @@
 #include <vector>
 using namespace std;
 
+
+
 int GetUVIndex(int poly_index, float u, float v, map<int, vector<int> > & conmap, vector<float>& st, int& maxindex){
 	vector<int>& con = conmap[poly_index];
 	bool found = false;
@@ -47,15 +49,18 @@ PolygonObject* GetMeshFromNode(GeListNode* C4DNode){
 		mesh = (PolygonObject*)cache;
 	}
 
-	if (obj->GetType() != Opolygon && obj->GetType() != Oalembicgenerator) {
+	if (!obj->IsInstanceOf(Opolygon)) {
+
 		ModelingCommandData mcd;
 		mcd.op = obj;
 		mcd.doc = obj->GetDocument();
 		if (!SendModelingCommand(MCOMMAND_CURRENTSTATETOOBJECT, mcd)) return nullptr;
 		ModelingCommandData mcd2;
 		mcd2.op = static_cast<BaseObject*>(mcd.result->GetIndex(0));
+		if (!SendModelingCommand(MCOMMAND_TRIANGULATE, mcd2)) return FALSE;
 		mesh = static_cast<PolygonObject*>(mcd2.op);
 	}
+
 	return mesh;
 }
 
@@ -68,11 +73,7 @@ void PolygonObjectTranslator::CreateNSINodes(const char* ParentTransformHandle, 
 	BaseObject* baseobject = (BaseObject*)C4DNode;
 	PolygonObject* object = GetMeshFromNode(C4DNode);
 
-	if (!object){
-		skip = true;
-		return;
-	}
-
+	
 	//PolygonObject* object = (PolygonObject*)C4DNode;
 
 	//if (baseobject->GetType() == Oalembicgenerator){ //If the object is an alembic generator, we get the polygon mesh from the cache
@@ -189,7 +190,8 @@ void PolygonObjectTranslator::CreateNSINodes(const char* ParentTransformHandle, 
 	//Export first UV set as "st"
 	UVWTag* UVtag = (UVWTag*)object->GetTag(Tuvw);
 
-	if (UVtag != NULL){
+	if (UVtag != NULL)
+	{
 		vector<int> st_indices;
 		st_indices.reserve(n_facevertices);
 
@@ -201,7 +203,8 @@ void PolygonObjectTranslator::CreateNSINodes(const char* ParentTransformHandle, 
 		int maxindex = 0;
 		int index = 0;
 
-		for (int j = 0; j < polycount; j++){
+		for (int j = 0; j < polycount; j++)
+		{
 			UVWStruct uv = UVtag->GetSlow(j);
 
 			index = GetUVIndex(polys[j].a, uv.a.x, uv.a.y, UV_connectivity_map, st, maxindex);
@@ -213,7 +216,8 @@ void PolygonObjectTranslator::CreateNSINodes(const char* ParentTransformHandle, 
 			index = GetUVIndex(polys[j].c, uv.c.x, uv.c.y, UV_connectivity_map, st, maxindex);
 			st_indices.push_back(index);
 
-			if (polys[j].c != polys[j].d){
+			if (polys[j].c != polys[j].d)
+			{
 				index = GetUVIndex(polys[j].d, uv.d.x, uv.d.y, UV_connectivity_map, st, maxindex);
 				st_indices.push_back(index);
 			}
@@ -221,7 +225,8 @@ void PolygonObjectTranslator::CreateNSINodes(const char* ParentTransformHandle, 
 
 
 		int st_flags = (NSIParamPerVertex);
-		if (UV_subdivision_mode == SDSOBJECT_SUBDIVIDE_UV_STANDARD){
+		if (UV_subdivision_mode == SDSOBJECT_SUBDIVIDE_UV_STANDARD)
+		{
 			st_flags = st_flags | NSIParamInterpolateLinear;
 		}
 		NSI::Argument arg_st("st");
@@ -242,7 +247,8 @@ void PolygonObjectTranslator::CreateNSINodes(const char* ParentTransformHandle, 
 
 	}
 
-	if (has_phong && !is_subd){
+	if (has_phong && !is_subd)
+	{
 		NSI::Argument arg_N_indices("N.indices");
 		arg_N_indices.SetType(NSITypeInteger);
 		arg_N_indices.SetCount(n_facevertices);
