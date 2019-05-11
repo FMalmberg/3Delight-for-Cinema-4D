@@ -33,6 +33,8 @@ Node::Node(BaseList2D* listnode){
 		c4d_node_link->SetLink((C4DAtomGoal*)listnode);
 	}
 
+	dirty_checksum = -1;
+
 	isVisible=true;
 	
 	TranslatorDeleter d;

@@ -270,6 +270,42 @@ void SceneParser::SampleFrameMotion() {
 
 }
 
+void SceneParser::InteractiveUpdate() {
+
+	DL_SampleInfo info;
+	info.sample = 0;
+	info.samples_max = 1;
+	info.shutter_open_time = 0;
+	info.shutter_close_time = 0;
+	info.sample_time = 0;
+
+	for (long i = 0; i<hooks.size(); i++) {
+		hooks[i]->SampleMotion(&info, doc, this);
+	}
+
+	for (long i = 0; i<transforms.size(); i++) {
+		transforms[i].SampleMotion(&info, doc, this);
+	}
+
+	DL_Translator* translator;
+	for (long i = 0; i < nodes.size(); i++) {
+
+
+		BaseList2D* c4d_node = nodes[i].GetC4DNode(doc);
+		Int64 new_dirtyval = Int64(c4d_node->GetDirty(DIRTYFLAGS::ALL));
+		if (nodes[i].dirty_checksum != new_dirtyval) {
+			nodes[i].dirty_checksum = new_dirtyval;
+			translator = nodes[i].GetTranslator();
+			if (translator && c4d_node) {
+				translator->SampleMotion(&info, nodes[i].GetC4DNode(doc), doc, this);
+			}
+		}
+	}
+	//if (!doc){ return; }
+
+	//SampleMotion(1, render_doc);
+}
+
 bool SceneParser::Parse(BaseDocument* document, long frame){
 	if (!doc){ return false; }
 

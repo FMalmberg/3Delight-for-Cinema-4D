@@ -12,13 +12,13 @@ typedef std::shared_ptr<BaseLink> BaseLinkPtr;
 
 class Node{ //: public DL_Node{
 private:
-
+	
 	bool isVisible;
 	BaseLinkPtr c4d_node_link;
 	DL_TranslatorPtr translator;
 
 public:
-
+	Int64 dirty_checksum;
 	Node(BaseList2D* listnode); 
 
 	void SetVisibility(bool visible);

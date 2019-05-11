@@ -25,6 +25,9 @@ Bool RegisterDL_MotionBlurTag(void);
 Bool RegisterDL_VisibilityTag(void);
 Bool Register3DelightPlugin(void);
 Bool RegisterCustomListView(void);
+Bool RegisterInteractiveRenderingStart(void);
+Bool RegisterInteractiveRenderingStop(void);
+Bool RegisterInteractiveRenderManager(void);
 
 Bool PluginStart(void)
 {
@@ -32,13 +35,18 @@ Bool PluginStart(void)
 	//if (!RegisterCustomGUITest()) return FALSE;
 	if (!RegisterRenderFrame()) return FALSE;
 	if (!RegisterRenderSequence()) return FALSE;
+	if (!RegisterCustomListView()) return FALSE;
+	if (!RegisterInteractiveRenderingStart()) return FALSE;
+	if (!RegisterInteractiveRenderingStop()) return FALSE;
 	if (!Register3DelightPlugin()) return FALSE;
+	if (!RegisterInteractiveRenderManager()) return FALSE;
 	//if (!RegisterInteractiveRenderManager())return FALSE;
 	//if (!RegisterDisplay()) return FALSE;
 	//if (!RegisterDL_CameraTag()) return FALSE;
 	//if (!RegisterDL_MotionBlurTag()) return FALSE;
 	if (!RegisterDL_VisibilityTag()) return FALSE;
 	if (!RegisterCustomListView()) return FALSE;
+
 	//Register 3Delight display driver for rendering to C4D bitmaps
 	PtDspyDriverFunctionTable table;
 	memset(&table, 0, sizeof(table));
