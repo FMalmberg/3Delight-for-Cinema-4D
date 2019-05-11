@@ -4,12 +4,51 @@
 #include "IDs.h"
 #include "myres.h"
 #include <vector>
+#include "nsi.hpp"
 using namespace std;
 
+void FrameStoppedCallback(
+	void* stoppedcallbackdata,
+	NSIContext_t ctx,
+	int status) {
+
+	//End context when rendering is completed (or stopped)
+	NSIEnd(ctx);
+}
+
+
 bool DL_RenderFrame(BaseDocument* doc, long frame, RENDER_MODE mode, bool progressive){
+	BaseDocument* renderdoc = (BaseDocument*)doc->GetClone(COPYFLAGS::DOCUMENT, nullptr);
+
+	NSIContext_t context_handle = NSIBegin(0, 0);
+
+	NSI::Context context(context_handle);
+
+	SceneParser sp(renderdoc, context_handle);
+
+	sp.SetRenderMode(mode);
+
+	//Render scene
+	bool RenderOK = sp.InitScene(true, frame);
+	sp.SampleFrameMotion();
+
+	BaseDocument::Free(renderdoc);
+
+	context.SetAttribute(NSI_SCENE_GLOBAL, (
+		NSI::IntegerArg("renderatlowpriority", 1)
+		));
+
+	context.RenderControl((
+		NSI::StringArg("action", "start"),
+		NSI::IntegerArg("progressive", 0),
+		NSI::PointerArg("stoppedcallback", (void*)&FrameStoppedCallback),
+		NSI::PointerArg("stoppedcallbackdata", 0)
+		));
 
 
-	RenderData* rd=doc->GetActiveRenderData();
+	return RenderOK;
+
+	/*RenderData* rd=doc->GetActiveRenderData();
 	BaseVideoPost* vp=rd->GetFirstVideoPost();
 
 	bool found=false;
@@ -51,8 +90,9 @@ bool DL_RenderFrame(BaseDocument* doc, long frame, RENDER_MODE mode, bool progre
 	sp.SetRenderMode(mode);
 
 	//Motion sampling
-	bool useMotionBlur=vp_data.GetBool(DL_USE_MOTION_BLUR);
-	long motionSamples=vp_data.GetInt32(DL_MOTION_SAMPLES,2);
+	long motionSamples = 2;
+	bool useMotionBlur=vp_data.GetBool(DL_MOTION_BLUR);
+	//long motionSamples=vp_data.GetInt32(DL_MOTION_SAMPLES,2);
 	if(!useMotionBlur){ motionSamples=1; }
 
 	float ShutterAngle=vp_data.GetFloat(DL_SHUTTER_ANGLE);
@@ -67,5 +107,5 @@ bool DL_RenderFrame(BaseDocument* doc, long frame, RENDER_MODE mode, bool progre
 	bool RenderOK=	sp.Parse(renderdoc, frame);
 
 	BaseDocument::Free(renderdoc);  
-	return RenderOK; 
+	return RenderOK; */
 }

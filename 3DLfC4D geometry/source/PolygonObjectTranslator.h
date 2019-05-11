@@ -12,7 +12,7 @@ class PolygonObjectTranslator : public DL_TranslatorPlugin{
 
 public:
 	virtual void CreateNSINodes(const char* ParentTransformHandle, GeListNode* C4DNode, BaseDocument* doc, DL_SceneParser* parser);
-	virtual void SampleMotion(double t, long i, GeListNode* C4DNode, BaseDocument* doc,DL_SceneParser* parser);
+	virtual void SampleMotion(DL_SampleInfo* info, GeListNode* C4DNode, BaseDocument* doc,DL_SceneParser* parser);
 
 private:
 	bool skip;

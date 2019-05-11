@@ -5,6 +5,7 @@
 class BaseDocument;
 
 #include "DL_SceneParser.h"
+#include "DL_SampleInfo.h"
 
 class DL_Hook{
 public:
@@ -12,7 +13,7 @@ public:
 
 	virtual void CreateNSINodes(BaseDocument* doc, DL_SceneParser* parser) = 0;
 	virtual void ConnectNSINodes(BaseDocument* doc, DL_SceneParser* parser) = 0;
-	virtual void SampleMotion(double t, long i, BaseDocument* doc, DL_SceneParser* parser) = 0;
+	virtual void SampleMotion(DL_SampleInfo* info, BaseDocument* doc, DL_SceneParser* parser) = 0;
 };
 
 typedef DL_Hook* (*HookAllocator)();

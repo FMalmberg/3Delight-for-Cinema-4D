@@ -18,7 +18,7 @@ PluginManager PM;
 Bool RegisterRenderFrame(void);
 Bool RegisterRenderSequence(void);
 //Bool RegisterInteractiveRenderManager(void);
-Bool RegisterDisplay(void);
+//Bool RegisterDisplay(void);
 //Bool RegisterImageLayer(void);
 Bool RegisterDL_CameraTag(void);
 Bool RegisterDL_MotionBlurTag(void);
@@ -34,7 +34,7 @@ Bool PluginStart(void)
 	if (!RegisterRenderSequence()) return FALSE;
 	if (!Register3DelightPlugin()) return FALSE;
 	//if (!RegisterInteractiveRenderManager())return FALSE;
-	if (!RegisterDisplay()) return FALSE;
+	//if (!RegisterDisplay()) return FALSE;
 	//if (!RegisterDL_CameraTag()) return FALSE;
 	//if (!RegisterDL_MotionBlurTag()) return FALSE;
 	if (!RegisterDL_VisibilityTag()) return FALSE;

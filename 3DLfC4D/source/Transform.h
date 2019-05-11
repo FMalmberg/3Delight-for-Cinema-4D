@@ -2,6 +2,7 @@
 #define TRANSFORM_H
 
 #include "DL_SceneParser.h"
+#include "DL_SampleInfo.h"
 #include "c4d.h"
 #include <string>
 
@@ -12,7 +13,7 @@ private:
 
 public:
 	Transform(BaseObject* object, DL_SceneParser* parser, std::string parent);
-	void SampleMotion(double t, long i,  BaseDocument* document, DL_SceneParser* parser);
+	void SampleMotion(DL_SampleInfo* info,  BaseDocument* document, DL_SceneParser* parser);
 	std::string GetHandle();
 };
 

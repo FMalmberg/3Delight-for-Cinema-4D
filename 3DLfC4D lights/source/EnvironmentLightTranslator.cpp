@@ -79,7 +79,7 @@ void EnvironmentLightTranslator::CreateNSINodes(const char* ParentTransformHandl
 
 }
 
-void EnvironmentLightTranslator::SampleMotion(double t, long i, GeListNode* C4DNode, BaseDocument* doc,DL_SceneParser* parser){
+void EnvironmentLightTranslator::SampleMotion(DL_SampleInfo* info, GeListNode* C4DNode, BaseDocument* doc,DL_SceneParser* parser){
 	
 	NSI::Context ctx(parser->GetContext());
 

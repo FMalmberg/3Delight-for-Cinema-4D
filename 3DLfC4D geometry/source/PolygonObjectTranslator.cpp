@@ -258,7 +258,7 @@ void PolygonObjectTranslator::CreateNSINodes(const char* ParentTransformHandle, 
 
 }
 
-void PolygonObjectTranslator::SampleMotion(double t, long i, GeListNode* C4DNode, BaseDocument* doc, DL_SceneParser* parser){
+void PolygonObjectTranslator::SampleMotion(DL_SampleInfo* info, GeListNode* C4DNode, BaseDocument* doc, DL_SceneParser* parser){
 	if (skip){ return; }
 
 	NSI::Context ctx(parser->GetContext());
@@ -321,7 +321,7 @@ void PolygonObjectTranslator::SampleMotion(double t, long i, GeListNode* C4DNode
 	arg_P.SetCount(pointcount);
 	arg_P.SetValuePointer((void*)&P[0]);
 
-	ctx.SetAttributeAtTime(handle, t, (
+	ctx.SetAttributeAtTime(handle, info->sample_time, (
 		arg_P
 		));
 
@@ -352,7 +352,7 @@ void PolygonObjectTranslator::SampleMotion(double t, long i, GeListNode* C4DNode
 		arg_N.SetFlags(NSIParamPerVertex);
 
 
-		ctx.SetAttributeAtTime(handle, t, (
+		ctx.SetAttributeAtTime(handle, info->sample_time, (
 			arg_N
 			));
 	}

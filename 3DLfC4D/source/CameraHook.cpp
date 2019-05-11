@@ -84,7 +84,7 @@ void CameraHook::CreateNSINodes(BaseDocument* doc, DL_SceneParser* parser){
 
 }
 
-void CameraHook::SampleMotion(double t, long i,  BaseDocument* document, DL_SceneParser* parser){
+void CameraHook::SampleMotion(DL_SampleInfo* info,  BaseDocument* document, DL_SceneParser* parser){
 	Float aperture=camera->GetAperture();
 	Float focus=camera->GetFocus();
 	float horizontal_fov=RadToDeg(2*ATan(0.5*aperture/focus));
@@ -111,13 +111,13 @@ void CameraHook::SampleMotion(double t, long i,  BaseDocument* document, DL_Scen
 	xform.SetType(NSITypeDoubleMatrix);
 	xform.SetValuePointer((void*)&v[0]);
 
-	ctx.SetAttributeAtTime(transform_name, t, (
+	ctx.SetAttributeAtTime(transform_name, info->sample_time, (
 			xform
 		));
 
 
 	//Sample fov
-	ctx.SetAttributeAtTime("scene_camera",t,(
+	ctx.SetAttributeAtTime("scene_camera",info->sample_time,(
 			NSI::FloatArg("fov",horizontal_fov),
 			NSI::FloatArg("focallength", focal_length_cm),
 			NSI::DoubleArg("depthoffield.focaldistance", focus_distance)

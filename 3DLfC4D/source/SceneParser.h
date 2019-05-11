@@ -11,7 +11,7 @@
 #include <map>
 #include <string>
 
-enum ParserStage{
+/*enum ParserStage{
 	NONE,
 	BUILD_SCENE_TREE,
 	CACHE_STATIC_DATA,
@@ -20,23 +20,30 @@ enum ParserStage{
 	EMIT_LIGHTS,
 	EMIT_SHADERS,
 	EMIT_GEOMETRY
-};
+};*/
 
 
 class SceneParser: public DL_SceneParser{
 public:
 	SceneParser();
+	SceneParser(BaseDocument* document, NSIContext_t context);
 	virtual ~SceneParser();
 	NSIContext_t GetContext();
-	bool Parse(BaseDocument* doc, long frame);
-	//void Initialize(BaseDocument* doc, NSIContext_t context_handle, long frame, RENDER_MODE mode, BaseContainer render_settings);
-	//void SampleFrameInterval();
-	//void InteractiveUpdate();
+
+	//Old method, to be removed
+	bool Parse(BaseDocument* document, long frame);
+
+	//New methods:
+	bool InitScene(bool animate, long frame);
+	void SampleFrameMotion();
+	void InteractiveUpdate();
+
+	void FillRenderSettings();
 
 	//Old
 	void SetMotionSamples(int samples);
 	void SetShutter(double open, double close);
-	void SetAOVExport(bool export_aovs);
+	//void SetAOVExport(bool export_aovs);
 
 	float* GetMotionSampleTimes();
 	int GetMotionSamples();
@@ -66,15 +73,16 @@ private:
 
 private:
 	NSIContext_t context_handle;
-	ParserStage stage;
-	BaseContainer* settings;
+	//ParserStage stage;
+	BaseContainer settings;
+	BaseDocument* doc;
 
 	RENDER_MODE rendermode;
 	BaseContainer DL_settings;
 
-	BaseDocument* render_doc;
+	
 
-	bool ExportAOVs;
+	//bool ExportAOVs;
 
 
 	std::vector<DL_HookPtr> hooks;

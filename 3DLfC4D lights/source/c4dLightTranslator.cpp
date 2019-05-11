@@ -499,7 +499,7 @@ void c4dLightTranslator::CreateNSINodes(
 	}
 }
 
-void c4dLightTranslator::SampleMotion(double t, long i, GeListNode* C4DNode, BaseDocument* doc, DL_SceneParser* parser)
+void c4dLightTranslator::SampleMotion(DL_SampleInfo* info, GeListNode* C4DNode, BaseDocument* doc, DL_SceneParser* parser)
 {
 	NSI::Context ctx(parser->GetContext());
 
@@ -546,7 +546,7 @@ void c4dLightTranslator::SampleMotion(double t, long i, GeListNode* C4DNode, Bas
 			arg_P.SetCount(4);
 			arg_P.SetValuePointer((void*)&P[0]);
 
-			ctx.SetAttributeAtTime(m_handle, t, (
+			ctx.SetAttributeAtTime(m_handle, info->sample_time, (
 				NSI::IntegerArg("nvertices", 4),
 				arg_P
 				));
@@ -813,7 +813,7 @@ void c4dLightTranslator::SampleMotion(double t, long i, GeListNode* C4DNode, Bas
 		obj->GetParameter(DescID(LIGHT_DETAILS_OUTERRADIUS), data, DESCFLAGS_GET::NONE);
 		float radius = data.GetFloat();
 
-		ctx.SetAttributeAtTime(m_handle, t, (
+		ctx.SetAttributeAtTime(m_handle, info->sample_time, (
 			NSI::FloatArg("width", radius)
 			));
 
@@ -841,7 +841,7 @@ void c4dLightTranslator::SampleMotion(double t, long i, GeListNode* C4DNode, Bas
 			decay == 0;
 		else decay == 1;
 
-		ctx.SetAttributeAtTime(m_shader_handle, t, (
+		ctx.SetAttributeAtTime(m_shader_handle, info->sample_time, (
 			NSI::ColorArg("i_color", &col[0]),
 			NSI::FloatArg("intensity", intensity),
 			NSI::IntegerArg("decayRate", decay),

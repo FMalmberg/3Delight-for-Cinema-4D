@@ -2,6 +2,7 @@
 #define DL_TRANSLATOR_H
 
 #include "DL_SceneParser.h"
+#include "DL_SampleInfo.h"
 
 //Forward  declarations
 class BaseDocument;
@@ -15,7 +16,7 @@ public:
 
 	virtual void CreateNSINodes(const char* ParentTransformHandle, GeListNode* C4DNode, BaseDocument* doc, DL_SceneParser* parser) = 0;
 	virtual void ConnectNSINodes(GeListNode* C4DNode, BaseDocument* doc,DL_SceneParser* parser)=0;
-	virtual void SampleMotion(double t, long i, GeListNode* C4DNode, BaseDocument* doc,DL_SceneParser* parser) = 0;
+	virtual void SampleMotion(DL_SampleInfo* info, GeListNode* C4DNode, BaseDocument* doc,DL_SceneParser* parser) = 0;
 
 };
 

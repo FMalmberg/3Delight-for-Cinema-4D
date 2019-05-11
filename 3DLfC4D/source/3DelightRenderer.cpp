@@ -218,6 +218,7 @@ Bool Register3DelightPlugin(void)
 	RegisterIcon(DL_JPG_ON, GeGetPluginResourcePath() + "jpg-on.png");
 	RegisterIcon(DL_JPG_OFF, GeGetPluginResourcePath() + "jpg.png");
 
-	return RegisterVideoPostPlugin(ID_RENDERSETTINGS, "3Delight Renderer"_s, PLUGINFLAG_VIDEOPOST_ISRENDERER, RenderSettings::Alloc, "myres"_s, 0, 0);
+	return RegisterVideoPostPlugin(ID_RENDERSETTINGS, "3Delight"_s, 0, RenderSettings::Alloc, "myres"_s, 0, 0); 
+	//PLUGINFLAG_VIDEOPOST_ISRENDERER
 }
 

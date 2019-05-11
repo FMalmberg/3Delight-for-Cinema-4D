@@ -83,7 +83,7 @@ void LightCardTranslator::CreateNSINodes(const char* ParentTransformHandle, GeLi
 
 }
 
-void LightCardTranslator::SampleMotion(double t, long i, GeListNode* C4DNode, BaseDocument* doc, DL_SceneParser* parser) {
+void LightCardTranslator::SampleMotion(DL_SampleInfo* info, GeListNode* C4DNode, BaseDocument* doc, DL_SceneParser* parser) {
 
 	NSI::Context ctx(parser->GetContext());
 
@@ -120,7 +120,7 @@ void LightCardTranslator::SampleMotion(double t, long i, GeListNode* C4DNode, Ba
 	arg_P.SetValuePointer((void*)&P[0]);
 	//arg_P.SetFlags(NSIParamIndirect);
 
-	ctx.SetAttributeAtTime(handle, t, (
+	ctx.SetAttributeAtTime(handle, info->sample_time, (
 		arg_P
 		));
 
@@ -137,7 +137,7 @@ void LightCardTranslator::SampleMotion(double t, long i, GeListNode* C4DNode, Ba
 	col[1] = color.y;
 	col[2] = color.z;
 
-	ctx.SetAttributeAtTime(shader_handle, t, (
+	ctx.SetAttributeAtTime(shader_handle, info->sample_time, (
 		NSI::ColorArg("tint", &col[0]),
 		NSI::FloatArg("intensity", intensity)
 		));

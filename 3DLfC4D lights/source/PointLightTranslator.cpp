@@ -63,7 +63,7 @@ void PointLightTranslator::CreateNSINodes(const char* ParentTransformHandle, GeL
 
 }
 
-void PointLightTranslator::SampleMotion(double t, long i, GeListNode* C4DNode, BaseDocument* doc, DL_SceneParser* parser){
+void PointLightTranslator::SampleMotion(DL_SampleInfo* info, GeListNode* C4DNode, BaseDocument* doc, DL_SceneParser* parser){
 
 	NSI::Context ctx(parser->GetContext());
 
@@ -72,7 +72,7 @@ void PointLightTranslator::SampleMotion(double t, long i, GeListNode* C4DNode, B
 
 	float radius = data->GetFloat(POINTLIGHT_RADIUS);
 
-	ctx.SetAttributeAtTime(handle, t, (
+	ctx.SetAttributeAtTime(handle, info->sample_time, (
 		NSI::FloatArg("width", radius)
 		));
 
@@ -87,7 +87,7 @@ void PointLightTranslator::SampleMotion(double t, long i, GeListNode* C4DNode, B
 	col[1] = color.y;
 	col[2] = color.z;
 
-	ctx.SetAttributeAtTime(shader_handle, t, (
+	ctx.SetAttributeAtTime(shader_handle, info->sample_time, (
 		NSI::ColorArg("tint", &col[0]),
 		NSI::FloatArg("intensity", intensity)
 		));
