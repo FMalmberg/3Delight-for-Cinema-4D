@@ -98,6 +98,7 @@ Bool RegisterEnvironmentLight(void);
 Bool RegisterColorBlendTexture(void);
 Bool RegisterColorCorrectionTexture(void);
 Bool RegisterColorVariationTexture(void);
+Bool RegisterFacingRatioTexture(void);
 
 Bool PluginStart(void)
 {
@@ -127,6 +128,7 @@ Bool PluginStart(void)
 	if (!RegisterColorBlendTexture()) return FALSE;
 	if (!RegisterColorCorrectionTexture()) return FALSE;
 	if (!RegisterColorVariationTexture()) return FALSE;
+	if (!RegisterFacingRatioTexture()) return FALSE;
 
 	return true;
 }
@@ -182,6 +184,7 @@ Bool PluginMessage(Int32 id, void *data)
 			pm->RegisterTranslator(DL_COLORBLEND, AllocateTranslator<Delight_ColorBlend>);
 			pm->RegisterTranslator(DL_COLORCORRECTION, AllocateTranslator<Delight_ColorCorrection>);
 			pm->RegisterTranslator(DL_COLORVARIATION, AllocateTranslator<Delight_ColorVariation>);
+			pm->RegisterTranslator(DL_FACINGRATIO, AllocateTranslator<Delight_FacingRatio>);
 			break;
 
 		}

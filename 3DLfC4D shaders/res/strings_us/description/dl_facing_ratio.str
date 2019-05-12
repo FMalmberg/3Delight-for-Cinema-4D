@@ -1,0 +1,24 @@
+STRINGTABLE dl_facing_ratio
+{
+	dl_color_correction "Color Correction";
+	SHADER_GROUP "Facing Ratio";
+	FACING_RATIO_COLOR_EDGE "Color Edge";
+	FACING_RATIO_COLOR_EDGE_SHADER "Texture";
+	FACING_RATIO_COLOR_CENTER "Color Center";
+	FACING_RATIO_COLOR_CENTER_SHADER "Texture";
+	FACING_RATIO_BIAS "Bias";
+	FACING_RATIO_BIAS_SHADER "Texture";
+	FACING_RATIO_CONTRAST "Contrast";
+	FACING_RATIO_CONTRAST_SHADER "Texture";
+	
+	BUMP_PAGE "Normal Map / Bump";
+	BUMP "Bump";
+	BUMP_TYPE "Type";
+	BUMP_MAP "Bump Map";
+	BUMP_VALUE "Value";
+	NORMAL_MAP_DIRECTX "Normal Map (DirectX)";
+	NORMAL_MAP_OPENGL "Normal Map (OpenGL)";
+	DISPLACEMENT_0 "Displacement (0.0 centered)";
+	DISPLACEMENT_5 "Displacement (0.5 centered)";
+	BUMP_INTENSITY "Intensity";
+}
