@@ -1,0 +1,32 @@
+STRINGTABLE dl_color_blend
+{
+	dl_color_blend "Color Blend";
+	SHADER_GROUP "Blend";
+	BLEND_MODE "Mode";
+	BLEND_MODE_OVER "Over";
+	BLEND_MODE_DARKEN "Darken (Min)";
+	BLEND_MODE_COLOR_BURN "Color Burn";
+	BLEND_MODE_ADD "Add";
+	BLEND_MODE_SCREEN "Screen";
+	BLEND_MODE_LIGHTEN "Lighten (Max)";
+	BLEND_MODE_COLOR_DODGE "Color Dodge";
+	BLEND_MODE_OVERLAY "Overlay";
+	BLEND_MODE_SOFT_LIGHT "Soft Light";
+	BLEND_MODE_HARD_LIGHT "Hard Light";
+	BLEND_MODE_ADD_SUBTRACT "Add/Subtract";
+	BLEND_MODE_SUBTRACT "Subtract";
+	BLEND_MODE_DIFFERENCE "Difference";
+	BLEND_MODE_DIVIDE "Divide";
+	BLEND_MODE_HUE "Hue";
+	BLEND_MODE_SATURATION "Saturation";
+	BLEND_MODE_COLOR "Color";
+	BLEND_MODE_LUMINOSITY "Luminosity";
+	
+	BLEND_FACTOR "Factor";
+	BLEND_FACTOR_SHADER "Texture";
+	BLEND_EMPTY " ";
+	BLEND_FOREGROUND "Foreground";
+	BLEND_FOREGROUND_SHADER "Texture";
+	BLEND_BACKGROUND "Background";
+	BLEND_BACKGROUND_SHADER "Texture";
+}

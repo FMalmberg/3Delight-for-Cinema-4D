@@ -29,6 +29,8 @@
 #include "DLFlakes_translator.h";
 #include "EnvironmentLightTranslator.h";
 #include "oenvironment.h";
+#include "DLColorBlend_Translator.h"
+
 
 
 #include "IDs.h"
@@ -92,6 +94,8 @@ Bool RegisterSkyTexture(void);
 Bool RegisterWorleyNoiseTexture(void);
 Bool RegisterFlakesTexture(void);
 Bool RegisterEnvironmentLight(void);
+Bool RegisterColorBlendTexture(void);
+
 
 Bool PluginStart(void)
 {
@@ -118,6 +122,12 @@ Bool PluginStart(void)
 	if (!RegisterSkyTexture()) return FALSE;
 	if (!RegisterFlakesTexture()) return FALSE;
 	if (!RegisterWorleyNoiseTexture()) return FALSE;
+	if (!RegisterColorBlendTexture()) return FALSE;
+	if (!RegisterColorCorrectionTexture()) return FALSE;
+	if (!RegisterColorVariationTexture()) return FALSE;
+	if (!RegisterFacingRatioTexture()) return FALSE;
+	if (!RegisterOpenVDB()) return FALSE;
+	if (!RegisterRandomColorTexture()) return FALSE;
 
 	return true;
 }
@@ -169,6 +179,8 @@ Bool PluginMessage(Int32 id, void *data)
 			pm->RegisterTranslator(DL_Flakes, AllocateTranslator<Delight_Flakes>);
 			pm->RegisterTranslator(ID_ENVIRONMENTLIGHT, AllocateTranslator<EnvironmentLightTranslator>);
 			pm->RegisterTranslator(ID_TEXTURESHADER, AllocateTranslator<TextureShaderTranslator>);
+			
+			pm->RegisterTranslator(DL_COLORBLEND, AllocateTranslator<Delight_ColorBlend>);
 			break;
 
 		}

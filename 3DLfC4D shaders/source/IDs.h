@@ -30,4 +30,7 @@
 #define DL_WorleyNoise 1052796
 #define DL_Flakes 1052797
 
+#define DL_COLORBLEND 1052822
+
+
 #endif
