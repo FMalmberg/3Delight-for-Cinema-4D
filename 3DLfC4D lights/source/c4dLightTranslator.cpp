@@ -802,7 +802,8 @@ void c4dLightTranslator::SampleMotion(DL_SampleInfo* info, GeListNode* C4DNode, 
 			NSI::FloatArg("intensity", intensity),
 			NSI::IntegerArg("decayRate", decay),
 			NSI::FloatArg("diffuse_contribution", diffuse),
-			NSI::FloatArg("specular_contribution", specular),
+			NSI::FloatArg("specular_contribution", specular),	
+			NSI::IntegerArg("normalize_area", 1),	
 			NSI::IntegerArg("twosided", 1)
 			));
 	}
@@ -846,6 +847,7 @@ void c4dLightTranslator::SampleMotion(DL_SampleInfo* info, GeListNode* C4DNode, 
 			NSI::FloatArg("intensity", intensity),
 			NSI::IntegerArg("decayRate", decay),
 			NSI::FloatArg("diffuse_contribution", diffuse),
+			NSI::IntegerArg("normalize_area", 1),
 			NSI::FloatArg("specular_contribution", specular)
 			));
 	}
@@ -874,6 +876,7 @@ void c4dLightTranslator::SampleMotion(DL_SampleInfo* info, GeListNode* C4DNode, 
 			NSI::ColorArg("i_color", &col[0]),
 			NSI::FloatArg("intensity", intensity),
 			NSI::FloatArg("diffuse_contribution", diffuse),
+			NSI::IntegerArg("normalize_area", 1),
 			NSI::FloatArg("specular_contribution", specular)
 			));
 
@@ -937,6 +940,7 @@ void c4dLightTranslator::SampleMotion(DL_SampleInfo* info, GeListNode* C4DNode, 
 			NSI::ColorArg("i_color", &col[0]),
 			NSI::FloatArg("intensity", intensity),
 			NSI::IntegerArg("decayRate", decayRate),
+			NSI::IntegerArg("normalize_area", 1),
 			NSI::FloatArg("coneAngle", coneAngle)
 			));
 
