@@ -1,0 +1,23 @@
+STRINGTABLE dl_color_variation
+{
+	dl_color_variation "Color Variation";
+	SHADER_GROUP "Input";
+	INPUT_COLOR "Color";
+	INPUT_COLOR_SHADER "Texture";
+	
+	VARIATION "Color Variation";
+	VARIATION_HUE "Hue";
+	VARIATION_HUE_SHADER "Texture";
+	VARIATION_SATURATION "Saturation";
+	VARIATION_SATURATION_SHADER "Texture";
+	VARIATION_BRIGHTNESS "Brightness";
+	VARIATION_BRIGHTNESS_SHADER "Texture";
+	RANDOM "Random";
+	RANDOMNESS_TYPE "Randomness";
+	RANDOMNESS_UNIFORM "Uniform";
+	RANDOMNESS_NATUAL "Natual";
+	SOURCE_TYPE "Source";
+	SOURCE_TYPE_OBJECT "Object";
+	SOURCE_TYPE_MATERIAL "Material";
+	SEED "Seed";
+}

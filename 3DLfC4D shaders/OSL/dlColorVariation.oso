@@ -1,0 +1,1152 @@
+OpenShadingLanguage 1.00
+# Compiled by oslc 1.11.0dev
+# options: -q -o ..\build\win64-x64-release-free\2016.5\..\osl\dlColorVariation.oso -I../../osl_shaders
+shader dlColorVariation
+param	color	_color	1 1 1		%meta{string,label,"Input"} %meta{string,attribute,"color"}  %read{81,81} %write{2147483647,-1}
+param	float	brightnessVariation	0		%meta{string,label,"Gain"} %meta{string,page,"Variation"}  %read{314,417} %write{2147483647,-1}
+param	float	hueVariation	0		%meta{string,label,"Hue"} %meta{string,page,"Variation"}  %read{82,185} %write{2147483647,-1}
+param	float	saturationVariation	0		%meta{string,label,"Saturation"} %meta{string,page,"Variation"}  %read{198,301} %write{2147483647,-1}
+param	int	randomness	1		%meta{string,label,"Randomness"} %meta{string,page,"Random"} %meta{string,widget,"mapper"} %meta{string,options,"Uniform:0|Natural:1"}  %read{90,322} %write{2147483647,-1}
+param	int	randomSource	0		%meta{string,label,"Source"} %meta{string,page,"Random"} %meta{string,widget,"mapper"} %meta{string,options,"Object:0|Material:1"}  %read{0,0} %write{2147483647,-1}
+param	int	seed	0		%meta{string,label,"Seed"} %meta{string,page,"Random"}  %read{4,7} %write{2147483647,-1}
+oparam	color	outColor	0 0 0		%read{430,432} %write{429,429}
+oparam	float	outColorR	0		%meta{string,attribute,"outColorR"}  %read{2147483647,-1} %write{430,430}
+oparam	float	outColorG	0		%meta{string,attribute,"outColorG"}  %read{2147483647,-1} %write{431,431}
+oparam	float	outColorB	0		%meta{string,attribute,"outColorB"}  %read{2147483647,-1} %write{432,432}
+local	int	___355_x	%read{8,313} %write{7,312}
+local	float	___356_SPLIT1	%read{122,354} %write{97,329}
+local	float	___356_SPLIT2	%read{150,396} %write{98,330}
+local	float	___356_CONST1	%read{125,357} %write{99,331}
+local	float	___356_CONST2	%read{152,384} %write{100,332}
+local	float	___356_A0	%read{131,363} %write{101,333}
+local	float	___356_A1	%read{129,361} %write{102,334}
+local	float	___356_A2	%read{127,359} %write{103,335}
+local	float	___356_A3	%read{126,358} %write{104,336}
+local	float	___356_B1	%read{136,368} %write{105,337}
+local	float	___356_B2	%read{134,366} %write{106,338}
+local	float	___356_B3	%read{133,365} %write{107,339}
+local	float	___356_C0	%read{158,390} %write{108,340}
+local	float	___356_C1	%read{156,388} %write{109,341}
+local	float	___356_C2	%read{154,386} %write{110,342}
+local	float	___356_C3	%read{153,385} %write{111,343}
+local	float	___356_D1	%read{160,392} %write{112,344}
+local	float	___356_D2	%read{159,391} %write{113,345}
+local	float	___356_E0	%read{170,402} %write{114,346}
+local	float	___356_E1	%read{168,400} %write{115,347}
+local	float	___356_E2	%read{166,398} %write{116,348}
+local	float	___356_E3	%read{165,397} %write{117,349}
+local	float	___356_F1	%read{172,404} %write{118,350}
+local	float	___356_F2	%read{171,403} %write{119,351}
+local	float	___356_PPND7	%read{178,411} %write{139,410}
+local	float	___356_Q	%read{121,408} %write{120,352}
+local	float	___357_R	%read{126,369} %write{125,357}
+local	float	___358_R	%read{144,405} %write{142,396}
+local	float	___363_R	%read{92,414} %write{89,411}
+local	int	random_number	%read{26,318} %write{2,313}
+local	int	___367_new_seed	%read{17,26} %write{15,25}
+local	int	curveid	%read{41,61} %write{37,59}
+local	color	hsv	%read{84,429} %write{81,428}
+const	int	$const1	0		%read{0,430} %write{2147483647,-1}
+temp	int	$tmp1	%read{1,1} %write{0,0}
+temp	int	$tmp2	%read{2147483647,-1} %write{2,2}
+const	string	$const2	"id.scenepath"		%read{2,2} %write{2147483647,-1}
+temp	int	$tmp3	%read{2147483647,-1} %write{3,3}
+const	string	$const3	"id.surfaceshader"		%read{3,3} %write{2147483647,-1}
+temp	int	$tmp4	%read{5,5} %write{4,4}
+const	string	$const4	"xorshift32"		%read{6,304} %write{2147483647,-1}
+const	int	$const5	13		%read{8,306} %write{2147483647,-1}
+temp	int	$tmp5	%read{9,9} %write{8,8}
+const	int	$const6	17		%read{10,308} %write{2147483647,-1}
+temp	int	$tmp6	%read{11,11} %write{10,10}
+const	int	$const7	32767		%read{11,309} %write{2147483647,-1}
+temp	int	$tmp7	%read{12,12} %write{11,11}
+const	int	$const8	5		%read{13,311} %write{2147483647,-1}
+temp	int	$tmp8	%read{14,14} %write{13,13}
+temp	int	$tmp9	%read{19,19} %write{18,18}
+temp	int	$tmp10	%read{21,21} %write{20,20}
+temp	int	$tmp11	%read{22,22} %write{21,21}
+temp	int	$tmp12	%read{24,24} %write{23,23}
+temp	int	$tmp13	%read{28,28} %write{26,26}
+temp	int	$tmp14	%read{30,30} %write{29,29}
+temp	int	$tmp15	%read{32,32} %write{31,31}
+temp	int	$tmp16	%read{33,33} %write{32,32}
+temp	int	$tmp17	%read{35,35} %write{34,34}
+temp	int	$tmp18	%read{39,39} %write{38,38}
+const	string	$const9	"id.curve"		%read{38,38} %write{2147483647,-1}
+temp	int	$tmp19	%read{43,43} %write{42,42}
+temp	int	$tmp20	%read{45,45} %write{44,44}
+temp	int	$tmp21	%read{46,46} %write{45,45}
+temp	int	$tmp22	%read{48,48} %write{47,47}
+temp	int	$tmp23	%read{53,53} %write{52,52}
+temp	int	$tmp24	%read{55,55} %write{54,54}
+temp	int	$tmp25	%read{56,56} %write{55,55}
+temp	int	$tmp26	%read{58,58} %write{57,57}
+temp	int	$tmp27	%read{70,70} %write{69,69}
+temp	int	$tmp28	%read{63,63} %write{62,62}
+temp	int	$tmp29	%read{65,65} %write{64,64}
+temp	int	$tmp30	%read{66,66} %write{65,65}
+temp	int	$tmp31	%read{68,68} %write{67,67}
+temp	int	$tmp32	%read{74,74} %write{73,73}
+temp	int	$tmp33	%read{76,76} %write{75,75}
+temp	int	$tmp34	%read{77,77} %write{76,76}
+temp	int	$tmp35	%read{79,79} %write{78,78}
+const	string	$const10	"rgb"		%read{81,429} %write{2147483647,-1}
+const	string	$const11	"hsv"		%read{81,429} %write{2147483647,-1}
+temp	int	$tmp36	%read{83,83} %write{82,82}
+temp	float	$tmp37	%read{186,186} %write{84,84}
+temp	float	$tmp38	%read{185,185} %write{92,184}
+const	string	$const12	"FloatRandom"		%read{85,317} %write{2147483647,-1}
+temp	float	$tmp39	%read{89,89} %write{87,87}
+temp	float	$tmp40	%read{87,87} %write{86,86}
+temp	float	$tmp41	%read{89,89} %write{88,88}
+const	int	$const13	2		%read{316,432} %write{2147483647,-1}
+const	float	$const14	2		%read{88,320} %write{2147483647,-1}
+const	float	$const16	31		%read{88,320} %write{2147483647,-1}
+temp	int	$tmp42	%read{91,91} %write{90,90}
+const	float	$const17	0.5		%read{92,352} %write{2147483647,-1}
+const	int	$const18	1		%read{200,431} %write{2147483647,-1}
+temp	float	$tmp43	%read{95,95} %write{94,94}
+const	float	$const19	1		%read{94,422} %write{2147483647,-1}
+temp	float	$tmp44	%read{120,143} %write{95,95}
+const	string	$const20	"NormalRandom"		%read{96,328} %write{2147483647,-1}
+const	float	$const21	0.425000012		%read{97,329} %write{2147483647,-1}
+const	float	$const22	5		%read{98,330} %write{2147483647,-1}
+const	float	$const23	0.180625007		%read{99,331} %write{2147483647,-1}
+const	float	$const24	1.60000002		%read{100,332} %write{2147483647,-1}
+const	float	$const25	3.38713264		%read{101,333} %write{2147483647,-1}
+const	float	$const26	50.4342728		%read{102,334} %write{2147483647,-1}
+const	float	$const27	159.291138		%read{103,335} %write{2147483647,-1}
+const	float	$const28	59.109375		%read{104,336} %write{2147483647,-1}
+const	float	$const29	17.8951702		%read{105,337} %write{2147483647,-1}
+const	float	$const30	78.7577591		%read{106,338} %write{2147483647,-1}
+const	float	$const31	67.187561		%read{107,339} %write{2147483647,-1}
+const	float	$const32	1.42343724		%read{108,340} %write{2147483647,-1}
+const	float	$const33	2.75681543		%read{109,341} %write{2147483647,-1}
+const	float	$const34	1.30672848		%read{110,342} %write{2147483647,-1}
+const	float	$const35	0.170238212		%read{111,343} %write{2147483647,-1}
+const	float	$const36	0.737001657		%read{112,344} %write{2147483647,-1}
+const	float	$const37	0.120211333		%read{113,345} %write{2147483647,-1}
+const	float	$const38	6.6579051		%read{114,346} %write{2147483647,-1}
+const	float	$const39	3.08122635		%read{115,347} %write{2147483647,-1}
+const	float	$const40	0.428682953		%read{116,348} %write{2147483647,-1}
+const	float	$const41	0.0173372049		%read{117,349} %write{2147483647,-1}
+const	float	$const42	0.241978943		%read{118,350} %write{2147483647,-1}
+const	float	$const43	0.0122582028		%read{119,351} %write{2147483647,-1}
+temp	float	$tmp45	%read{122,122} %write{121,121}
+temp	int	$tmp46	%read{123,123} %write{122,122}
+temp	float	$tmp47	%read{125,125} %write{124,124}
+temp	float	$tmp48	%read{127,127} %write{126,126}
+temp	float	$tmp49	%read{128,128} %write{127,127}
+temp	float	$tmp50	%read{129,129} %write{128,128}
+temp	float	$tmp51	%read{130,130} %write{129,129}
+temp	float	$tmp52	%read{131,131} %write{130,130}
+temp	float	$tmp53	%read{132,132} %write{131,131}
+temp	float	$tmp54	%read{139,139} %write{132,132}
+temp	float	$tmp55	%read{134,134} %write{133,133}
+temp	float	$tmp56	%read{135,135} %write{134,134}
+temp	float	$tmp57	%read{136,136} %write{135,135}
+temp	float	$tmp58	%read{137,137} %write{136,136}
+temp	float	$tmp59	%read{138,138} %write{137,137}
+temp	float	$tmp60	%read{139,139} %write{138,138}
+const	float	$const44	0		%read{140,423} %write{2147483647,-1}
+temp	int	$tmp61	%read{141,141} %write{140,140}
+temp	int	$tmp62	%read{145,145} %write{144,144}
+const	float	$const45	5.4000001		%read{146,378} %write{2147483647,-1}
+temp	float	$tmp63	%read{148,148} %write{147,147}
+temp	float	$tmp64	%read{149,149} %write{148,148}
+temp	int	$tmp65	%read{151,151} %write{150,150}
+temp	float	$tmp66	%read{154,154} %write{153,153}
+temp	float	$tmp67	%read{155,155} %write{154,154}
+temp	float	$tmp68	%read{156,156} %write{155,155}
+temp	float	$tmp69	%read{157,157} %write{156,156}
+temp	float	$tmp70	%read{158,158} %write{157,157}
+temp	float	$tmp71	%read{163,163} %write{158,158}
+temp	float	$tmp72	%read{160,160} %write{159,159}
+temp	float	$tmp73	%read{161,161} %write{160,160}
+temp	float	$tmp74	%read{162,162} %write{161,161}
+temp	float	$tmp75	%read{163,163} %write{162,162}
+temp	float	$tmp76	%read{166,166} %write{165,165}
+temp	float	$tmp77	%read{167,167} %write{166,166}
+temp	float	$tmp78	%read{168,168} %write{167,167}
+temp	float	$tmp79	%read{169,169} %write{168,168}
+temp	float	$tmp80	%read{170,170} %write{169,169}
+temp	float	$tmp81	%read{175,175} %write{170,170}
+temp	float	$tmp82	%read{172,172} %write{171,171}
+temp	float	$tmp83	%read{173,173} %write{172,172}
+temp	float	$tmp84	%read{174,174} %write{173,173}
+temp	float	$tmp85	%read{175,175} %write{174,174}
+temp	int	$tmp86	%read{177,177} %write{176,176}
+temp	float	$tmp87	%read{184,184} %write{183,183}
+const	float	$const47	-3		%read{183,415} %write{2147483647,-1}
+const	float	$const49	3		%read{182,414} %write{2147483647,-1}
+const	string	$const50	"clamp"		%read{181,421} %write{2147483647,-1}
+temp	float	$tmp88	%read{183,183} %write{182,182}
+const	float	$const52	6		%read{184,416} %write{2147483647,-1}
+temp	float	$tmp89	%read{186,186} %write{185,185}
+temp	float	$tmp90	%read{187,187} %write{186,186}
+temp	int	$tmp91	%read{191,191} %write{190,190}
+temp	int	$tmp92	%read{193,193} %write{192,192}
+temp	int	$tmp93	%read{194,194} %write{193,193}
+temp	int	$tmp94	%read{196,196} %write{195,195}
+temp	int	$tmp95	%read{199,199} %write{198,198}
+temp	float	$tmp96	%read{302,302} %write{200,200}
+temp	float	$tmp97	%read{301,301} %write{208,300}
+temp	float	$tmp98	%read{205,205} %write{203,203}
+temp	float	$tmp99	%read{203,203} %write{202,202}
+temp	float	$tmp100	%read{205,205} %write{204,204}
+temp	int	$tmp101	%read{207,207} %write{206,206}
+temp	float	$tmp102	%read{211,211} %write{210,210}
+temp	float	$tmp103	%read{236,259} %write{211,211}
+temp	float	$tmp104	%read{238,238} %write{237,237}
+temp	int	$tmp105	%read{239,239} %write{238,238}
+temp	float	$tmp106	%read{241,241} %write{240,240}
+temp	float	$tmp107	%read{243,243} %write{242,242}
+temp	float	$tmp108	%read{244,244} %write{243,243}
+temp	float	$tmp109	%read{245,245} %write{244,244}
+temp	float	$tmp110	%read{246,246} %write{245,245}
+temp	float	$tmp111	%read{247,247} %write{246,246}
+temp	float	$tmp112	%read{248,248} %write{247,247}
+temp	float	$tmp113	%read{255,255} %write{248,248}
+temp	float	$tmp114	%read{250,250} %write{249,249}
+temp	float	$tmp115	%read{251,251} %write{250,250}
+temp	float	$tmp116	%read{252,252} %write{251,251}
+temp	float	$tmp117	%read{253,253} %write{252,252}
+temp	float	$tmp118	%read{254,254} %write{253,253}
+temp	float	$tmp119	%read{255,255} %write{254,254}
+temp	int	$tmp120	%read{257,257} %write{256,256}
+temp	int	$tmp121	%read{261,261} %write{260,260}
+temp	float	$tmp122	%read{264,264} %write{263,263}
+temp	float	$tmp123	%read{265,265} %write{264,264}
+temp	int	$tmp124	%read{267,267} %write{266,266}
+temp	float	$tmp125	%read{270,270} %write{269,269}
+temp	float	$tmp126	%read{271,271} %write{270,270}
+temp	float	$tmp127	%read{272,272} %write{271,271}
+temp	float	$tmp128	%read{273,273} %write{272,272}
+temp	float	$tmp129	%read{274,274} %write{273,273}
+temp	float	$tmp130	%read{279,279} %write{274,274}
+temp	float	$tmp131	%read{276,276} %write{275,275}
+temp	float	$tmp132	%read{277,277} %write{276,276}
+temp	float	$tmp133	%read{278,278} %write{277,277}
+temp	float	$tmp134	%read{279,279} %write{278,278}
+temp	float	$tmp135	%read{282,282} %write{281,281}
+temp	float	$tmp136	%read{283,283} %write{282,282}
+temp	float	$tmp137	%read{284,284} %write{283,283}
+temp	float	$tmp138	%read{285,285} %write{284,284}
+temp	float	$tmp139	%read{286,286} %write{285,285}
+temp	float	$tmp140	%read{291,291} %write{286,286}
+temp	float	$tmp141	%read{288,288} %write{287,287}
+temp	float	$tmp142	%read{289,289} %write{288,288}
+temp	float	$tmp143	%read{290,290} %write{289,289}
+temp	float	$tmp144	%read{291,291} %write{290,290}
+temp	int	$tmp145	%read{293,293} %write{292,292}
+temp	float	$tmp146	%read{300,300} %write{299,299}
+temp	float	$tmp147	%read{299,299} %write{298,298}
+temp	float	$tmp148	%read{302,302} %write{301,301}
+temp	float	$tmp149	%read{303,303} %write{302,302}
+temp	int	$tmp150	%read{307,307} %write{306,306}
+temp	int	$tmp151	%read{309,309} %write{308,308}
+temp	int	$tmp152	%read{310,310} %write{309,309}
+temp	int	$tmp153	%read{312,312} %write{311,311}
+temp	int	$tmp154	%read{315,315} %write{314,314}
+temp	float	$tmp155	%read{418,418} %write{316,316}
+temp	float	$tmp156	%read{417,417} %write{324,416}
+temp	float	$tmp157	%read{321,321} %write{319,319}
+temp	float	$tmp158	%read{319,319} %write{318,318}
+temp	float	$tmp159	%read{321,321} %write{320,320}
+temp	int	$tmp160	%read{323,323} %write{322,322}
+temp	float	$tmp161	%read{327,327} %write{326,326}
+temp	float	$tmp162	%read{352,375} %write{327,327}
+temp	float	$tmp163	%read{354,354} %write{353,353}
+temp	int	$tmp164	%read{355,355} %write{354,354}
+temp	float	$tmp165	%read{357,357} %write{356,356}
+temp	float	$tmp166	%read{359,359} %write{358,358}
+temp	float	$tmp167	%read{360,360} %write{359,359}
+temp	float	$tmp168	%read{361,361} %write{360,360}
+temp	float	$tmp169	%read{362,362} %write{361,361}
+temp	float	$tmp170	%read{363,363} %write{362,362}
+temp	float	$tmp171	%read{364,364} %write{363,363}
+temp	float	$tmp172	%read{371,371} %write{364,364}
+temp	float	$tmp173	%read{366,366} %write{365,365}
+temp	float	$tmp174	%read{367,367} %write{366,366}
+temp	float	$tmp175	%read{368,368} %write{367,367}
+temp	float	$tmp176	%read{369,369} %write{368,368}
+temp	float	$tmp177	%read{370,370} %write{369,369}
+temp	float	$tmp178	%read{371,371} %write{370,370}
+temp	int	$tmp179	%read{373,373} %write{372,372}
+temp	int	$tmp180	%read{377,377} %write{376,376}
+temp	float	$tmp181	%read{380,380} %write{379,379}
+temp	float	$tmp182	%read{381,381} %write{380,380}
+temp	int	$tmp183	%read{383,383} %write{382,382}
+temp	float	$tmp184	%read{386,386} %write{385,385}
+temp	float	$tmp185	%read{387,387} %write{386,386}
+temp	float	$tmp186	%read{388,388} %write{387,387}
+temp	float	$tmp187	%read{389,389} %write{388,388}
+temp	float	$tmp188	%read{390,390} %write{389,389}
+temp	float	$tmp189	%read{395,395} %write{390,390}
+temp	float	$tmp190	%read{392,392} %write{391,391}
+temp	float	$tmp191	%read{393,393} %write{392,392}
+temp	float	$tmp192	%read{394,394} %write{393,393}
+temp	float	$tmp193	%read{395,395} %write{394,394}
+temp	float	$tmp194	%read{398,398} %write{397,397}
+temp	float	$tmp195	%read{399,399} %write{398,398}
+temp	float	$tmp196	%read{400,400} %write{399,399}
+temp	float	$tmp197	%read{401,401} %write{400,400}
+temp	float	$tmp198	%read{402,402} %write{401,401}
+temp	float	$tmp199	%read{407,407} %write{402,402}
+temp	float	$tmp200	%read{404,404} %write{403,403}
+temp	float	$tmp201	%read{405,405} %write{404,404}
+temp	float	$tmp202	%read{406,406} %write{405,405}
+temp	float	$tmp203	%read{407,407} %write{406,406}
+temp	int	$tmp204	%read{409,409} %write{408,408}
+temp	float	$tmp205	%read{416,416} %write{415,415}
+temp	float	$tmp206	%read{415,415} %write{414,414}
+temp	float	$tmp207	%read{418,418} %write{417,417}
+temp	float	$tmp208	%read{419,419} %write{418,418}
+temp	float	$tmp209	%read{424,424} %write{423,423}
+temp	float	$tmp210	%read{422,422} %write{420,420}
+temp	float	$tmp211	%read{423,423} %write{422,422}
+temp	float	$tmp212	%read{426,426} %write{425,425}
+temp	int	$tmp213	%read{427,427} %write{426,426}
+code ___main___
+# ../../osl_shaders/dlColorVariation.osl:45
+# 	if( randomSource == 0 )
+	eq		$tmp1 randomSource $const1 	%filename{"../../osl_shaders/dlColorVariation.osl"} %line{45} %argrw{"wrr"}
+	if		$tmp1 3 4 	%argrw{"r"}
+# ../../osl_shaders/dlColorVariation.osl:47
+# 		getattribute( "id.scenepath", random_number );
+	getattribute	$tmp2 $const2 random_number 	%line{47} %argrw{"wrw"}
+# ../../osl_shaders/dlColorVariation.osl:51
+# 		getattribute( "id.surfaceshader", random_number );
+	getattribute	$tmp3 $const3 random_number 	%line{51} %argrw{"wrw"}
+# ../../osl_shaders/dlColorVariation.osl:54
+# 	if( seed != 0 )
+	neq		$tmp4 seed $const1 	%line{54} %argrw{"wrr"}
+	if		$tmp4 37 37 	%argrw{"r"}
+# ../../osl_shaders/dlColorVariation.osl:61
+# 		int new_seed = xorshift32( seed );
+	functioncall	$const4 16 	%line{61} %argrw{"r"}
+# W:/r2d2\src\osl_shaders\random.h:19
+# 	int x = state;
+	assign		___355_x seed 	%filename{"W:/r2d2\src\osl_shaders\random.h"} %line{19} %argrw{"wr"}
+# W:/r2d2\src\osl_shaders\random.h:20
+# 	x ^= x << 13;
+	shl		$tmp5 ___355_x $const5 	%line{20} %argrw{"wrr"}
+	xor		___355_x ___355_x $tmp5 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\random.h:21
+# 	x ^= (x >> 17) & 0x7fff;
+	shr		$tmp6 ___355_x $const6 	%line{21} %argrw{"wrr"}
+	bitand		$tmp7 $tmp6 $const7 	%argrw{"wrr"}
+	xor		___355_x ___355_x $tmp7 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\random.h:22
+# 	x ^= x << 5;
+	shl		$tmp8 ___355_x $const8 	%line{22} %argrw{"wrr"}
+	xor		___355_x ___355_x $tmp8 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\random.h:23
+# 	return x;
+	assign		___367_new_seed ___355_x 	%line{23} %argrw{"wr"}
+# ../../osl_shaders/dlColorVariation.osl:62
+# 		new_seed = xorshift32( new_seed );
+	functioncall	$const4 26 	%filename{"../../osl_shaders/dlColorVariation.osl"} %line{62} %argrw{"r"}
+# W:/r2d2\src\osl_shaders\random.h:19
+# 	int x = state;
+	assign		___355_x ___367_new_seed 	%filename{"W:/r2d2\src\osl_shaders\random.h"} %line{19} %argrw{"wr"}
+# W:/r2d2\src\osl_shaders\random.h:20
+# 	x ^= x << 13;
+	shl		$tmp9 ___355_x $const5 	%line{20} %argrw{"wrr"}
+	xor		___355_x ___355_x $tmp9 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\random.h:21
+# 	x ^= (x >> 17) & 0x7fff;
+	shr		$tmp10 ___355_x $const6 	%line{21} %argrw{"wrr"}
+	bitand		$tmp11 $tmp10 $const7 	%argrw{"wrr"}
+	xor		___355_x ___355_x $tmp11 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\random.h:22
+# 	x ^= x << 5;
+	shl		$tmp12 ___355_x $const8 	%line{22} %argrw{"wrr"}
+	xor		___355_x ___355_x $tmp12 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\random.h:23
+# 	return x;
+	assign		___367_new_seed ___355_x 	%line{23} %argrw{"wr"}
+# ../../osl_shaders/dlColorVariation.osl:64
+# 		random_number = xorshift32( random_number * new_seed );
+	mul		$tmp13 random_number ___367_new_seed 	%filename{"../../osl_shaders/dlColorVariation.osl"} %line{64} %argrw{"wrr"}
+	functioncall	$const4 37 	%argrw{"r"}
+# W:/r2d2\src\osl_shaders\random.h:19
+# 	int x = state;
+	assign		___355_x $tmp13 	%filename{"W:/r2d2\src\osl_shaders\random.h"} %line{19} %argrw{"wr"}
+# W:/r2d2\src\osl_shaders\random.h:20
+# 	x ^= x << 13;
+	shl		$tmp14 ___355_x $const5 	%line{20} %argrw{"wrr"}
+	xor		___355_x ___355_x $tmp14 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\random.h:21
+# 	x ^= (x >> 17) & 0x7fff;
+	shr		$tmp15 ___355_x $const6 	%line{21} %argrw{"wrr"}
+	bitand		$tmp16 $tmp15 $const7 	%argrw{"wrr"}
+	xor		___355_x ___355_x $tmp16 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\random.h:22
+# 	x ^= x << 5;
+	shl		$tmp17 ___355_x $const8 	%line{22} %argrw{"wrr"}
+	xor		___355_x ___355_x $tmp17 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\random.h:23
+# 	return x;
+	assign		random_number ___355_x 	%line{23} %argrw{"wr"}
+# ../../osl_shaders/dlColorVariation.osl:67
+# 	int curveid = 0;
+	assign		curveid $const1 	%filename{"../../osl_shaders/dlColorVariation.osl"} %line{67} %argrw{"wr"}
+# ../../osl_shaders/dlColorVariation.osl:68
+# 	if( getattribute("id.curve", curveid) )
+	getattribute	$tmp18 $const9 curveid 	%line{68} %argrw{"wrw"}
+	if		$tmp18 71 71 	%argrw{"r"}
+# ../../osl_shaders/dlColorVariation.osl:70
+# 		curveid = xorshift32( curveid );
+	functioncall	$const4 50 	%line{70} %argrw{"r"}
+# W:/r2d2\src\osl_shaders\random.h:19
+# 	int x = state;
+	assign		___355_x curveid 	%filename{"W:/r2d2\src\osl_shaders\random.h"} %line{19} %argrw{"wr"}
+# W:/r2d2\src\osl_shaders\random.h:20
+# 	x ^= x << 13;
+	shl		$tmp19 ___355_x $const5 	%line{20} %argrw{"wrr"}
+	xor		___355_x ___355_x $tmp19 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\random.h:21
+# 	x ^= (x >> 17) & 0x7fff;
+	shr		$tmp20 ___355_x $const6 	%line{21} %argrw{"wrr"}
+	bitand		$tmp21 $tmp20 $const7 	%argrw{"wrr"}
+	xor		___355_x ___355_x $tmp21 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\random.h:22
+# 	x ^= x << 5;
+	shl		$tmp22 ___355_x $const8 	%line{22} %argrw{"wrr"}
+	xor		___355_x ___355_x $tmp22 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\random.h:23
+# 	return x;
+	assign		curveid ___355_x 	%line{23} %argrw{"wr"}
+# ../../osl_shaders/dlColorVariation.osl:71
+# 		curveid = xorshift32( curveid );
+	functioncall	$const4 60 	%filename{"../../osl_shaders/dlColorVariation.osl"} %line{71} %argrw{"r"}
+# W:/r2d2\src\osl_shaders\random.h:19
+# 	int x = state;
+	assign		___355_x curveid 	%filename{"W:/r2d2\src\osl_shaders\random.h"} %line{19} %argrw{"wr"}
+# W:/r2d2\src\osl_shaders\random.h:20
+# 	x ^= x << 13;
+	shl		$tmp23 ___355_x $const5 	%line{20} %argrw{"wrr"}
+	xor		___355_x ___355_x $tmp23 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\random.h:21
+# 	x ^= (x >> 17) & 0x7fff;
+	shr		$tmp24 ___355_x $const6 	%line{21} %argrw{"wrr"}
+	bitand		$tmp25 $tmp24 $const7 	%argrw{"wrr"}
+	xor		___355_x ___355_x $tmp25 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\random.h:22
+# 	x ^= x << 5;
+	shl		$tmp26 ___355_x $const8 	%line{22} %argrw{"wrr"}
+	xor		___355_x ___355_x $tmp26 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\random.h:23
+# 	return x;
+	assign		curveid ___355_x 	%line{23} %argrw{"wr"}
+# ../../osl_shaders/dlColorVariation.osl:73
+# 		random_number ^= xorshift32( curveid );
+	functioncall	$const4 70 	%filename{"../../osl_shaders/dlColorVariation.osl"} %line{73} %argrw{"r"}
+# W:/r2d2\src\osl_shaders\random.h:19
+# 	int x = state;
+	assign		___355_x curveid 	%filename{"W:/r2d2\src\osl_shaders\random.h"} %line{19} %argrw{"wr"}
+# W:/r2d2\src\osl_shaders\random.h:20
+# 	x ^= x << 13;
+	shl		$tmp28 ___355_x $const5 	%line{20} %argrw{"wrr"}
+	xor		___355_x ___355_x $tmp28 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\random.h:21
+# 	x ^= (x >> 17) & 0x7fff;
+	shr		$tmp29 ___355_x $const6 	%line{21} %argrw{"wrr"}
+	bitand		$tmp30 $tmp29 $const7 	%argrw{"wrr"}
+	xor		___355_x ___355_x $tmp30 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\random.h:22
+# 	x ^= x << 5;
+	shl		$tmp31 ___355_x $const8 	%line{22} %argrw{"wrr"}
+	xor		___355_x ___355_x $tmp31 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\random.h:23
+# 	return x;
+	assign		$tmp27 ___355_x 	%line{23} %argrw{"wr"}
+# ../../osl_shaders/dlColorVariation.osl:73
+# 		random_number ^= xorshift32( curveid );
+	xor		random_number random_number $tmp27 	%filename{"../../osl_shaders/dlColorVariation.osl"} %line{73} %argrw{"wrr"}
+# ../../osl_shaders/dlColorVariation.osl:81
+# 	random_number = xorshift32( random_number );
+	functioncall	$const4 81 	%line{81} %argrw{"r"}
+# W:/r2d2\src\osl_shaders\random.h:19
+# 	int x = state;
+	assign		___355_x random_number 	%filename{"W:/r2d2\src\osl_shaders\random.h"} %line{19} %argrw{"wr"}
+# W:/r2d2\src\osl_shaders\random.h:20
+# 	x ^= x << 13;
+	shl		$tmp32 ___355_x $const5 	%line{20} %argrw{"wrr"}
+	xor		___355_x ___355_x $tmp32 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\random.h:21
+# 	x ^= (x >> 17) & 0x7fff;
+	shr		$tmp33 ___355_x $const6 	%line{21} %argrw{"wrr"}
+	bitand		$tmp34 $tmp33 $const7 	%argrw{"wrr"}
+	xor		___355_x ___355_x $tmp34 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\random.h:22
+# 	x ^= x << 5;
+	shl		$tmp35 ___355_x $const8 	%line{22} %argrw{"wrr"}
+	xor		___355_x ___355_x $tmp35 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\random.h:23
+# 	return x;
+	assign		random_number ___355_x 	%line{23} %argrw{"wr"}
+# ../../osl_shaders/dlColorVariation.osl:83
+# 	color hsv = transformc( "rgb", "hsv", _color );
+	transformc	hsv $const10 $const11 _color 	%filename{"../../osl_shaders/dlColorVariation.osl"} %line{83} %argrw{"wrrr"}
+# ../../osl_shaders/dlColorVariation.osl:85
+# 	if( hueVariation != 0 )
+	neq		$tmp36 hueVariation $const1 	%line{85} %argrw{"wrr"}
+	if		$tmp36 188 188 	%argrw{"r"}
+# ../../osl_shaders/dlColorVariation.osl:86
+# 		hsv[0] += hueVariation * FloatRandom( random_number, randomness );
+	compref		$tmp37 hsv $const1 	%line{86} %argrw{"wrr"}
+	functioncall	$const12 185 	%argrw{"r"}
+# W:/r2d2\src\osl_shaders\random.h:97
+# 	float R = float(rand) / pow(2,31);
+	assign		$tmp40 random_number 	%filename{"W:/r2d2\src\osl_shaders\random.h"} %line{97} %argrw{"wr"}
+	assign		$tmp39 $tmp40 	%argrw{"wr"}
+	pow		$tmp41 $const14 $const16 	%argrw{"wrr"}
+	div		___363_R $tmp39 $tmp41 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\random.h:101
+# 	if( distribution == UNIFORM_DISTRIBUTION  )
+	eq		$tmp42 randomness $const1 	%line{101} %argrw{"wrr"}
+	if		$tmp42 94 94 	%argrw{"r"}
+# W:/r2d2\src\osl_shaders\random.h:103
+# 		return R*0.5;
+	mul		$tmp38 ___363_R $const17 	%line{103} %argrw{"wrr"}
+	return
+# W:/r2d2\src\osl_shaders\random.h:106
+# 	R = NormalRandom( (R+1) * 0.5 );
+	add		$tmp43 ___363_R $const19 	%line{106} %argrw{"wrr"}
+	mul		$tmp44 $tmp43 $const17 	%argrw{"wrr"}
+	functioncall	$const20 181 	%argrw{"r"}
+# W:/r2d2\src\osl_shaders\random.h:35
+# 		SPLIT1 = 0.425, SPLIT2 = 5.0,
+	assign		___356_SPLIT1 $const21 	%line{35} %argrw{"wr"}
+	assign		___356_SPLIT2 $const22 	%argrw{"wr"}
+# W:/r2d2\src\osl_shaders\random.h:36
+# 		CONST1 = 0.180625, CONST2 = 1.6,
+	assign		___356_CONST1 $const23 	%line{36} %argrw{"wr"}
+	assign		___356_CONST2 $const24 	%argrw{"wr"}
+# W:/r2d2\src\osl_shaders\random.h:37
+# 		A0 = 3.3871327179E+00, A1 = 5.0434271938E+01,
+	assign		___356_A0 $const25 	%line{37} %argrw{"wr"}
+	assign		___356_A1 $const26 	%argrw{"wr"}
+# W:/r2d2\src\osl_shaders\random.h:38
+# 		A2 = 1.5929113202E+02, A3 = 5.9109374720E+01,
+	assign		___356_A2 $const27 	%line{38} %argrw{"wr"}
+	assign		___356_A3 $const28 	%argrw{"wr"}
+# W:/r2d2\src\osl_shaders\random.h:39
+# 		B1 = 1.7895169469E+01, B2 = 7.8757757664E+01,
+	assign		___356_B1 $const29 	%line{39} %argrw{"wr"}
+	assign		___356_B2 $const30 	%argrw{"wr"}
+# W:/r2d2\src\osl_shaders\random.h:40
+# 		B3 = 6.7187563600E+01,
+	assign		___356_B3 $const31 	%line{40} %argrw{"wr"}
+# W:/r2d2\src\osl_shaders\random.h:41
+# 		C0 = 1.4234372777E+00, C1 = 2.7568153900E+00,
+	assign		___356_C0 $const32 	%line{41} %argrw{"wr"}
+	assign		___356_C1 $const33 	%argrw{"wr"}
+# W:/r2d2\src\osl_shaders\random.h:42
+# 		C2 = 1.3067284816E+00, C3 = 1.7023821103E-01,
+	assign		___356_C2 $const34 	%line{42} %argrw{"wr"}
+	assign		___356_C3 $const35 	%argrw{"wr"}
+# W:/r2d2\src\osl_shaders\random.h:43
+# 		D1 = 7.3700164250E-01, D2 = 1.2021132975E-01,
+	assign		___356_D1 $const36 	%line{43} %argrw{"wr"}
+	assign		___356_D2 $const37 	%argrw{"wr"}
+# W:/r2d2\src\osl_shaders\random.h:44
+# 		E0 = 6.6579051150E+00, E1 = 3.0812263860E+00,
+	assign		___356_E0 $const38 	%line{44} %argrw{"wr"}
+	assign		___356_E1 $const39 	%argrw{"wr"}
+# W:/r2d2\src\osl_shaders\random.h:45
+# 		E2 = 4.2868294337E-01, E3 = 1.7337203997E-02,
+	assign		___356_E2 $const40 	%line{45} %argrw{"wr"}
+	assign		___356_E3 $const41 	%argrw{"wr"}
+# W:/r2d2\src\osl_shaders\random.h:46
+# 		F1 = 2.4197894225E-01, F2 = 1.2258202635E-02;
+	assign		___356_F1 $const42 	%line{46} %argrw{"wr"}
+	assign		___356_F2 $const43 	%argrw{"wr"}
+# W:/r2d2\src\osl_shaders\random.h:49
+# 	float Q = P - 0.5;
+	sub		___356_Q $tmp44 $const17 	%line{49} %argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\random.h:50
+# 	if( fabs(Q) <= SPLIT1 )
+	fabs		$tmp45 ___356_Q 	%line{50} %argrw{"wr"}
+	le		$tmp46 $tmp45 ___356_SPLIT1 	%argrw{"wrr"}
+	if		$tmp46 140 179 	%argrw{"r"}
+# W:/r2d2\src\osl_shaders\random.h:52
+# 		float R = CONST1 - Q * Q;
+	mul		$tmp47 ___356_Q ___356_Q 	%line{52} %argrw{"wrr"}
+	sub		___357_R ___356_CONST1 $tmp47 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\random.h:53
+# 		PPND7 = Q * (((A3 * R + A2) * R + A1) * R + A0) /
+	mul		$tmp48 ___356_A3 ___357_R 	%line{53} %argrw{"wrr"}
+	add		$tmp49 $tmp48 ___356_A2 	%argrw{"wrr"}
+	mul		$tmp50 $tmp49 ___357_R 	%argrw{"wrr"}
+	add		$tmp51 $tmp50 ___356_A1 	%argrw{"wrr"}
+	mul		$tmp52 $tmp51 ___357_R 	%argrw{"wrr"}
+	add		$tmp53 $tmp52 ___356_A0 	%argrw{"wrr"}
+	mul		$tmp54 ___356_Q $tmp53 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\random.h:54
+# 		            (((B3 * R + B2) * R + B1) * R + 1.0);
+	mul		$tmp55 ___356_B3 ___357_R 	%line{54} %argrw{"wrr"}
+	add		$tmp56 $tmp55 ___356_B2 	%argrw{"wrr"}
+	mul		$tmp57 $tmp56 ___357_R 	%argrw{"wrr"}
+	add		$tmp58 $tmp57 ___356_B1 	%argrw{"wrr"}
+	mul		$tmp59 $tmp58 ___357_R 	%argrw{"wrr"}
+	add		$tmp60 $tmp59 $const19 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\random.h:53
+# 		PPND7 = Q * (((A3 * R + A2) * R + A1) * R + A0) /
+	div		___356_PPND7 $tmp54 $tmp60 	%line{53} %argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\random.h:58
+# 		float R = Q < 0.0 ? P : 1.0 - P;
+	lt		$tmp61 ___356_Q $const44 	%line{58} %argrw{"wrr"}
+	if		$tmp61 143 144 	%argrw{"r"}
+	assign		___358_R $tmp44 	%argrw{"wr"}
+	sub		___358_R $const19 $tmp44 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\random.h:59
+# 		if( R <= 0.0 )
+	le		$tmp62 ___358_R $const44 	%line{59} %argrw{"wrr"}
+	if		$tmp62 147 176 	%argrw{"r"}
+# W:/r2d2\src\osl_shaders\random.h:62
+# 			PPND7 = 5.4;
+	assign		___356_PPND7 $const45 	%line{62} %argrw{"wr"}
+# W:/r2d2\src\osl_shaders\random.h:66
+# 			R = sqrt( -log( R ) );
+	log		$tmp63 ___358_R 	%line{66} %argrw{"wr"}
+	neg		$tmp64 $tmp63 	%argrw{"wr"}
+	sqrt		___358_R $tmp64 	%argrw{"wr"}
+# W:/r2d2\src\osl_shaders\random.h:67
+# 			if( R <= SPLIT2 )
+	le		$tmp65 ___358_R ___356_SPLIT2 	%line{67} %argrw{"wrr"}
+	if		$tmp65 164 176 	%argrw{"r"}
+# W:/r2d2\src\osl_shaders\random.h:69
+# 				R -= CONST2;
+	sub		___358_R ___358_R ___356_CONST2 	%line{69} %argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\random.h:70
+# 				PPND7 = (((C3 * R + C2) * R + C1) * R + C0) /
+	mul		$tmp66 ___356_C3 ___358_R 	%line{70} %argrw{"wrr"}
+	add		$tmp67 $tmp66 ___356_C2 	%argrw{"wrr"}
+	mul		$tmp68 $tmp67 ___358_R 	%argrw{"wrr"}
+	add		$tmp69 $tmp68 ___356_C1 	%argrw{"wrr"}
+	mul		$tmp70 $tmp69 ___358_R 	%argrw{"wrr"}
+	add		$tmp71 $tmp70 ___356_C0 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\random.h:71
+# 					    ((D2 * R + D1) * R + 1.0);
+	mul		$tmp72 ___356_D2 ___358_R 	%line{71} %argrw{"wrr"}
+	add		$tmp73 $tmp72 ___356_D1 	%argrw{"wrr"}
+	mul		$tmp74 $tmp73 ___358_R 	%argrw{"wrr"}
+	add		$tmp75 $tmp74 $const19 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\random.h:70
+# 				PPND7 = (((C3 * R + C2) * R + C1) * R + C0) /
+	div		___356_PPND7 $tmp71 $tmp75 	%line{70} %argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\random.h:75
+# 				R -= SPLIT2;
+	sub		___358_R ___358_R ___356_SPLIT2 	%line{75} %argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\random.h:76
+# 				PPND7 = (((E3 * R + E2) * R + E1) * R + E0) /
+	mul		$tmp76 ___356_E3 ___358_R 	%line{76} %argrw{"wrr"}
+	add		$tmp77 $tmp76 ___356_E2 	%argrw{"wrr"}
+	mul		$tmp78 $tmp77 ___358_R 	%argrw{"wrr"}
+	add		$tmp79 $tmp78 ___356_E1 	%argrw{"wrr"}
+	mul		$tmp80 $tmp79 ___358_R 	%argrw{"wrr"}
+	add		$tmp81 $tmp80 ___356_E0 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\random.h:77
+# 					    ((F2 * R + F1) * R + 1.0);
+	mul		$tmp82 ___356_F2 ___358_R 	%line{77} %argrw{"wrr"}
+	add		$tmp83 $tmp82 ___356_F1 	%argrw{"wrr"}
+	mul		$tmp84 $tmp83 ___358_R 	%argrw{"wrr"}
+	add		$tmp85 $tmp84 $const19 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\random.h:76
+# 				PPND7 = (((E3 * R + E2) * R + E1) * R + E0) /
+	div		___356_PPND7 $tmp81 $tmp85 	%line{76} %argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\random.h:81
+# 		if( Q < 0.0 )
+	lt		$tmp86 ___356_Q $const44 	%line{81} %argrw{"wrr"}
+	if		$tmp86 179 179 	%argrw{"r"}
+# W:/r2d2\src\osl_shaders\random.h:82
+# 			PPND7 = -PPND7;
+	neg		___356_PPND7 ___356_PPND7 	%line{82} %argrw{"wr"}
+# W:/r2d2\src\osl_shaders\random.h:84
+# 	return PPND7;
+	assign		___363_R ___356_PPND7 	%line{84} %argrw{"wr"}
+	return
+# W:/r2d2\src\osl_shaders\random.h:113
+# 	return clamp(R, -3, 3) / 6;
+	functioncall	$const50 184 	%line{113} %argrw{"r"}
+# W:/r2d2\src\3delight\win64-x64-release-free\osl\stdosl.h:163
+# float  clamp (float x, float minval, float maxval) { return max(min(x,maxval),minval); }
+	min		$tmp88 ___363_R $const49 	%filename{"W:/r2d2\src\3delight\win64-x64-release-free\osl\stdosl.h"} %line{163} %argrw{"wrr"}
+	max		$tmp87 $tmp88 $const47 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\random.h:113
+# 	return clamp(R, -3, 3) / 6;
+	div		$tmp38 $tmp87 $const52 	%filename{"W:/r2d2\src\osl_shaders\random.h"} %line{113} %argrw{"wrr"}
+# ../../osl_shaders/dlColorVariation.osl:86
+# 		hsv[0] += hueVariation * FloatRandom( random_number, randomness );
+	mul		$tmp89 hueVariation $tmp38 	%filename{"../../osl_shaders/dlColorVariation.osl"} %line{86} %argrw{"wrr"}
+	add		$tmp90 $tmp37 $tmp89 	%argrw{"wrr"}
+	compassign	hsv $const1 $tmp90 	%argrw{"wrr"}
+# ../../osl_shaders/dlColorVariation.osl:89
+# 	random_number = xorshift32( random_number );
+	functioncall	$const4 198 	%line{89} %argrw{"r"}
+# W:/r2d2\src\osl_shaders\random.h:19
+# 	int x = state;
+	assign		___355_x random_number 	%filename{"W:/r2d2\src\osl_shaders\random.h"} %line{19} %argrw{"wr"}
+# W:/r2d2\src\osl_shaders\random.h:20
+# 	x ^= x << 13;
+	shl		$tmp91 ___355_x $const5 	%line{20} %argrw{"wrr"}
+	xor		___355_x ___355_x $tmp91 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\random.h:21
+# 	x ^= (x >> 17) & 0x7fff;
+	shr		$tmp92 ___355_x $const6 	%line{21} %argrw{"wrr"}
+	bitand		$tmp93 $tmp92 $const7 	%argrw{"wrr"}
+	xor		___355_x ___355_x $tmp93 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\random.h:22
+# 	x ^= x << 5;
+	shl		$tmp94 ___355_x $const8 	%line{22} %argrw{"wrr"}
+	xor		___355_x ___355_x $tmp94 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\random.h:23
+# 	return x;
+	assign		random_number ___355_x 	%line{23} %argrw{"wr"}
+# ../../osl_shaders/dlColorVariation.osl:91
+# 	if( saturationVariation != 0 )
+	neq		$tmp95 saturationVariation $const1 	%filename{"../../osl_shaders/dlColorVariation.osl"} %line{91} %argrw{"wrr"}
+	if		$tmp95 304 304 	%argrw{"r"}
+# ../../osl_shaders/dlColorVariation.osl:93
+# 		hsv[1] += saturationVariation *
+	compref		$tmp96 hsv $const18 	%line{93} %argrw{"wrr"}
+# ../../osl_shaders/dlColorVariation.osl:94
+# 			FloatRandom( random_number, randomness );
+	functioncall	$const12 301 	%line{94} %argrw{"r"}
+# W:/r2d2\src\osl_shaders\random.h:97
+# 	float R = float(rand) / pow(2,31);
+	assign		$tmp99 random_number 	%filename{"W:/r2d2\src\osl_shaders\random.h"} %line{97} %argrw{"wr"}
+	assign		$tmp98 $tmp99 	%argrw{"wr"}
+	pow		$tmp100 $const14 $const16 	%argrw{"wrr"}
+	div		___363_R $tmp98 $tmp100 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\random.h:101
+# 	if( distribution == UNIFORM_DISTRIBUTION  )
+	eq		$tmp101 randomness $const1 	%line{101} %argrw{"wrr"}
+	if		$tmp101 210 210 	%argrw{"r"}
+# W:/r2d2\src\osl_shaders\random.h:103
+# 		return R*0.5;
+	mul		$tmp97 ___363_R $const17 	%line{103} %argrw{"wrr"}
+	return
+# W:/r2d2\src\osl_shaders\random.h:106
+# 	R = NormalRandom( (R+1) * 0.5 );
+	add		$tmp102 ___363_R $const19 	%line{106} %argrw{"wrr"}
+	mul		$tmp103 $tmp102 $const17 	%argrw{"wrr"}
+	functioncall	$const20 297 	%argrw{"r"}
+# W:/r2d2\src\osl_shaders\random.h:35
+# 		SPLIT1 = 0.425, SPLIT2 = 5.0,
+	assign		___356_SPLIT1 $const21 	%line{35} %argrw{"wr"}
+	assign		___356_SPLIT2 $const22 	%argrw{"wr"}
+# W:/r2d2\src\osl_shaders\random.h:36
+# 		CONST1 = 0.180625, CONST2 = 1.6,
+	assign		___356_CONST1 $const23 	%line{36} %argrw{"wr"}
+	assign		___356_CONST2 $const24 	%argrw{"wr"}
+# W:/r2d2\src\osl_shaders\random.h:37
+# 		A0 = 3.3871327179E+00, A1 = 5.0434271938E+01,
+	assign		___356_A0 $const25 	%line{37} %argrw{"wr"}
+	assign		___356_A1 $const26 	%argrw{"wr"}
+# W:/r2d2\src\osl_shaders\random.h:38
+# 		A2 = 1.5929113202E+02, A3 = 5.9109374720E+01,
+	assign		___356_A2 $const27 	%line{38} %argrw{"wr"}
+	assign		___356_A3 $const28 	%argrw{"wr"}
+# W:/r2d2\src\osl_shaders\random.h:39
+# 		B1 = 1.7895169469E+01, B2 = 7.8757757664E+01,
+	assign		___356_B1 $const29 	%line{39} %argrw{"wr"}
+	assign		___356_B2 $const30 	%argrw{"wr"}
+# W:/r2d2\src\osl_shaders\random.h:40
+# 		B3 = 6.7187563600E+01,
+	assign		___356_B3 $const31 	%line{40} %argrw{"wr"}
+# W:/r2d2\src\osl_shaders\random.h:41
+# 		C0 = 1.4234372777E+00, C1 = 2.7568153900E+00,
+	assign		___356_C0 $const32 	%line{41} %argrw{"wr"}
+	assign		___356_C1 $const33 	%argrw{"wr"}
+# W:/r2d2\src\osl_shaders\random.h:42
+# 		C2 = 1.3067284816E+00, C3 = 1.7023821103E-01,
+	assign		___356_C2 $const34 	%line{42} %argrw{"wr"}
+	assign		___356_C3 $const35 	%argrw{"wr"}
+# W:/r2d2\src\osl_shaders\random.h:43
+# 		D1 = 7.3700164250E-01, D2 = 1.2021132975E-01,
+	assign		___356_D1 $const36 	%line{43} %argrw{"wr"}
+	assign		___356_D2 $const37 	%argrw{"wr"}
+# W:/r2d2\src\osl_shaders\random.h:44
+# 		E0 = 6.6579051150E+00, E1 = 3.0812263860E+00,
+	assign		___356_E0 $const38 	%line{44} %argrw{"wr"}
+	assign		___356_E1 $const39 	%argrw{"wr"}
+# W:/r2d2\src\osl_shaders\random.h:45
+# 		E2 = 4.2868294337E-01, E3 = 1.7337203997E-02,
+	assign		___356_E2 $const40 	%line{45} %argrw{"wr"}
+	assign		___356_E3 $const41 	%argrw{"wr"}
+# W:/r2d2\src\osl_shaders\random.h:46
+# 		F1 = 2.4197894225E-01, F2 = 1.2258202635E-02;
+	assign		___356_F1 $const42 	%line{46} %argrw{"wr"}
+	assign		___356_F2 $const43 	%argrw{"wr"}
+# W:/r2d2\src\osl_shaders\random.h:49
+# 	float Q = P - 0.5;
+	sub		___356_Q $tmp103 $const17 	%line{49} %argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\random.h:50
+# 	if( fabs(Q) <= SPLIT1 )
+	fabs		$tmp104 ___356_Q 	%line{50} %argrw{"wr"}
+	le		$tmp105 $tmp104 ___356_SPLIT1 	%argrw{"wrr"}
+	if		$tmp105 256 295 	%argrw{"r"}
+# W:/r2d2\src\osl_shaders\random.h:52
+# 		float R = CONST1 - Q * Q;
+	mul		$tmp106 ___356_Q ___356_Q 	%line{52} %argrw{"wrr"}
+	sub		___357_R ___356_CONST1 $tmp106 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\random.h:53
+# 		PPND7 = Q * (((A3 * R + A2) * R + A1) * R + A0) /
+	mul		$tmp107 ___356_A3 ___357_R 	%line{53} %argrw{"wrr"}
+	add		$tmp108 $tmp107 ___356_A2 	%argrw{"wrr"}
+	mul		$tmp109 $tmp108 ___357_R 	%argrw{"wrr"}
+	add		$tmp110 $tmp109 ___356_A1 	%argrw{"wrr"}
+	mul		$tmp111 $tmp110 ___357_R 	%argrw{"wrr"}
+	add		$tmp112 $tmp111 ___356_A0 	%argrw{"wrr"}
+	mul		$tmp113 ___356_Q $tmp112 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\random.h:54
+# 		            (((B3 * R + B2) * R + B1) * R + 1.0);
+	mul		$tmp114 ___356_B3 ___357_R 	%line{54} %argrw{"wrr"}
+	add		$tmp115 $tmp114 ___356_B2 	%argrw{"wrr"}
+	mul		$tmp116 $tmp115 ___357_R 	%argrw{"wrr"}
+	add		$tmp117 $tmp116 ___356_B1 	%argrw{"wrr"}
+	mul		$tmp118 $tmp117 ___357_R 	%argrw{"wrr"}
+	add		$tmp119 $tmp118 $const19 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\random.h:53
+# 		PPND7 = Q * (((A3 * R + A2) * R + A1) * R + A0) /
+	div		___356_PPND7 $tmp113 $tmp119 	%line{53} %argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\random.h:58
+# 		float R = Q < 0.0 ? P : 1.0 - P;
+	lt		$tmp120 ___356_Q $const44 	%line{58} %argrw{"wrr"}
+	if		$tmp120 259 260 	%argrw{"r"}
+	assign		___358_R $tmp103 	%argrw{"wr"}
+	sub		___358_R $const19 $tmp103 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\random.h:59
+# 		if( R <= 0.0 )
+	le		$tmp121 ___358_R $const44 	%line{59} %argrw{"wrr"}
+	if		$tmp121 263 292 	%argrw{"r"}
+# W:/r2d2\src\osl_shaders\random.h:62
+# 			PPND7 = 5.4;
+	assign		___356_PPND7 $const45 	%line{62} %argrw{"wr"}
+# W:/r2d2\src\osl_shaders\random.h:66
+# 			R = sqrt( -log( R ) );
+	log		$tmp122 ___358_R 	%line{66} %argrw{"wr"}
+	neg		$tmp123 $tmp122 	%argrw{"wr"}
+	sqrt		___358_R $tmp123 	%argrw{"wr"}
+# W:/r2d2\src\osl_shaders\random.h:67
+# 			if( R <= SPLIT2 )
+	le		$tmp124 ___358_R ___356_SPLIT2 	%line{67} %argrw{"wrr"}
+	if		$tmp124 280 292 	%argrw{"r"}
+# W:/r2d2\src\osl_shaders\random.h:69
+# 				R -= CONST2;
+	sub		___358_R ___358_R ___356_CONST2 	%line{69} %argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\random.h:70
+# 				PPND7 = (((C3 * R + C2) * R + C1) * R + C0) /
+	mul		$tmp125 ___356_C3 ___358_R 	%line{70} %argrw{"wrr"}
+	add		$tmp126 $tmp125 ___356_C2 	%argrw{"wrr"}
+	mul		$tmp127 $tmp126 ___358_R 	%argrw{"wrr"}
+	add		$tmp128 $tmp127 ___356_C1 	%argrw{"wrr"}
+	mul		$tmp129 $tmp128 ___358_R 	%argrw{"wrr"}
+	add		$tmp130 $tmp129 ___356_C0 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\random.h:71
+# 					    ((D2 * R + D1) * R + 1.0);
+	mul		$tmp131 ___356_D2 ___358_R 	%line{71} %argrw{"wrr"}
+	add		$tmp132 $tmp131 ___356_D1 	%argrw{"wrr"}
+	mul		$tmp133 $tmp132 ___358_R 	%argrw{"wrr"}
+	add		$tmp134 $tmp133 $const19 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\random.h:70
+# 				PPND7 = (((C3 * R + C2) * R + C1) * R + C0) /
+	div		___356_PPND7 $tmp130 $tmp134 	%line{70} %argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\random.h:75
+# 				R -= SPLIT2;
+	sub		___358_R ___358_R ___356_SPLIT2 	%line{75} %argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\random.h:76
+# 				PPND7 = (((E3 * R + E2) * R + E1) * R + E0) /
+	mul		$tmp135 ___356_E3 ___358_R 	%line{76} %argrw{"wrr"}
+	add		$tmp136 $tmp135 ___356_E2 	%argrw{"wrr"}
+	mul		$tmp137 $tmp136 ___358_R 	%argrw{"wrr"}
+	add		$tmp138 $tmp137 ___356_E1 	%argrw{"wrr"}
+	mul		$tmp139 $tmp138 ___358_R 	%argrw{"wrr"}
+	add		$tmp140 $tmp139 ___356_E0 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\random.h:77
+# 					    ((F2 * R + F1) * R + 1.0);
+	mul		$tmp141 ___356_F2 ___358_R 	%line{77} %argrw{"wrr"}
+	add		$tmp142 $tmp141 ___356_F1 	%argrw{"wrr"}
+	mul		$tmp143 $tmp142 ___358_R 	%argrw{"wrr"}
+	add		$tmp144 $tmp143 $const19 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\random.h:76
+# 				PPND7 = (((E3 * R + E2) * R + E1) * R + E0) /
+	div		___356_PPND7 $tmp140 $tmp144 	%line{76} %argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\random.h:81
+# 		if( Q < 0.0 )
+	lt		$tmp145 ___356_Q $const44 	%line{81} %argrw{"wrr"}
+	if		$tmp145 295 295 	%argrw{"r"}
+# W:/r2d2\src\osl_shaders\random.h:82
+# 			PPND7 = -PPND7;
+	neg		___356_PPND7 ___356_PPND7 	%line{82} %argrw{"wr"}
+# W:/r2d2\src\osl_shaders\random.h:84
+# 	return PPND7;
+	assign		___363_R ___356_PPND7 	%line{84} %argrw{"wr"}
+	return
+# W:/r2d2\src\osl_shaders\random.h:113
+# 	return clamp(R, -3, 3) / 6;
+	functioncall	$const50 300 	%line{113} %argrw{"r"}
+# W:/r2d2\src\3delight\win64-x64-release-free\osl\stdosl.h:163
+# float  clamp (float x, float minval, float maxval) { return max(min(x,maxval),minval); }
+	min		$tmp147 ___363_R $const49 	%filename{"W:/r2d2\src\3delight\win64-x64-release-free\osl\stdosl.h"} %line{163} %argrw{"wrr"}
+	max		$tmp146 $tmp147 $const47 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\random.h:113
+# 	return clamp(R, -3, 3) / 6;
+	div		$tmp97 $tmp146 $const52 	%filename{"W:/r2d2\src\osl_shaders\random.h"} %line{113} %argrw{"wrr"}
+# ../../osl_shaders/dlColorVariation.osl:93
+# 		hsv[1] += saturationVariation *
+	mul		$tmp148 saturationVariation $tmp97 	%filename{"../../osl_shaders/dlColorVariation.osl"} %line{93} %argrw{"wrr"}
+# ../../osl_shaders/dlColorVariation.osl:94
+# 			FloatRandom( random_number, randomness );
+	add		$tmp149 $tmp96 $tmp148 	%line{94} %argrw{"wrr"}
+# ../../osl_shaders/dlColorVariation.osl:93
+# 		hsv[1] += saturationVariation *
+	compassign	hsv $const18 $tmp149 	%line{93} %argrw{"wrr"}
+# ../../osl_shaders/dlColorVariation.osl:98
+# 	random_number = xorshift32( random_number );
+	functioncall	$const4 314 	%line{98} %argrw{"r"}
+# W:/r2d2\src\osl_shaders\random.h:19
+# 	int x = state;
+	assign		___355_x random_number 	%filename{"W:/r2d2\src\osl_shaders\random.h"} %line{19} %argrw{"wr"}
+# W:/r2d2\src\osl_shaders\random.h:20
+# 	x ^= x << 13;
+	shl		$tmp150 ___355_x $const5 	%line{20} %argrw{"wrr"}
+	xor		___355_x ___355_x $tmp150 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\random.h:21
+# 	x ^= (x >> 17) & 0x7fff;
+	shr		$tmp151 ___355_x $const6 	%line{21} %argrw{"wrr"}
+	bitand		$tmp152 $tmp151 $const7 	%argrw{"wrr"}
+	xor		___355_x ___355_x $tmp152 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\random.h:22
+# 	x ^= x << 5;
+	shl		$tmp153 ___355_x $const8 	%line{22} %argrw{"wrr"}
+	xor		___355_x ___355_x $tmp153 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\random.h:23
+# 	return x;
+	assign		random_number ___355_x 	%line{23} %argrw{"wr"}
+# ../../osl_shaders/dlColorVariation.osl:100
+# 	if( brightnessVariation != 0 )
+	neq		$tmp154 brightnessVariation $const1 	%filename{"../../osl_shaders/dlColorVariation.osl"} %line{100} %argrw{"wrr"}
+	if		$tmp154 420 420 	%argrw{"r"}
+# ../../osl_shaders/dlColorVariation.osl:101
+# 		hsv[2] += brightnessVariation * FloatRandom( random_number, randomness);
+	compref		$tmp155 hsv $const13 	%line{101} %argrw{"wrr"}
+	functioncall	$const12 417 	%argrw{"r"}
+# W:/r2d2\src\osl_shaders\random.h:97
+# 	float R = float(rand) / pow(2,31);
+	assign		$tmp158 random_number 	%filename{"W:/r2d2\src\osl_shaders\random.h"} %line{97} %argrw{"wr"}
+	assign		$tmp157 $tmp158 	%argrw{"wr"}
+	pow		$tmp159 $const14 $const16 	%argrw{"wrr"}
+	div		___363_R $tmp157 $tmp159 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\random.h:101
+# 	if( distribution == UNIFORM_DISTRIBUTION  )
+	eq		$tmp160 randomness $const1 	%line{101} %argrw{"wrr"}
+	if		$tmp160 326 326 	%argrw{"r"}
+# W:/r2d2\src\osl_shaders\random.h:103
+# 		return R*0.5;
+	mul		$tmp156 ___363_R $const17 	%line{103} %argrw{"wrr"}
+	return
+# W:/r2d2\src\osl_shaders\random.h:106
+# 	R = NormalRandom( (R+1) * 0.5 );
+	add		$tmp161 ___363_R $const19 	%line{106} %argrw{"wrr"}
+	mul		$tmp162 $tmp161 $const17 	%argrw{"wrr"}
+	functioncall	$const20 413 	%argrw{"r"}
+# W:/r2d2\src\osl_shaders\random.h:35
+# 		SPLIT1 = 0.425, SPLIT2 = 5.0,
+	assign		___356_SPLIT1 $const21 	%line{35} %argrw{"wr"}
+	assign		___356_SPLIT2 $const22 	%argrw{"wr"}
+# W:/r2d2\src\osl_shaders\random.h:36
+# 		CONST1 = 0.180625, CONST2 = 1.6,
+	assign		___356_CONST1 $const23 	%line{36} %argrw{"wr"}
+	assign		___356_CONST2 $const24 	%argrw{"wr"}
+# W:/r2d2\src\osl_shaders\random.h:37
+# 		A0 = 3.3871327179E+00, A1 = 5.0434271938E+01,
+	assign		___356_A0 $const25 	%line{37} %argrw{"wr"}
+	assign		___356_A1 $const26 	%argrw{"wr"}
+# W:/r2d2\src\osl_shaders\random.h:38
+# 		A2 = 1.5929113202E+02, A3 = 5.9109374720E+01,
+	assign		___356_A2 $const27 	%line{38} %argrw{"wr"}
+	assign		___356_A3 $const28 	%argrw{"wr"}
+# W:/r2d2\src\osl_shaders\random.h:39
+# 		B1 = 1.7895169469E+01, B2 = 7.8757757664E+01,
+	assign		___356_B1 $const29 	%line{39} %argrw{"wr"}
+	assign		___356_B2 $const30 	%argrw{"wr"}
+# W:/r2d2\src\osl_shaders\random.h:40
+# 		B3 = 6.7187563600E+01,
+	assign		___356_B3 $const31 	%line{40} %argrw{"wr"}
+# W:/r2d2\src\osl_shaders\random.h:41
+# 		C0 = 1.4234372777E+00, C1 = 2.7568153900E+00,
+	assign		___356_C0 $const32 	%line{41} %argrw{"wr"}
+	assign		___356_C1 $const33 	%argrw{"wr"}
+# W:/r2d2\src\osl_shaders\random.h:42
+# 		C2 = 1.3067284816E+00, C3 = 1.7023821103E-01,
+	assign		___356_C2 $const34 	%line{42} %argrw{"wr"}
+	assign		___356_C3 $const35 	%argrw{"wr"}
+# W:/r2d2\src\osl_shaders\random.h:43
+# 		D1 = 7.3700164250E-01, D2 = 1.2021132975E-01,
+	assign		___356_D1 $const36 	%line{43} %argrw{"wr"}
+	assign		___356_D2 $const37 	%argrw{"wr"}
+# W:/r2d2\src\osl_shaders\random.h:44
+# 		E0 = 6.6579051150E+00, E1 = 3.0812263860E+00,
+	assign		___356_E0 $const38 	%line{44} %argrw{"wr"}
+	assign		___356_E1 $const39 	%argrw{"wr"}
+# W:/r2d2\src\osl_shaders\random.h:45
+# 		E2 = 4.2868294337E-01, E3 = 1.7337203997E-02,
+	assign		___356_E2 $const40 	%line{45} %argrw{"wr"}
+	assign		___356_E3 $const41 	%argrw{"wr"}
+# W:/r2d2\src\osl_shaders\random.h:46
+# 		F1 = 2.4197894225E-01, F2 = 1.2258202635E-02;
+	assign		___356_F1 $const42 	%line{46} %argrw{"wr"}
+	assign		___356_F2 $const43 	%argrw{"wr"}
+# W:/r2d2\src\osl_shaders\random.h:49
+# 	float Q = P - 0.5;
+	sub		___356_Q $tmp162 $const17 	%line{49} %argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\random.h:50
+# 	if( fabs(Q) <= SPLIT1 )
+	fabs		$tmp163 ___356_Q 	%line{50} %argrw{"wr"}
+	le		$tmp164 $tmp163 ___356_SPLIT1 	%argrw{"wrr"}
+	if		$tmp164 372 411 	%argrw{"r"}
+# W:/r2d2\src\osl_shaders\random.h:52
+# 		float R = CONST1 - Q * Q;
+	mul		$tmp165 ___356_Q ___356_Q 	%line{52} %argrw{"wrr"}
+	sub		___357_R ___356_CONST1 $tmp165 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\random.h:53
+# 		PPND7 = Q * (((A3 * R + A2) * R + A1) * R + A0) /
+	mul		$tmp166 ___356_A3 ___357_R 	%line{53} %argrw{"wrr"}
+	add		$tmp167 $tmp166 ___356_A2 	%argrw{"wrr"}
+	mul		$tmp168 $tmp167 ___357_R 	%argrw{"wrr"}
+	add		$tmp169 $tmp168 ___356_A1 	%argrw{"wrr"}
+	mul		$tmp170 $tmp169 ___357_R 	%argrw{"wrr"}
+	add		$tmp171 $tmp170 ___356_A0 	%argrw{"wrr"}
+	mul		$tmp172 ___356_Q $tmp171 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\random.h:54
+# 		            (((B3 * R + B2) * R + B1) * R + 1.0);
+	mul		$tmp173 ___356_B3 ___357_R 	%line{54} %argrw{"wrr"}
+	add		$tmp174 $tmp173 ___356_B2 	%argrw{"wrr"}
+	mul		$tmp175 $tmp174 ___357_R 	%argrw{"wrr"}
+	add		$tmp176 $tmp175 ___356_B1 	%argrw{"wrr"}
+	mul		$tmp177 $tmp176 ___357_R 	%argrw{"wrr"}
+	add		$tmp178 $tmp177 $const19 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\random.h:53
+# 		PPND7 = Q * (((A3 * R + A2) * R + A1) * R + A0) /
+	div		___356_PPND7 $tmp172 $tmp178 	%line{53} %argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\random.h:58
+# 		float R = Q < 0.0 ? P : 1.0 - P;
+	lt		$tmp179 ___356_Q $const44 	%line{58} %argrw{"wrr"}
+	if		$tmp179 375 376 	%argrw{"r"}
+	assign		___358_R $tmp162 	%argrw{"wr"}
+	sub		___358_R $const19 $tmp162 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\random.h:59
+# 		if( R <= 0.0 )
+	le		$tmp180 ___358_R $const44 	%line{59} %argrw{"wrr"}
+	if		$tmp180 379 408 	%argrw{"r"}
+# W:/r2d2\src\osl_shaders\random.h:62
+# 			PPND7 = 5.4;
+	assign		___356_PPND7 $const45 	%line{62} %argrw{"wr"}
+# W:/r2d2\src\osl_shaders\random.h:66
+# 			R = sqrt( -log( R ) );
+	log		$tmp181 ___358_R 	%line{66} %argrw{"wr"}
+	neg		$tmp182 $tmp181 	%argrw{"wr"}
+	sqrt		___358_R $tmp182 	%argrw{"wr"}
+# W:/r2d2\src\osl_shaders\random.h:67
+# 			if( R <= SPLIT2 )
+	le		$tmp183 ___358_R ___356_SPLIT2 	%line{67} %argrw{"wrr"}
+	if		$tmp183 396 408 	%argrw{"r"}
+# W:/r2d2\src\osl_shaders\random.h:69
+# 				R -= CONST2;
+	sub		___358_R ___358_R ___356_CONST2 	%line{69} %argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\random.h:70
+# 				PPND7 = (((C3 * R + C2) * R + C1) * R + C0) /
+	mul		$tmp184 ___356_C3 ___358_R 	%line{70} %argrw{"wrr"}
+	add		$tmp185 $tmp184 ___356_C2 	%argrw{"wrr"}
+	mul		$tmp186 $tmp185 ___358_R 	%argrw{"wrr"}
+	add		$tmp187 $tmp186 ___356_C1 	%argrw{"wrr"}
+	mul		$tmp188 $tmp187 ___358_R 	%argrw{"wrr"}
+	add		$tmp189 $tmp188 ___356_C0 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\random.h:71
+# 					    ((D2 * R + D1) * R + 1.0);
+	mul		$tmp190 ___356_D2 ___358_R 	%line{71} %argrw{"wrr"}
+	add		$tmp191 $tmp190 ___356_D1 	%argrw{"wrr"}
+	mul		$tmp192 $tmp191 ___358_R 	%argrw{"wrr"}
+	add		$tmp193 $tmp192 $const19 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\random.h:70
+# 				PPND7 = (((C3 * R + C2) * R + C1) * R + C0) /
+	div		___356_PPND7 $tmp189 $tmp193 	%line{70} %argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\random.h:75
+# 				R -= SPLIT2;
+	sub		___358_R ___358_R ___356_SPLIT2 	%line{75} %argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\random.h:76
+# 				PPND7 = (((E3 * R + E2) * R + E1) * R + E0) /
+	mul		$tmp194 ___356_E3 ___358_R 	%line{76} %argrw{"wrr"}
+	add		$tmp195 $tmp194 ___356_E2 	%argrw{"wrr"}
+	mul		$tmp196 $tmp195 ___358_R 	%argrw{"wrr"}
+	add		$tmp197 $tmp196 ___356_E1 	%argrw{"wrr"}
+	mul		$tmp198 $tmp197 ___358_R 	%argrw{"wrr"}
+	add		$tmp199 $tmp198 ___356_E0 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\random.h:77
+# 					    ((F2 * R + F1) * R + 1.0);
+	mul		$tmp200 ___356_F2 ___358_R 	%line{77} %argrw{"wrr"}
+	add		$tmp201 $tmp200 ___356_F1 	%argrw{"wrr"}
+	mul		$tmp202 $tmp201 ___358_R 	%argrw{"wrr"}
+	add		$tmp203 $tmp202 $const19 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\random.h:76
+# 				PPND7 = (((E3 * R + E2) * R + E1) * R + E0) /
+	div		___356_PPND7 $tmp199 $tmp203 	%line{76} %argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\random.h:81
+# 		if( Q < 0.0 )
+	lt		$tmp204 ___356_Q $const44 	%line{81} %argrw{"wrr"}
+	if		$tmp204 411 411 	%argrw{"r"}
+# W:/r2d2\src\osl_shaders\random.h:82
+# 			PPND7 = -PPND7;
+	neg		___356_PPND7 ___356_PPND7 	%line{82} %argrw{"wr"}
+# W:/r2d2\src\osl_shaders\random.h:84
+# 	return PPND7;
+	assign		___363_R ___356_PPND7 	%line{84} %argrw{"wr"}
+	return
+# W:/r2d2\src\osl_shaders\random.h:113
+# 	return clamp(R, -3, 3) / 6;
+	functioncall	$const50 416 	%line{113} %argrw{"r"}
+# W:/r2d2\src\3delight\win64-x64-release-free\osl\stdosl.h:163
+# float  clamp (float x, float minval, float maxval) { return max(min(x,maxval),minval); }
+	min		$tmp206 ___363_R $const49 	%filename{"W:/r2d2\src\3delight\win64-x64-release-free\osl\stdosl.h"} %line{163} %argrw{"wrr"}
+	max		$tmp205 $tmp206 $const47 	%argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\random.h:113
+# 	return clamp(R, -3, 3) / 6;
+	div		$tmp156 $tmp205 $const52 	%filename{"W:/r2d2\src\osl_shaders\random.h"} %line{113} %argrw{"wrr"}
+# ../../osl_shaders/dlColorVariation.osl:101
+# 		hsv[2] += brightnessVariation * FloatRandom( random_number, randomness);
+	mul		$tmp207 brightnessVariation $tmp156 	%filename{"../../osl_shaders/dlColorVariation.osl"} %line{101} %argrw{"wrr"}
+	add		$tmp208 $tmp155 $tmp207 	%argrw{"wrr"}
+	compassign	hsv $const13 $tmp208 	%argrw{"wrr"}
+# ../../osl_shaders/dlColorVariation.osl:104
+# 	hsv[1] = clamp( hsv[1], 0, 1 );
+	compref		$tmp210 hsv $const18 	%line{104} %argrw{"wrr"}
+	functioncall	$const50 424 	%argrw{"r"}
+# W:/r2d2\src\3delight\win64-x64-release-free\osl\stdosl.h:163
+# float  clamp (float x, float minval, float maxval) { return max(min(x,maxval),minval); }
+	min		$tmp211 $tmp210 $const19 	%filename{"W:/r2d2\src\3delight\win64-x64-release-free\osl\stdosl.h"} %line{163} %argrw{"wrr"}
+	max		$tmp209 $tmp211 $const44 	%argrw{"wrr"}
+# ../../osl_shaders/dlColorVariation.osl:104
+# 	hsv[1] = clamp( hsv[1], 0, 1 );
+	compassign	hsv $const18 $tmp209 	%filename{"../../osl_shaders/dlColorVariation.osl"} %line{104} %argrw{"wrr"}
+# ../../osl_shaders/dlColorVariation.osl:105
+# 	if( hsv[2] < 0 )
+	compref		$tmp212 hsv $const13 	%line{105} %argrw{"wrr"}
+	lt		$tmp213 $tmp212 $const1 	%argrw{"wrr"}
+	if		$tmp213 429 429 	%argrw{"r"}
+# ../../osl_shaders/dlColorVariation.osl:106
+# 		hsv[2] = 0;
+	compassign	hsv $const13 $const1 	%line{106} %argrw{"wrr"}
+# ../../osl_shaders/dlColorVariation.osl:108
+# 	outColor = transformc( "hsv", "rgb", hsv );
+	transformc	outColor $const11 $const10 hsv 	%line{108} %argrw{"wrrr"}
+# ../../osl_shaders/dlColorVariation.osl:109
+# 	ASSIGN_COMPONENTS( outColor );
+	compref		outColorR outColor $const1 	%line{109} %argrw{"wrr"}
+	compref		outColorG outColor $const18 	%argrw{"wrr"}
+	compref		outColorB outColor $const13 	%argrw{"wrr"}
+	end
