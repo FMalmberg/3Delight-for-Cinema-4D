@@ -70,7 +70,7 @@ void NSI_Export_Material::CreateNSINodes(const char* ParentTransformHandle, GeLi
 
 		case DA_VECTOR: //Vector data type
 		{
-			Vector c4d_vector_value = data->GetVector();
+			Vector c4d_vector_value = toLinear(data->GetVector(),doc);
 			const float vector_val[3] = { c4d_vector_value.x,c4d_vector_value.y, c4d_vector_value.z };
 			args.Add(new NSI::ColorArg(osl_parameter_name, &vector_val[0]));
 			break;
