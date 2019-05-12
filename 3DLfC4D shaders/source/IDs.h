@@ -31,6 +31,7 @@
 #define DL_Flakes 1052797
 
 #define DL_COLORBLEND 1052822
+#define DL_COLORCORRECTION	1052823
 
 
 #endif

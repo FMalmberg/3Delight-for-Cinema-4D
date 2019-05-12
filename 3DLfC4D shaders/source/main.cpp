@@ -30,6 +30,7 @@
 #include "EnvironmentLightTranslator.h";
 #include "oenvironment.h";
 #include "DLColorBlend_Translator.h"
+#include "DLColorCorrection_Translator.h"
 
 
 
@@ -95,7 +96,7 @@ Bool RegisterWorleyNoiseTexture(void);
 Bool RegisterFlakesTexture(void);
 Bool RegisterEnvironmentLight(void);
 Bool RegisterColorBlendTexture(void);
-
+Bool RegisterColorCorrectionTexture(void);
 
 Bool PluginStart(void)
 {
@@ -124,10 +125,6 @@ Bool PluginStart(void)
 	if (!RegisterWorleyNoiseTexture()) return FALSE;
 	if (!RegisterColorBlendTexture()) return FALSE;
 	if (!RegisterColorCorrectionTexture()) return FALSE;
-	if (!RegisterColorVariationTexture()) return FALSE;
-	if (!RegisterFacingRatioTexture()) return FALSE;
-	if (!RegisterOpenVDB()) return FALSE;
-	if (!RegisterRandomColorTexture()) return FALSE;
 
 	return true;
 }
@@ -181,6 +178,7 @@ Bool PluginMessage(Int32 id, void *data)
 			pm->RegisterTranslator(ID_TEXTURESHADER, AllocateTranslator<TextureShaderTranslator>);
 			
 			pm->RegisterTranslator(DL_COLORBLEND, AllocateTranslator<Delight_ColorBlend>);
+			pm->RegisterTranslator(DL_COLORCORRECTION, AllocateTranslator<Delight_ColorCorrection>);
 			break;
 
 		}
