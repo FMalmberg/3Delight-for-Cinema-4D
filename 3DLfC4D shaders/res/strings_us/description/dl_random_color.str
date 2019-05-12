@@ -1,0 +1,31 @@
+STRINGTABLE dl_random_color
+{
+	dl_random_color "Random Input Color";
+	SHADER_GROUP "Random Color";
+	INPUT_COLOR1 "Color 1";
+	INPUT_COLOR1_SHADER "Texture";
+	INPUT_IMPORTANCE1 "Importance 1";
+	INPUT_IMPORTANCE1_SHADER "Texture";
+	EMPTY1 " ";
+	INPUT_COLOR2 "Color 2";
+	INPUT_COLOR2_SHADER "Texture";
+	INPUT_IMPORTANCE2 "Importance 2";
+	INPUT_IMPORTANCE2_SHADER "Texture";
+	EMPTY2 " ";
+	INPUT_COLOR3 "Color 3";
+	INPUT_COLOR3_SHADER "Texture";
+	INPUT_IMPORTANCE3 "Importance 3";
+	INPUT_IMPORTANCE3_SHADER "Texture";
+	EMPTY3 " ";
+	INPUT_COLOR4 "Color 4";
+	INPUT_COLOR4_SHADER "Texture";
+	INPUT_IMPORTANCE4 "Importance 4";
+	INPUT_IMPORTANCE4_SHADER "Texture";
+	EMPTY4 " ";
+	INPUT_COLOR5 "Color 5";
+	INPUT_COLOR5_SHADER "Texture";
+	INPUT_IMPORTANCE5 "Importance 5";
+	INPUT_IMPORTANCE5_SHADER "Texture";
+	INPUT "Input";
+	SEED "Seed";
+}

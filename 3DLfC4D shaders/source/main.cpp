@@ -31,7 +31,9 @@
 #include "oenvironment.h";
 #include "DLColorBlend_Translator.h"
 #include "DLColorCorrection_Translator.h"
-
+#include "DLColorVariation_Translator.h"
+#include "DLRandomColorTranslator.h"
+#include "DLFacingRatio_Translator.h"
 
 
 #include "IDs.h"
@@ -99,6 +101,7 @@ Bool RegisterColorBlendTexture(void);
 Bool RegisterColorCorrectionTexture(void);
 Bool RegisterColorVariationTexture(void);
 Bool RegisterFacingRatioTexture(void);
+Bool RegisterRandomColorTexture(void);
 
 Bool PluginStart(void)
 {
@@ -129,6 +132,7 @@ Bool PluginStart(void)
 	if (!RegisterColorCorrectionTexture()) return FALSE;
 	if (!RegisterColorVariationTexture()) return FALSE;
 	if (!RegisterFacingRatioTexture()) return FALSE;
+	if (!RegisterRandomColorTexture()) return FALSE;
 
 	return true;
 }
@@ -185,6 +189,7 @@ Bool PluginMessage(Int32 id, void *data)
 			pm->RegisterTranslator(DL_COLORCORRECTION, AllocateTranslator<Delight_ColorCorrection>);
 			pm->RegisterTranslator(DL_COLORVARIATION, AllocateTranslator<Delight_ColorVariation>);
 			pm->RegisterTranslator(DL_FACINGRATIO, AllocateTranslator<Delight_FacingRatio>);
+			pm->RegisterTranslator(DL_RANDOMCOLOR, AllocateTranslator<Delight_RandomColor>);
 			break;
 
 		}
