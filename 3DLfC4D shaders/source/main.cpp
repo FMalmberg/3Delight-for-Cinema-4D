@@ -33,9 +33,9 @@
 #include "DLColorCorrection_Translator.h"
 #include "DLColorVariation_Translator.h"
 #include "DLRandomColorTranslator.h"
+#include "DLOpenVDBNode_Translator.h"
 #include "DLFacingRatio_Translator.h"
-
-
+#include "DLOpenVDBNode_Translator.h"
 #include "IDs.h"
 /*
 	This function is used to dynamically change the structure of Create Material UI.
@@ -101,6 +101,7 @@ Bool RegisterColorBlendTexture(void);
 Bool RegisterColorCorrectionTexture(void);
 Bool RegisterColorVariationTexture(void);
 Bool RegisterFacingRatioTexture(void);
+Bool RegisterOpenVDB(void);
 Bool RegisterRandomColorTexture(void);
 
 Bool PluginStart(void)
@@ -132,6 +133,7 @@ Bool PluginStart(void)
 	if (!RegisterColorCorrectionTexture()) return FALSE;
 	if (!RegisterColorVariationTexture()) return FALSE;
 	if (!RegisterFacingRatioTexture()) return FALSE;
+	if (!RegisterOpenVDB()) return FALSE;
 	if (!RegisterRandomColorTexture()) return FALSE;
 
 	return true;
@@ -190,12 +192,13 @@ Bool PluginMessage(Int32 id, void *data)
 			pm->RegisterTranslator(DL_COLORVARIATION, AllocateTranslator<Delight_ColorVariation>);
 			pm->RegisterTranslator(DL_FACINGRATIO, AllocateTranslator<Delight_FacingRatio>);
 			pm->RegisterTranslator(DL_RANDOMCOLOR, AllocateTranslator<Delight_RandomColor>);
+			pm->RegisterTranslator(DL_OPENVDB, AllocateTranslator<Delight_OpenVDBTranslator>);
 			break;
-
 		}
 
 		case C4DPL_BUILDMENU:
 		{
+			
 			BaseContainer* bc = GetMenuResource("M_MATERIAL_MANAGER"_s);
 			if (!bc) return FALSE;
 			CreateMaterialUI(bc);
