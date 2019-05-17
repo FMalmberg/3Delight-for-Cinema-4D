@@ -9,6 +9,89 @@
 #include "IDs.h"
 #include <assert.h> 
 #include <algorithm>
+#include "SceneParser.h"
+
+void NSIErrorHandlerC4D(void *userdata, int level, int code, const char *message)
+{
+	const char *pre = (const char *)userdata;
+	std::string buffer("3Delight");
+
+	if (pre)
+	{
+		buffer += " (" + std::string(pre) + "): ";
+	}
+	else
+		buffer += ": ";
+
+	buffer += message;
+
+	switch (level)
+	{
+	case NSIErrMessage:
+		ApplicationOutput(buffer.c_str());
+		break;
+	case NSIErrInfo:
+		ApplicationOutput(buffer.c_str());
+		break;
+	case NSIErrWarning:
+		ApplicationOutput(buffer.c_str());
+		break;
+	default:
+	case NSIErrError:
+		ApplicationOutput(buffer.c_str());
+		break;
+	}
+}
+
+
+bool Render(BaseDocument* doc, long frame, RENDER_MODE mode, bool progressive, BaseContainer* settings) {
+	BaseDocument* renderdoc = (BaseDocument*)doc->GetClone(COPYFLAGS::DOCUMENT, nullptr);
+
+	NSIContext_t context_handle = NSIBegin(0, 0);
+	String action = settings->GetString(DL_ISCLICKED);
+	if (action == "Render")
+	{
+		NSIErrorHandler_t eh = NSIErrorHandlerC4D;
+		NSIParam_t streamParam;
+		streamParam.name = "errorhandler";
+		streamParam.data = &eh;
+		streamParam.type = NSITypePointer;
+		context_handle = NSIBegin(1, &streamParam);
+	}
+	else if (action == "Export")
+	{
+		String file = settings->GetFilename(DL_FOLDER_OUTPUT).GetString();
+		std::string exported = file.GetCStringCopy();
+		NSIParam_t streamParam;
+		const char *output = exported.c_str();
+		streamParam.name = "streamfilename";
+		streamParam.data = &output;
+		streamParam.type = NSITypeString;
+
+		context_handle = NSIBegin(1, &streamParam);
+	}
+
+	NSI::Context context(context_handle);
+
+	SceneParser sp(renderdoc, context_handle);
+
+	sp.SetRenderMode(mode);
+
+	//Render scene
+	bool RenderOK = sp.InitScene(true, frame);
+	sp.SampleFrameMotion();
+
+	BaseDocument::Free(renderdoc);
+
+	context.SetAttribute(NSI_SCENE_GLOBAL, (
+		NSI::IntegerArg("renderatlowpriority", 1)
+		));
+
+	context.RenderControl((
+		NSI::StringArg("action", "start")
+		));
+	return RenderOK;
+}
 
 /**
 	Function to hide a specific element from the RenderSettings GUI
@@ -124,11 +207,12 @@ Bool RenderSettings::Message(GeListNode* i_node, Int32 i_type, void* i_data)
 		{
 			DescriptionCommand* dc = (DescriptionCommand*)i_data;
 			BaseContainer* dldata = ((BaseVideoPost*)i_node)->GetDataInstance();
+			BaseDocument* doc = GetActiveDocument();
+			BaseTime t = doc->GetTime();
+			long frame = t.GetFrame(doc->GetFps());
 			if (dc->_descId[0].id == DL_CREATE_RENDER_SETTINGS) //If render button is clicked
 			{
 				dldata->SetString(DL_ISCLICKED, "Render"_s);
-				//Executes this command which will run the plugin with the ID_RENDERFRAME ID.
-				CallCommand(ID_RENDERFRAME);
 			}
 			//If Export to NSI File button is clicked
 			if (dc->_descId[0].id == DL_EXPORT_RENDER_SETTINGS) 
@@ -143,8 +227,8 @@ Bool RenderSettings::Message(GeListNode* i_node, Int32 i_type, void* i_data)
 					folder.FileSelect(FILESELECTTYPE::ANYTHING, FILESELECT::SAVE, "Select Folder"_s);
 					dldata->SetFilename(DL_FOLDER_OUTPUT, folder);
 				}
-				CallCommand(ID_RENDERFRAME);
 			}
+			Render(doc, frame, PREVIEW_RENDER, true,dldata);
 			break;
 		}
 	}
@@ -218,7 +302,7 @@ Bool Register3DelightPlugin(void)
 	RegisterIcon(DL_JPG_ON, GeGetPluginResourcePath() + "jpg-on.png");
 	RegisterIcon(DL_JPG_OFF, GeGetPluginResourcePath() + "jpg.png");
 
-	return RegisterVideoPostPlugin(ID_RENDERSETTINGS, "3Delight"_s, 0, RenderSettings::Alloc, "myres"_s, 0, 0); 
+	return RegisterVideoPostPlugin(ID_RENDERSETTINGS, "3Delight"_s, PLUGINFLAG_VIDEOPOST_ISRENDERER, RenderSettings::Alloc, "myres"_s, 0, 0); 
 	//PLUGINFLAG_VIDEOPOST_ISRENDERER
 }
 

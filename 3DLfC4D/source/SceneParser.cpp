@@ -16,38 +16,6 @@
 // std::stringstream, std::stringbuf
 using namespace std;
 
-void NSIErrorHandlerC4D(void *userdata, int level, int code, const char *message)
-{
-	const char *pre = (const char *)userdata;
-	std::string buffer("3Delight");
-
-	if (pre)
-	{
-		buffer += " (" + std::string(pre) + "): ";
-	}
-	else
-		buffer += ": ";
-
-	buffer += message;
-
-	switch (level)
-	{
-	case NSIErrMessage:
-		ApplicationOutput(buffer.c_str());
-		break;
-	case NSIErrInfo:
-		ApplicationOutput(buffer.c_str());
-		break;
-	case NSIErrWarning:
-		ApplicationOutput(buffer.c_str());
-		break;
-	default:
-	case NSIErrError:
-		ApplicationOutput(buffer.c_str());
-		break;
-	}
-}
-
 
 void StoppedCallback(
 	void* stoppedcallbackdata,
@@ -334,18 +302,8 @@ bool SceneParser::Parse(BaseDocument* document, long frame){
 
 	NSI::Context context;
 
-	NSIErrorHandler_t eh = NSIErrorHandlerC4D;
 
-	NSIParam_t param[1];
-	param[0].name = "errorhandler";
-	param[0].data = &eh;
-	param[0].type = NSITypePointer; param[0].count = 1;
-	param[0].flags = 0; param[0].arraylength = 0;
-	
-	if(settings.GetString(DL_ISCLICKED) == "Render")
-	context.Begin(NSI::PointerArg("errorhandler", NSIErrorHandlerC4D));
-
-	else if (settings.GetString(DL_ISCLICKED) == "Export") {
+	if (settings.GetString(DL_ISCLICKED) == "Export") {
 		String flnm = settings.GetFilename(DL_FOLDER_OUTPUT).GetString();
 		std::string exported = flnm.GetCStringCopy();
 		context.Begin(NSI::StringArg("streamfilename", exported.c_str()));
