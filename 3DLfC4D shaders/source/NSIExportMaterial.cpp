@@ -38,51 +38,9 @@ void NSI_Export_Material::CreateNSINodes(const char* ParentTransformHandle, GeLi
 	else
 		c_shaderpath = StringToChars(shaderpath.GetString());
 
-	Int32   id;
-	GeData* data = nullptr;
-	BrowseContainer browse(material_container);
 
-	NSI::ArgumentList args;
 	ctx.SetAttribute(m_material_handle, NSI::StringArg("shaderfilename", std::string(&c_shaderpath[0])));
-
-	std::string osl_parameter_name;
-	while (browse.GetNext(&id, &data))		// loop through the values
-	{
-		if (m_ids_to_names.count(id) == 1)
-			osl_parameter_name = m_ids_to_names[id].second;
-		else
-			osl_parameter_name = "_" + std::to_string(id);
-		switch (data->GetType())
-		{
-		case DA_LONG: //Integer data type
-		{
-			Int32 value = data->GetInt32();
-			args.Add(new NSI::IntegerArg(osl_parameter_name, value));
-			break;
-		}
-
-		case DA_REAL: //Float data type
-		{
-			Float float_value = data->GetFloat();
-			args.Add(new NSI::FloatArg(osl_parameter_name, float_value));
-			break;
-		}
-
-		case DA_VECTOR: //Vector data type
-		{
-			Vector c4d_vector_value = toLinear(data->GetVector(),doc);
-			const float vector_val[3] = { c4d_vector_value.x,c4d_vector_value.y, c4d_vector_value.z };
-			args.Add(new NSI::ColorArg(osl_parameter_name, &vector_val[0]));
-			break;
-		}
-
-		default:
-			break;
-		}
-
-	}
-	if(args.size()>0)
-	ctx.SetAttribute(m_material_handle, args);
+	
 	parser->SetAssociatedHandle((BaseList2D*)C4DNode, m_material_attributes.c_str());
 }
 
@@ -131,3 +89,60 @@ void NSI_Export_Material::ConnectNSINodes(GeListNode* C4DNode, BaseDocument* doc
 #endif // VERBOSE
 	}
 }
+
+void NSI_Export_Material::SampleMotion(DL_SampleInfo* info, GeListNode* C4DNode, BaseDocument* doc, DL_SceneParser* parser) {
+	if (info->sample > 0) {
+		return; //Don't do motion blur sampling of shader parameters, only first sample is exported
+	}
+
+	NSI::Context ctx(parser->GetContext());
+
+	BaseMaterial* material = (BaseMaterial*)C4DNode;
+	BaseContainer* material_container = material->GetDataInstance();
+
+	Int32   id;
+	GeData* data = nullptr;
+	BrowseContainer browse(material_container);
+
+	NSI::ArgumentList args;
+
+	std::string osl_parameter_name;
+	while (browse.GetNext(&id, &data))		// loop through the values
+	{
+		if (m_ids_to_names.count(id) == 1)
+			osl_parameter_name = m_ids_to_names[id].second;
+		else
+			osl_parameter_name = "_" + std::to_string(id);
+		switch (data->GetType())
+		{
+		case DA_LONG: //Integer data type
+		{
+			Int32 value = data->GetInt32();
+			args.Add(new NSI::IntegerArg(osl_parameter_name, value));
+			break;
+		}
+
+		case DA_REAL: //Float data type
+		{
+			Float float_value = data->GetFloat();
+			args.Add(new NSI::FloatArg(osl_parameter_name, float_value));
+			break;
+		}
+
+		case DA_VECTOR: //Vector data type
+		{
+			Vector c4d_vector_value = toLinear(data->GetVector(), doc);
+			const float vector_val[3] = { c4d_vector_value.x,c4d_vector_value.y, c4d_vector_value.z };
+			args.Add(new NSI::ColorArg(osl_parameter_name, &vector_val[0]));
+			break;
+		}
+
+		default:
+			break;
+		}
+
+	}
+	if (args.size() > 0)
+		ctx.SetAttribute(m_material_handle, args);
+}
+
