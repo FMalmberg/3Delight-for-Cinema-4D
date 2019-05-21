@@ -11,11 +11,9 @@
 	NSI_Export_Material Translater class is the class for exporting C4D standard materials
 	to NSI materials. This class with it's functions will only be executed as many times
 	as the number of materials created. So one time for each material.
-
 	CreateNSINodes() function will create the NSI shader for the current material
 	with a unique name each time there is a new material and connect it with the
 	OSL shader containing all the materials attributes
-
 	ConnectNSINodes() will check for the materials' textures if there is used any
 	shader on that specific material or not. if there is we find which of the
 	materials' parameter has used that shader and then use nsiConnect to connect
@@ -40,7 +38,7 @@ void NSI_Export_Material::CreateNSINodes(const char* ParentTransformHandle, GeLi
 
 
 	ctx.SetAttribute(m_material_handle, NSI::StringArg("shaderfilename", std::string(&c_shaderpath[0])));
-	
+
 	parser->SetAssociatedHandle((BaseList2D*)C4DNode, m_material_attributes.c_str());
 }
 
@@ -145,4 +143,3 @@ void NSI_Export_Material::SampleMotion(DL_SampleInfo* info, GeListNode* C4DNode,
 	if (args.size() > 0)
 		ctx.SetAttribute(m_material_handle, args);
 }
-
