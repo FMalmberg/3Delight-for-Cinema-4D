@@ -11,6 +11,7 @@ class DL_Hook{
 public:
 	virtual void Free() = 0;
 
+	virtual void Init(BaseDocument* doc, DL_SceneParser* parser) = 0;
 	virtual void CreateNSINodes(BaseDocument* doc, DL_SceneParser* parser) = 0;
 	virtual void ConnectNSINodes(BaseDocument* doc, DL_SceneParser* parser) = 0;
 	virtual void SampleMotion(DL_SampleInfo* info, BaseDocument* doc, DL_SceneParser* parser) = 0;

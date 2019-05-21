@@ -56,6 +56,12 @@ public:
 
 	BaseContainer* GetSettings();
 
+	//Return the base handle name of any c4d item. 
+	//Primarily intended to be used for building connections in the NSI scene, e.g. in ConnectNSINodes()
+	//Exception: Not guaranteed to return the correct name for virtual objects
+	virtual const char* GetHandleName(BaseList2D* node);
+
+	//The three functions below are scheduled for deprecation
 	virtual const char* GetUniqueName(char* basename);
 	virtual void SetAssociatedHandle(BaseList2D* node, const char* handle);
 	virtual const char* GetAssociatedHandle(BaseList2D* node);
@@ -73,6 +79,7 @@ private:
 
 private:
 	NSIContext_t context_handle;
+	std::string handle;
 	//ParserStage stage;
 	BaseContainer settings;
 	BaseDocument* doc;

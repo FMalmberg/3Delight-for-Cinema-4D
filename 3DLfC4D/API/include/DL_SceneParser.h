@@ -15,6 +15,7 @@ class DL_SceneParser{
 public:
 	virtual NSIContext_t GetContext()=0;
 	
+	virtual const char* GetHandleName(BaseList2D* node) = 0;
 
 	virtual void RequestMinimumShutterTime(float t)=0;
 	virtual float GetShutterOpen()=0;

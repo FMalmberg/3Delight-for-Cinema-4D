@@ -64,7 +64,7 @@ PolygonObject* GetMeshFromNode(GeListNode* C4DNode){
 	return mesh;
 }
 
-void PolygonObjectTranslator::CreateNSINodes(const char* ParentTransformHandle, GeListNode* C4DNode, BaseDocument* doc, DL_SceneParser* parser){
+void PolygonObjectTranslator::CreateNSINodes(const char* Handle, const char* ParentTransformHandle, GeListNode* C4DNode, BaseDocument* doc, DL_SceneParser* parser){
 	NSI::Context ctx(parser->GetContext());
 
 	skip = false;
@@ -258,7 +258,7 @@ void PolygonObjectTranslator::CreateNSINodes(const char* ParentTransformHandle, 
 
 }
 
-void PolygonObjectTranslator::SampleMotion(DL_SampleInfo* info, GeListNode* C4DNode, BaseDocument* doc, DL_SceneParser* parser){
+void PolygonObjectTranslator::SampleMotion(DL_SampleInfo* info, const char* Handle, GeListNode* C4DNode, BaseDocument* doc, DL_SceneParser* parser){
 	if (skip){ return; }
 
 	NSI::Context ctx(parser->GetContext());

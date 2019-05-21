@@ -9,10 +9,10 @@
 	NSI_Export_Bitmap Translater class is used only to utput the colorspace
 	used by the Bitmap Shader. Everything else is done in Shader_Translator.
 */
-void NSI_Export_Bitmap::CreateNSINodes(const char* ParentTransformHandle, GeListNode* C4DNode, BaseDocument* doc, DL_SceneParser* parser)
+void NSI_Export_Bitmap::CreateNSINodes(const char* Handle, const char* ParentTransformHandle, GeListNode* C4DNode, BaseDocument* doc, DL_SceneParser* parser)
 {
 
-	NSI_Export_Shader::CreateNSINodes(ParentTransformHandle, C4DNode, doc, parser);
+	NSI_Export_Shader::CreateNSINodes(Handle ,ParentTransformHandle, C4DNode, doc, parser);
 
 	NSI::Context ctx(parser->GetContext());
 	BaseShader* shader = (BaseShader*)C4DNode;

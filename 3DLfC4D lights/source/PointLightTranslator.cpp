@@ -6,7 +6,7 @@
 #include "nsi.hpp"
 
 
-void PointLightTranslator::CreateNSINodes(const char* ParentTransformHandle, GeListNode* C4DNode, BaseDocument* doc, DL_SceneParser* parser){
+void PointLightTranslator::CreateNSINodes(const char* Handle, const char* ParentTransformHandle, GeListNode* C4DNode, BaseDocument* doc, DL_SceneParser* parser){
 	NSI::Context ctx(parser->GetContext());
 
 	//Create a mesh and connect it to the parent transform
@@ -63,7 +63,7 @@ void PointLightTranslator::CreateNSINodes(const char* ParentTransformHandle, GeL
 
 }
 
-void PointLightTranslator::SampleMotion(DL_SampleInfo* info, GeListNode* C4DNode, BaseDocument* doc, DL_SceneParser* parser){
+void PointLightTranslator::SampleMotion(DL_SampleInfo* info, const char* Handle, GeListNode* C4DNode, BaseDocument* doc, DL_SceneParser* parser){
 
 	NSI::Context ctx(parser->GetContext());
 

@@ -5,7 +5,7 @@
 #include "DL_Utilities.h"
 #include "nsi.hpp"
 
-void NormalDisplacementTranslator::CreateNSINodes(const char* ParentTransformHandle, GeListNode* C4DNode, BaseDocument* doc, DL_SceneParser* parser){
+void NormalDisplacementTranslator::CreateNSINodes(const char* Handle, const char* ParentTransformHandle, GeListNode* C4DNode, BaseDocument* doc, DL_SceneParser* parser){
 	GePrint("Displacement"_s);
 	
 	NSI::Context ctx(parser->GetContext());
@@ -36,7 +36,7 @@ void NormalDisplacementTranslator::CreateNSINodes(const char* ParentTransformHan
 	parser->SetAssociatedHandle((BaseList2D*)C4DNode, shader_handle.c_str());
 }
 
-void NormalDisplacementTranslator::ConnectNSINodes(GeListNode* C4DNode, BaseDocument* doc,DL_SceneParser* parser){
+void NormalDisplacementTranslator::ConnectNSINodes(const char* Handle, GeListNode* C4DNode, BaseDocument* doc,DL_SceneParser* parser){
 	NSI::Context ctx(parser->GetContext());
 	BaseObject* obj=(BaseObject*)C4DNode;
 	BaseContainer* data=obj->GetDataInstance();

@@ -4,7 +4,7 @@
 #include "DL_TypeConversions.h"
 #include "DL_Utilities.h"
 #include "nsi.hpp"
-void StandardShaderTranslator::CreateNSINodes(const char* ParentTransformHandle, GeListNode* C4DNode, BaseDocument* doc, DL_SceneParser* parser) {
+void StandardShaderTranslator::CreateNSINodes(const char* Handle, const char* ParentTransformHandle, GeListNode* C4DNode, BaseDocument* doc, DL_SceneParser* parser) {
 	NSI::Context ctx(parser->GetContext());
 
 	//Create the shader node
@@ -110,7 +110,7 @@ void StandardShaderTranslator::CreateNSINodes(const char* ParentTransformHandle,
 	parser->SetAssociatedHandle((BaseList2D*)C4DNode, shader_handle.c_str());
 }
 
-void StandardShaderTranslator::ConnectNSINodes(GeListNode* C4DNode, BaseDocument* doc, DL_SceneParser* parser) {
+void StandardShaderTranslator::ConnectNSINodes(const char* Handle, GeListNode* C4DNode, BaseDocument* doc, DL_SceneParser* parser) {
 
 	NSI::Context ctx(parser->GetContext());
 

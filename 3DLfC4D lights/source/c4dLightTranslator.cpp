@@ -101,6 +101,7 @@ std::tuple<vector<float>, vector<int>, vector<int>> createHemisphere()
 
 
 void c4dLightTranslator::CreateNSINodes(
+	const char* Handle,
 	const char* ParentTransformHandle,
 	GeListNode* C4DNode, BaseDocument* doc, DL_SceneParser* parser)
 {
@@ -499,7 +500,7 @@ void c4dLightTranslator::CreateNSINodes(
 	}
 }
 
-void c4dLightTranslator::SampleMotion(DL_SampleInfo* info, GeListNode* C4DNode, BaseDocument* doc, DL_SceneParser* parser)
+void c4dLightTranslator::SampleMotion(DL_SampleInfo* info, const char* Handle, GeListNode* C4DNode, BaseDocument* doc, DL_SceneParser* parser)
 {
 	NSI::Context ctx(parser->GetContext());
 

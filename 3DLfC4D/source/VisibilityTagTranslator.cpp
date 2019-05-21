@@ -3,7 +3,7 @@
 #include "nsi.hpp"
 using namespace std;
 
-void VisibilityTagTranslator::CreateNSINodes(const char* ParentTransformHandle, GeListNode* C4DNode, BaseDocument* doc, DL_SceneParser* parser){
+void VisibilityTagTranslator::CreateNSINodes(const char* Handle, const char* ParentTransformHandle, GeListNode* C4DNode, BaseDocument* doc, DL_SceneParser* parser){
 	NSI::Context ctx(parser->GetContext());
 
 	BaseList2D *obj = (BaseList2D*)C4DNode;

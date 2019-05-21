@@ -11,7 +11,7 @@
 //#include "Util.h"
 
 
-void LightCardTranslator::CreateNSINodes(const char* ParentTransformHandle, GeListNode* C4DNode, BaseDocument* doc, DL_SceneParser* parser) {
+void LightCardTranslator::CreateNSINodes(const char* Handle, const char* ParentTransformHandle, GeListNode* C4DNode, BaseDocument* doc, DL_SceneParser* parser) {
 	NSI::Context ctx(parser->GetContext());
 
 	//Create a mesh and connect it to the parent transform
@@ -83,7 +83,7 @@ void LightCardTranslator::CreateNSINodes(const char* ParentTransformHandle, GeLi
 
 }
 
-void LightCardTranslator::SampleMotion(DL_SampleInfo* info, GeListNode* C4DNode, BaseDocument* doc, DL_SceneParser* parser) {
+void LightCardTranslator::SampleMotion(DL_SampleInfo* info, const char* Handle,  GeListNode* C4DNode, BaseDocument* doc, DL_SceneParser* parser) {
 
 	NSI::Context ctx(parser->GetContext());
 

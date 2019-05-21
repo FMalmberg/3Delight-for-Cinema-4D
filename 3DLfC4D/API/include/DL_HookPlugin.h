@@ -7,6 +7,8 @@ class DL_HookPlugin:public DL_Hook{
 public:
 	virtual ~DL_HookPlugin(){}
 	virtual void Free(){ delete this; };
+
+	virtual void Init(BaseDocument* doc, DL_SceneParser* parser){}
 	virtual void CreateNSINodes(BaseDocument* doc, DL_SceneParser* parser){}
 	virtual void ConnectNSINodes(BaseDocument* doc, DL_SceneParser* parser){}
 	virtual void SampleMotion(DL_SampleInfo* info, BaseDocument* doc, DL_SceneParser* parser){}

@@ -6,7 +6,7 @@
 
 using namespace std;
 
-void RangeTranslator::CreateNSINodes(const char* ParentTransformHandle, GeListNode* C4DNode, BaseDocument* doc, DL_SceneParser* parser){
+void RangeTranslator::CreateNSINodes(const char* Handle, const char* ParentTransformHandle, GeListNode* C4DNode, BaseDocument* doc, DL_SceneParser* parser){
 	NSI::Context ctx(parser->GetContext());
 
 	//Create the shader node
@@ -36,7 +36,7 @@ void RangeTranslator::CreateNSINodes(const char* ParentTransformHandle, GeListNo
 	parser->SetAssociatedHandle((BaseList2D*)C4DNode, shader_handle.c_str());
 }
 
-void RangeTranslator::ConnectNSINodes(GeListNode* C4DNode, BaseDocument* doc,DL_SceneParser* parser){
+void RangeTranslator::ConnectNSINodes(const char* Handle, GeListNode* C4DNode, BaseDocument* doc,DL_SceneParser* parser){
 		
 	NSI::Context ctx(parser->GetContext());
 
