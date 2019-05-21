@@ -10,11 +10,11 @@
 #include "VDBQuery.h"
 
 //Use this function to get the Text value from the Dropdown (CYCLE)
-String getDropDownNames(Description* const description, Int32 group_id, Int32 SelectedItem)
+string getDropDownNames(Description* const description, Int32 group_id, Int32 SelectedItem)
 {
 	const DescID* singleid = description->GetSingleDescID();
 	const DescID cid = DescLevel(group_id, DTYPE_LONG, 0);
-	String selected_name = "";
+	string selected_name = "";
 	if (!singleid || cid.IsPartOf(*singleid, nullptr))
 	{
 		AutoAlloc<AtomArray> arr;
@@ -25,10 +25,12 @@ String getDropDownNames(Description* const description, Int32 group_id, Int32 Se
 			BaseContainer* items = selectionParameter->GetContainerInstance(DESC_CYCLE);
 			if (items != nullptr)
 			{
-				selected_name = items->GetData(SelectedItem).GetString();
+				selected_name = items->GetData(SelectedItem).GetString().GetCStringCopy();
 			}
 		}
 	}
+	if (selected_name == "None")
+		selected_name = "";
 	return selected_name;
 }
 
@@ -39,7 +41,28 @@ void Delight_OpenVDBTranslator::CreateNSINodes(const char* ParentTransformHandle
 	m_handle = string(parser->GetUniqueName("OpenVDBObject"));
 	m_transform_handle = string(ParentTransformHandle);
 	ctx.Create(m_handle, "volume");
-	ctx.Connect(m_handle, "", m_transform_handle, "objects");
+
+	std::string transform_handle2 = string(parser->GetUniqueName("transform"));
+	ctx.Create(transform_handle2, "transform");
+
+	vector<double> change_direction
+	{
+		1,0,0,0,
+		0, 1,0,0,
+		0,0,-1,0,
+		0,0,0,1
+	};
+
+	NSI::Argument xform("transformationmatrix");
+	xform.SetType(NSITypeDoubleMatrix);
+	xform.SetValuePointer((void*)&change_direction[0]);
+	ctx.SetAttribute(transform_handle2, xform);
+
+	ctx.Connect(transform_handle2, "", m_transform_handle, "objects");
+
+
+	ctx.Connect(m_handle, "", transform_handle2, "objects");
+
 
 	m_attributes_handle = string(parser->GetUniqueName("OpenVDBAttributes"));
 	ctx.Create(m_attributes_handle, "attributes");
@@ -57,18 +80,8 @@ void Delight_OpenVDBTranslator::CreateNSINodes(const char* ParentTransformHandle
 	string texturename = "";
 	Filename texturefile = data->GetFilename(FILE_FILENAME);
 	if (texturefile.IsPopulated())
-	{
 		texturename = StringToStdString(texturefile.GetString());
-		int num_grids = 0;
-		const char *const *grid_names;
-		DlVDBGetGridNames(texturename.c_str(), &num_grids, &grid_names);
-
-		ApplicationOutput("NumGrids @", num_grids);
-		for (int i = 0; i < num_grids; i++)
-		{
-			ApplicationOutput("Grid @", grid_names[i]);
-		}
-	}
+	
 	double velocity_scale = data->GetFloat(GRIDS_GROUP_VELOCITY_SCALE);
 	/*
 		Here we get the selected ID for the grids but we need the text
@@ -81,16 +94,16 @@ void Delight_OpenVDBTranslator::CreateNSINodes(const char* ParentTransformHandle
 	int velocity = data->GetInt32(GRIDS_GROUP_VELOCITY);
 
 	std::string smoke_text= 
-		getDropDownNames(description, GRIDS_GROUP_SMOKE,smoke).GetCStringCopy();
+		getDropDownNames(description, GRIDS_GROUP_SMOKE,smoke);
 
 	std::string temperature_text= 
-		getDropDownNames(description, GRIDS_GROUP_TEMPERATURE,temperature).GetCStringCopy();
+		getDropDownNames(description, GRIDS_GROUP_TEMPERATURE,temperature);
 
 	std::string emission_text= 
-		getDropDownNames(description, GRIDS_GROUP_EMISSION_INTENSITY,emission).GetCStringCopy();
+		getDropDownNames(description, GRIDS_GROUP_EMISSION_INTENSITY,emission);
 
 	std::string velocity_text= 
-		getDropDownNames(description, GRIDS_GROUP_VELOCITY,velocity).GetCStringCopy();
+		getDropDownNames(description, GRIDS_GROUP_VELOCITY,velocity);
 	
 	
 	NSI::ArgumentList args;
@@ -146,27 +159,25 @@ void Delight_OpenVDBTranslator::CreateNSINodes(const char* ParentTransformHandle
 	args.Add(new NSI::FloatArg("density_remap_range_end", density_range_end));
 
 	args.Add(NSI::Argument::New("density_remap_curve_Knots")
-			->SetType(NSITypeFloat)
-			->SetCount(density_knot_count)
+			->SetArrayType(NSITypeFloat, density_knot_count)
 			->SetValuePointer(&density_curve_knots[0]));
 
 	args.Add(NSI::Argument::New("density_remap_curve_Floats")
-			->SetType(NSITypeFloat)
-			->SetCount(density_knot_count)
+			->SetArrayType(NSITypeFloat, density_knot_count)
 			->SetValuePointer(&density_curve_floats[0]));
     
 	args.Add(NSI::Argument::New("density_remap_curve_interpolations")
-			->SetType(NSITypeInteger)
-			->SetCount(density_knot_count)
-			->SetValuePointer(&density_curve_interpolations[0]));
+		->SetArrayType(NSITypeInteger, density_knot_count)
+		->SetValuePointer(&density_curve_interpolations[0]));
 
 	//Transparency Group
 	Vector c4dTransparencyColor = toLinear(data->GetVector(TRANSPARENCY_COLOR), doc);
 	float transparency_color[3]{ c4dTransparencyColor.x,c4dTransparencyColor.y,c4dTransparencyColor.z };
 	float transparency_scale = data->GetFloat(TRANSPARENCY_SCALE);
-
+	float incadescence[3]{ 1,1,1 };
 	args.Add(new NSI::ColorArg("transparency_color", &transparency_color[0]));
 	args.Add(new NSI::FloatArg("transparency_scale", transparency_scale));
+	args.Add(new NSI::ColorArg("incandescence", &incadescence[0]));
 
 	//Emission Group
 	float emmission_scale = data->GetFloat(EMMISSION_SCALE);
@@ -195,25 +206,22 @@ void Delight_OpenVDBTranslator::CreateNSINodes(const char* ParentTransformHandle
 	args.Add(new NSI::FloatArg("emission_intensity_range_end", intensity_range_end));
 
 	args.Add(NSI::Argument::New("emission_intensity_curve_Knots")
-		->SetType(NSITypeFloat)
-		->SetCount(intensity_knot_count)
+		->SetArrayType(NSITypeFloat, intensity_knot_count)
 		->SetValuePointer(&intensity_curve_knots[0]));
 
 	args.Add(NSI::Argument::New("emission_intensity_curve_Floats")
-		->SetType(NSITypeFloat)
-		->SetCount(intensity_knot_count)
+		->SetArrayType(NSITypeFloat, intensity_knot_count)
 		->SetValuePointer(&intensity_curve_floats[0]));
 
 	args.Add(NSI::Argument::New("emission_intensity_curve_interpolations")
-		->SetType(NSITypeInteger)
-		->SetCount(intensity_knot_count)
+		->SetArrayType(NSITypeInteger, intensity_knot_count)
 		->SetValuePointer(&intensity_curve_interpolations[0]));
 
 	//Blackbody Group
 	float blackbody_intensity = data->GetFloat(BLACKBODY_INTENSITY);
 	int blackbody_mode = data->GetInt32(BLACKBODY_MODE);
 	float blackbody_kelvin = data->GetFloat(BLACKBODY_KELVIN);
-	Vector c4dBlackBodyTint = toLinear(data->GetVector(BLACKBODY_TINT), doc);
+	Vector c4dBlackBodyTint = data->GetVector(BLACKBODY_TINT);
 	float blackbody_tint[3]{ c4dBlackBodyTint.x,c4dBlackBodyTint.y,c4dBlackBodyTint.z };
 	float blackbody_range_start = data->GetFloat(BLACKBODY_RANGE_START);
 	float blackbody_range_end = data->GetFloat(BLACKBODY_RANGE_END);
@@ -241,18 +249,15 @@ void Delight_OpenVDBTranslator::CreateNSINodes(const char* ParentTransformHandle
 	args.Add(new NSI::FloatArg("blackbody_temperature_range_end", blackbody_range_end));
 
 	args.Add(NSI::Argument::New("blackbody_temperature_curve_Knots")
-		->SetType(NSITypeFloat)
-		->SetCount(blackbody_knot_count)
+		->SetArrayType(NSITypeFloat, blackbody_knot_count)
 		->SetValuePointer(&blackbody_curve_knots[0]));
 
 	args.Add(NSI::Argument::New("blackbody_temperature_curve_Floats")
-		->SetType(NSITypeFloat)
-		->SetCount(blackbody_knot_count)
+		->SetArrayType(NSITypeFloat, blackbody_knot_count)
 		->SetValuePointer(&blackbody_curve_floats[0]));
 
 	args.Add(NSI::Argument::New("blackbody_temperature_curve_interpolations")
-		->SetType(NSITypeInteger)
-		->SetCount(blackbody_knot_count)
+		->SetArrayType(NSITypeInteger, blackbody_knot_count)
 		->SetValuePointer(&blackbody_curve_interpolations[0]));
 
 	//Ramp Group
@@ -261,7 +266,6 @@ void Delight_OpenVDBTranslator::CreateNSINodes(const char* ParentTransformHandle
 	float ramp_tint[3]{ c4dRampTint.x,c4dRampTint.y,c4dRampTint.z };
 	float ramp_range_start = data->GetFloat(RAMP_RANGE_START);
 	float ramp_range_end = data->GetFloat(RAMP_RANGE_END);
-
 	GeData ramp_data = data->GetData(EMISSION_RAMP);
 	Gradient* emmission_ramp = (Gradient*)ramp_data.GetCustomDataType(CUSTOMDATATYPE_GRADIENT);
 	int ramp_knot_count = emmission_ramp->GetKnotCount();
@@ -274,9 +278,7 @@ void Delight_OpenVDBTranslator::CreateNSINodes(const char* ParentTransformHandle
 		int j = i * 3;
 		GradientKnot Knot = emmission_ramp->GetKnot(i);
 		ramp_curve_knots[i] = Knot.pos;
-		Vector KnotColor = (Knot.col),doc;
-		//float knot_color[3]{ KnotColor.x, KnotColor.y, KnotColor.z };
-		//ramp_curve_colors[i] = {knot_color[0], knot_color[1], knot_color[2], };
+		Vector KnotColor = toLinear((Knot.col),doc);
 		ramp_curve_colors[j] = KnotColor.x;
 		ramp_curve_colors[j+1] = KnotColor.y;
 		ramp_curve_colors[j+2] = KnotColor.z;
@@ -289,18 +291,15 @@ void Delight_OpenVDBTranslator::CreateNSINodes(const char* ParentTransformHandle
 	args.Add(new NSI::FloatArg("emissionramp_temperature_range_end", ramp_range_end));
 	
 	args.Add(NSI::Argument::New("emissionramp_color_curve_Knots")
-		->SetType(NSITypeFloat)
-		->SetCount(ramp_knot_count)
+		->SetArrayType(NSITypeFloat, ramp_knot_count)
 		->SetValuePointer(&ramp_curve_knots[0]));
 
 	args.Add(NSI::Argument::New("emissionramp_color_curve_Colors")
-		->SetType(NSITypeColor)
-		->SetCount(ramp_knot_count)
+		->SetArrayType(NSITypeColor, ramp_knot_count)
 		->SetValuePointer(&ramp_curve_colors[0]));
 
 	args.Add(NSI::Argument::New("emissionramp_color_curve_interpolations")
-		->SetType(NSITypeInteger)
-		->SetCount(ramp_knot_count)
+		->SetArrayType(NSITypeInteger, ramp_knot_count)
 		->SetValuePointer(&ramp_curve_interpolations[0]));
 
 	ctx.SetAttribute(m_shader_handle, args);

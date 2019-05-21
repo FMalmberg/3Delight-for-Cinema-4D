@@ -203,15 +203,6 @@ Bool PluginMessage(Int32 id, void *data)
 			CreateMaterialUI(bc);
 			break;
 		}
-		case C4DPL_COMMANDLINEARGS:
-		{
-			const Filename file = GeGetStartupPath() + Filename("plugins") + Filename("3Delight") + Filename("Layout") + Filename("3Delight.l4d");
-			Bool result = LoadFile(file);
-			// check the result.
-			if (!result)
-				DiagnosticOutput("can't load the layout");
-			break;
-		}
 	}
 		return FALSE;
 }

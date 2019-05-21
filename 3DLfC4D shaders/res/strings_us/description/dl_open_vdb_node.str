@@ -5,7 +5,7 @@ STRINGTABLE dl_open_vdb_node
 	FILE_GROUP "File";
 	FILE_FILENAME "Filename";
 	FILE_USE_FILE_SEQUENCE "Use File Sequence";
-	FILE_INDEX_RANGE_START "Index range";
+	FILE_INDEX_RANGE_START "Index Range";
 	FILE_INDEX_RANGE_END "";
 	FILE_OUTSIDE_RANGE "Outside Range";
 	FILE_OUTSIDE_RANGE_HOLD_FIRST "Hold first / last file index";
@@ -13,7 +13,7 @@ STRINGTABLE dl_open_vdb_node
 	FILE_START_OFFSET "Start Offset";
 	FILE_INCREMENT "Increment";
 	FILE_CONFINE_TO_FRAME_RANGE "Confine to Frame Range";
-	FILE_FRAME_RANGE_START "Frame range";
+	FILE_FRAME_RANGE_START "Frame Range";
 	FILE_FRAME_RANGE_END "";
 	
 	GRIDS_GROUP "Grids";
@@ -58,7 +58,7 @@ STRINGTABLE dl_open_vdb_node
 	
 	INTENSITY_GROUP "Intensity";
 	INTENSITY_USE_GRID "Use Grid";
-	INTENSITY_RANGE_START "range";
+	INTENSITY_RANGE_START "Range";
 	INTENSITY_RANGE_END "";
 	INTENSITY_RAMP "Intensity Ramp";
 	
@@ -70,14 +70,14 @@ STRINGTABLE dl_open_vdb_node
 	BLACKBODY_ARTISTIC "Artistic";
 	BLACKBODY_KELVIN "Kelvin";
 	BLACKBODY_TINT "Tint";
-	BLACKBODY_RANGE_START "range";
+	BLACKBODY_RANGE_START "Range";
 	BLACKBODY_RANGE_END "";
 	BLACKBODY_RAMP "BlackBody Ramp";
 	
 	RAMP_GROUP "Ramp";
 	RAMP_INTENSITY "Intensity";
 	RAMP_TINT "Tint";
-	RAMP_RANGE_START "range";
+	RAMP_RANGE_START "Range";
 	RAMP_RANGE_END "";
 	EMISSION_RAMP "Ramp";	
 	

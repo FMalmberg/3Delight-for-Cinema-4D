@@ -29,48 +29,12 @@ Bool DL_Glass_command::Execute(BaseDocument* doc)
 				textureTag->SetMaterial(material);
 			}
 		}
-
 	}
 	EventAdd();
 	return true;
 }
 
-
 Bool Register_DlGlass_Object(void)
 {
 	return RegisterCommandPlugin(DL_GLASS_COMMAND, "Glass Material"_s, PLUGINFLAG_HIDEPLUGINMENU|PLUGINFLAG_TOOL_SINGLECLICK, AutoBitmap("shelf_dlGlass_200.png"_s), String("Assign new Glass"), NewObjClear(DL_Glass_command));
 }
-
-/*
-
-	#include "c4d.h"
-	#include "IDs.h"
-
-	class DL_Glass_command : public ObjectData
-	{
-	public:
-	virtual Bool Init(GeListNode *node);
-	static NodeData *Alloc(void) { return NewObj(DL_Glass_command) iferr_ignore("Wrong Instance"); }
-
-	};
-
-
-
-	Bool DL_Glass_command::Init(GeListNode* node)
-	{
-	BaseDocument* doc = GetActiveDocument();
-	Material* material = (Material*)BaseMaterial::Alloc(DL_GLASS);
-	if (!material)
-	return false;
-	doc->InsertMaterial(material);
-	return true;
-	}
-
-
-	Bool Register_DlGlass_Object(void)
-	{
-	return RegisterObjectPlugin(DL_GLASS_COMMAND, "Glass Material"_s, PLUGINFLAG_HIDEPLUGINMENU, DL_Glass_command::Alloc ,String(), AutoBitmap("shelf_dlGlass_200.png"_s),0);
-	}
-
-
-*/
