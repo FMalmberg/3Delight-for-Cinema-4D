@@ -171,7 +171,9 @@ bool SceneParser::InitScene(bool animate, long frame) {
 		DL_Translator* translator = n.GetTranslator();
 		if (translator) {
 			nodes.push_back(n);
-			translator->CreateNSINodes("","", mat, doc, this);
+			string mat_handle = GetHandleName((BaseList2D*)mat);
+			translator->Init(mat, doc, this);
+			translator->CreateNSINodes(mat_handle.c_str(),"", mat, doc, this);
 		}
 
 		//Traverse sub-shaders
@@ -191,7 +193,8 @@ bool SceneParser::InitScene(bool animate, long frame) {
 	for (long i = 0; i<nodes.size(); i++) {
 		DL_Translator* translator = nodes[i].GetTranslator();
 		if (translator) {
-			translator->ConnectNSINodes("",nodes[i].GetC4DNode(doc), doc, this);
+			string handle = GetHandleName(nodes[i].GetC4DNode(doc));
+			translator->ConnectNSINodes(handle.c_str(),nodes[i].GetC4DNode(doc), doc, this);
 		}
 	}
 
@@ -220,6 +223,7 @@ void SceneParser::SampleFrameMotion() {
 		}
 
 		for (long i = 0; i<transforms.size(); i++) {
+
 			transforms[i].SampleMotion(&info, doc, this);
 		}
 
@@ -228,7 +232,8 @@ void SceneParser::SampleFrameMotion() {
 			translator = nodes[i].GetTranslator();
 			BaseList2D* c4d_node = nodes[i].GetC4DNode(doc);
 			if (translator && c4d_node) {
-				translator->SampleMotion(&info, "",nodes[i].GetC4DNode(doc), doc, this);
+				string handle = GetHandleName(c4d_node);
+				translator->SampleMotion(&info, handle.c_str(),nodes[i].GetC4DNode(doc), doc, this);
 			}
 		}
 
@@ -265,7 +270,8 @@ void SceneParser::InteractiveUpdate() {
 			nodes[i].dirty_checksum = new_dirtyval;
 			translator = nodes[i].GetTranslator();
 			if (translator && c4d_node) {
-				translator->SampleMotion(&info, "", nodes[i].GetC4DNode(doc), doc, this);
+				string handle = GetHandleName(c4d_node);
+				translator->SampleMotion(&info, handle.c_str(), nodes[i].GetC4DNode(doc), doc, this);
 			}
 		}
 	}
@@ -570,7 +576,9 @@ void SceneParser::TraverseScene(BaseObject* obj, BaseDocument* doc,std::string p
 		DL_Translator* translator=n.GetTranslator();
 		if(translator){
 			nodes.push_back(n);
-			translator->CreateNSINodes("",transform_handle.c_str(), obj, doc, this);
+			string object_handle = string(GetHandleName((BaseList2D*)obj));
+			translator->Init(obj, doc, this);
+			translator->CreateNSINodes(object_handle.c_str(),transform_handle.c_str(), obj, doc, this);
 		}
 	}
 
@@ -581,7 +589,9 @@ void SceneParser::TraverseScene(BaseObject* obj, BaseDocument* doc,std::string p
 		DL_Translator* tagtranslator=tagnode.GetTranslator();
 		if(tagtranslator){
 			nodes.push_back(tagnode);
-			tagtranslator->CreateNSINodes("", transform_handle.c_str(), tag, doc, this);
+			string tag_handle = string(GetHandleName((BaseList2D*)tag));
+			tagtranslator->Init(tag, doc, this);
+			tagtranslator->CreateNSINodes(tag_handle.c_str(), transform_handle.c_str(), tag, doc, this);
 		}
 		tag=tag->GetNext();
 	}

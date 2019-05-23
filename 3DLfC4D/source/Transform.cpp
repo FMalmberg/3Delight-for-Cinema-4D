@@ -7,7 +7,8 @@ Transform::Transform(BaseObject* object, DL_SceneParser* parser, std::string par
 	
 	NSI::Context ctx(parser->GetContext());
 
-	handle=std::string(parser->GetUniqueName("transform"));
+	//handle=std::string(parser->GetUniqueName("transform"));
+	handle = std::string("X_")+std::string(parser->GetHandleName((BaseList2D*)object));
 	ctx.Create(handle, "transform");
 	ctx.Connect(handle, "", parent, "objects");
 }
