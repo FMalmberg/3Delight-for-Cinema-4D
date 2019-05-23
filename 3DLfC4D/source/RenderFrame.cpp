@@ -38,6 +38,6 @@ Bool RenderFrame::Execute(BaseDocument* doc)
 
 Bool RegisterRenderFrame(void)
 {
-	return RegisterCommandPlugin(ID_RENDERFRAME, "Render frameXXX"_s, 0, AutoBitmap("camera.tif"_s), String(), 
+	return RegisterCommandPlugin(ID_RENDERFRAME, "Render frame"_s, 0, AutoBitmap("camera.tif"_s), String(), 
 		NewObjClear(RenderFrame));
 }
