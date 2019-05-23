@@ -32,11 +32,28 @@ Bool DL_Principled_command::Execute(BaseDocument* doc)
 	if (!material)
 		return false;
 	doc->InsertMaterial(material);
+	AutoAlloc<AtomArray>selected_objects;
+	doc->GetActiveObjects(*selected_objects, GETACTIVEOBJECTFLAGS::NONE);
+	if (selected_objects)
+	{
+		Int32 object_count = selected_objects->GetCount();
+		for (int i = 0; i < object_count; i++)
+		{
+			BaseObject* object = (BaseObject*)selected_objects->GetIndex(i);
+			if (object)
+			{
+				TextureTag* const textureTag = static_cast<TextureTag*>(object->MakeTag(Ttexture));
+				textureTag->SetMaterial(material);
+			}
+		}
+
+	}
+	EventAdd();
 	return true;
 }
 
 
 Bool Register_DlPrincipled_Object(void)
 {
-	return RegisterCommandPlugin(DL_PRINCIPLED_COMMAND, "3Delight Principled"_s, PLUGINFLAG_HIDE, 0, String(),NewObjClear(DL_Principled_command));
+	return RegisterCommandPlugin(DL_PRINCIPLED_COMMAND, "3Delight Principled"_s, PLUGINFLAG_HIDEPLUGINMENU, AutoBitmap("shelf_dlPrincipled_200.png"_s), String("Assign new Principled"_s),NewObjClear(DL_Principled_command));
 }

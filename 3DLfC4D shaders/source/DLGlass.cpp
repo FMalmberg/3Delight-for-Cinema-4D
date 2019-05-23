@@ -3,6 +3,7 @@
 #include "IDs.h"
 #include "dl_glass.h"
 
+
 class DL_Glass : public MaterialData
 {
 	INSTANCEOF(DL_Material, MaterialData)
@@ -17,7 +18,8 @@ public:
 		DESCFLAGS_ENABLE flags, const BaseContainer *itemdesc);
 	virtual Bool Message(GeListNode *node, Int32 type, void *data);
 	virtual	void CalcSurface(BaseMaterial* mat, VolumeData* vd);
-	static NodeData* Alloc(void) { return NewObjClear(DL_Glass); }
+	static NodeData* Alloc(void) {
+		return NewObjClear(DL_Glass); }
 
 };
 
@@ -138,5 +140,6 @@ void DL_Glass::CalcSurface(BaseMaterial* mat, VolumeData* vd)
 
 Bool RegisterDLGlass(void)
 {
-	return RegisterMaterialPlugin(DL_GLASS, "DL_Glass"_s, PLUGINFLAG_HIDE, DL_Glass::Alloc, "Dl_glass"_s, 0);
+	RegisterMaterialPlugin(DL_GLASS, "DL_Glass"_s, PLUGINFLAG_HIDE, DL_Glass::Alloc, "Dl_glass"_s, 0);
+	return TRUE;
 }

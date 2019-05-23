@@ -47,6 +47,7 @@ Bool DL_CarPaint::Init(GeListNode* node)
 	data->SetInt32(BUMP_TYPE, BUMP_MAP);
 	data->SetFloat(BUMP_INTENSITY, 1);
 	data->SetInt32(BUMP_LAYERS_AFFECTED, AFFECT_BOTH_LAYERS);
+
 	//color = data->GetVector(SIMPLEMATERIAL_COLOR);
 	return true;
 }

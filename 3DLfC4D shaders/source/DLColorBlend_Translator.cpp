@@ -10,6 +10,7 @@
 
 Delight_ColorBlend::Delight_ColorBlend()
 {
+	
 	Filename shaderpath = Filename(GeGetPluginPath() + Filename("OSL") + Filename("dlColorBlend.oso"));
 	vector<char> c_shaderpath = StringToChars(shaderpath.GetString());
 	m_ids_to_names[Shader_Path] = make_pair("", &c_shaderpath[0]);

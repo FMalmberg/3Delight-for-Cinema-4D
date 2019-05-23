@@ -20,9 +20,9 @@ Bool DLFlakes::Init(GeListNode* node)
 	data->SetInt32(FLAKES_SCALE, 1.0);
 	data->SetFloat(FLAKES_RANDOMNESS, 0.5);
 	data->SetInt32(FLAKES_LAYERS, 1);
+	
 	return true;
 }
-
 
 Vector DLFlakes::Output(BaseShader* sh, ChannelData* sd)
 {

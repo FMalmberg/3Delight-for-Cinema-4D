@@ -5,16 +5,16 @@
 #include "c4d.h"
 #include <string>
 
-class EnvironmentLightTranslator : public DL_TranslatorPlugin{
+class EnvironmentLightTranslator : public DL_TranslatorPlugin {
 public:
+
 	virtual void CreateNSINodes(const char* Handle, const char* ParentTransformHandle, GeListNode* C4DNode, BaseDocument* doc, DL_SceneParser* parser);
 	virtual void SampleMotion(DL_SampleInfo* info, const char* Handle, GeListNode* C4DNode, BaseDocument* doc,DL_SceneParser* parser);
+
 private:
 	std::string m_handle;
 	std::string m_shader_handle;
 	std::string m_transform_handle;
-	
+
 };
-
-
 #endif
