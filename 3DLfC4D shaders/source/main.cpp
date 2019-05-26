@@ -156,7 +156,7 @@ Bool PluginMessage(Int32 id, void *data)
 		case DL_LOAD_PLUGINS:
 		{
 			DL_PluginManager* pm = (DL_PluginManager*)data;
-			pm->RegisterHook(AllocateHook<ShaderSettingsHook>);
+			//pm->RegisterHook(AllocateHook<ShaderSettingsHook>);
 			/*
 				On the translator we have only allocated the Materials and Shaders that we
 				support in our plugin. There will be others to add as we are working on it.

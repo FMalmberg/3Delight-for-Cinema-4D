@@ -24,9 +24,9 @@ public:
 	virtual RENDER_MODE GetRenderMode()=0;
 	
 	
-	virtual const char* GetUniqueName(char* basename)=0;
-	virtual void SetAssociatedHandle(BaseList2D* node, const char* handle)=0;
-	virtual const char* GetAssociatedHandle(BaseList2D* node)=0;
+	//virtual const char* GetUniqueName(char* basename)=0;
+	//virtual void SetAssociatedHandle(BaseList2D* node, const char* handle)=0;
+	//virtual const char* GetAssociatedHandle(BaseList2D* node)=0;
 };
 
 #endif

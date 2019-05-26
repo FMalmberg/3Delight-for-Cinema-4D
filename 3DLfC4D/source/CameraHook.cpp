@@ -10,14 +10,14 @@ void CameraHook::CreateNSINodes(BaseDocument* doc, DL_SceneParser* parser){
 
 	NSI::Context ctx(parser->GetContext());
 
-	ctx.Create("scene_camera", "perspectivecamera");
-	transform_name=string(parser->GetUniqueName("transform"));
+	ctx.Create("3dlfc4d::scene_camera", "perspectivecamera");
+	transform_name = string("3dlfc4d::scene_camera_transform"); //string(parser->GetUniqueName("transform"));
 	ctx.Create(transform_name, "transform");
-	ctx.Create("scene_camera_screen", "screen");
+	ctx.Create("3dlfc4d::scene_camera_screen", "screen");
 
-	ctx.Connect("scene_camera", "", transform_name, "objects");
+	ctx.Connect("3dlfc4d::scene_camera", "", transform_name, "objects");
 	ctx.Connect(transform_name, "", ".root", "objects");
-	ctx.Connect("scene_camera_screen", "", "scene_camera", "screens");
+	ctx.Connect("3dlfc4d::scene_camera_screen", "", "3dlfc4d::scene_camera", "screens");
 
 	RenderData* rd=doc->GetActiveRenderData();
 	BaseContainer* render_data=rd->GetDataInstance();
@@ -69,14 +69,14 @@ void CameraHook::CreateNSINodes(BaseDocument* doc, DL_SceneParser* parser){
 	int pixel_samples=DL_Settings->GetInt32(DL_PIXEL_SAMPLES,16);
 	
 
-	ctx.SetAttribute("scene_camera",(
+	ctx.SetAttribute("3dlfc4d::scene_camera",(
 			shutter_arg,
 			shutteropening_arg,
 			NSI::IntegerArg("depthoffield.enable",enable_dof),
 			NSI::DoubleArg("depthoffield.fstop",fstop)
 		));
 
-	ctx.SetAttribute("scene_camera_screen", (
+	ctx.SetAttribute("3dlfc4d::scene_camera_screen", (
 		resolution_arg,
 		screenwindow_arg,
 		NSI::IntegerArg("oversampling", pixel_samples)
@@ -117,7 +117,7 @@ void CameraHook::SampleMotion(DL_SampleInfo* info,  BaseDocument* document, DL_S
 
 
 	//Sample fov
-	ctx.SetAttributeAtTime("scene_camera",info->sample_time,(
+	ctx.SetAttributeAtTime("3dlfc4d::scene_camera",info->sample_time,(
 			NSI::FloatArg("fov",horizontal_fov),
 			NSI::FloatArg("focallength", focal_length_cm),
 			NSI::DoubleArg("depthoffield.focaldistance", focus_distance)

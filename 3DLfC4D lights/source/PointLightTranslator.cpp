@@ -10,7 +10,8 @@ void PointLightTranslator::CreateNSINodes(const char* Handle, const char* Parent
 	NSI::Context ctx(parser->GetContext());
 
 	//Create a mesh and connect it to the parent transform
-	handle = string(parser->GetUniqueName("poitlight"));
+	//handle = string(parser->GetUniqueName("poitlight"));
+	handle = string(Handle);
 	transform_handle = string(ParentTransformHandle);
 
 	ctx.Create(handle, "particles");
@@ -27,7 +28,8 @@ void PointLightTranslator::CreateNSINodes(const char* Handle, const char* Parent
 
 
 	//Create an attributes node, and connect it to the mesh
-	string attributes_handle = string(parser->GetUniqueName("light_attributes"));
+	//string attributes_handle = string(parser->GetUniqueName("light_attributes"));
+	string attributes_handle = string(Handle) + ("attributes");
 	ctx.Create(attributes_handle, "attributes");
 	ctx.SetAttribute(attributes_handle, (
 		NSI::IntegerArg("visibility.camera", camera_visibility)//,
@@ -35,7 +37,8 @@ void PointLightTranslator::CreateNSINodes(const char* Handle, const char* Parent
 	ctx.Connect(attributes_handle, "", handle, "geometryattributes");
 
 	//Create a shader for the mesh and connect it to the geometry attributes of the mesh
-	shader_handle = string(parser->GetUniqueName("pointlight_shader"));
+	//shader_handle = string(parser->GetUniqueName("pointlight_shader"));
+	shader_handle = string(Handle) + "shader";
 	ctx.Create(shader_handle, "shader");
 	ctx.Connect(shader_handle, "", attributes_handle, "surfaceshader");
 
@@ -59,7 +62,7 @@ void PointLightTranslator::CreateNSINodes(const char* Handle, const char* Parent
 
 	ctx.SetAttribute(handle,  (arg_P));
 
-	parser->SetAssociatedHandle((BaseList2D*)C4DNode, handle.c_str());
+	//parser->SetAssociatedHandle((BaseList2D*)C4DNode, handle.c_str());
 
 }
 

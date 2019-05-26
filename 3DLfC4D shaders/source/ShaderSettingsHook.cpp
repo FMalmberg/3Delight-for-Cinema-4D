@@ -11,12 +11,12 @@ void ShaderSettingsHook::CreateNSINodes(BaseDocument* doc, DL_SceneParser* parse
 	NSI::Context ctx(parser->GetContext());
 
 	//Create an attributes node, and connect it to the mesh
-	string attributes_handle=string(parser->GetUniqueName("root_attributes"));
+	string attributes_handle = string(""); // string(parser->GetUniqueName("root_attributes"));
 	ctx.Create(attributes_handle, "attributes");
 	ctx.Connect(attributes_handle,"",".root","geometryattributes");
 
 	//Create a shader for the mesh and connect it to the geometry attributes of the mesh
-	std::string shader_handle(parser->GetUniqueName("default_surface_shader"));
+	std::string shader_handle(""); //= (parser->GetUniqueName("default_surface_shader"));
 	ctx.Create(shader_handle, "shader");
 	ctx.Connect(shader_handle,"",attributes_handle,"surfaceshader");
 

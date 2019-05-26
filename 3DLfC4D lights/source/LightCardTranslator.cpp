@@ -15,7 +15,8 @@ void LightCardTranslator::CreateNSINodes(const char* Handle, const char* ParentT
 	NSI::Context ctx(parser->GetContext());
 
 	//Create a mesh and connect it to the parent transform
-	handle = string(parser->GetUniqueName("quadlight"));
+	//handle = string(parser->GetUniqueName("quadlight"));
+	handle = string(Handle);
 	transform_handle = string(ParentTransformHandle);
 
 	ctx.Create(handle, "mesh");
@@ -32,7 +33,8 @@ void LightCardTranslator::CreateNSINodes(const char* Handle, const char* ParentT
 
 
 	//Create an attributes node, and connect it to the mesh
-	string attributes_handle = string(parser->GetUniqueName("light_attributes"));
+	//string attributes_handle = string(parser->GetUniqueName("light_attributes"));
+	string attributes_handle = string(Handle) + string("attributes");
 	ctx.Create(attributes_handle, "attributes");
 	ctx.SetAttribute(attributes_handle, (
 		NSI::IntegerArg("visibility.camera", camera_visibility)//,
@@ -41,7 +43,8 @@ void LightCardTranslator::CreateNSINodes(const char* Handle, const char* ParentT
 	ctx.Connect(attributes_handle, "", handle, "geometryattributes");
 
 	//Create a shader for the mesh and connect it to the geometry attributes of the mesh
-	shader_handle = string(parser->GetUniqueName("quadlight_shader"));
+	//shader_handle = string(parser->GetUniqueName("quadlight_shader"));
+	shader_handle = string(Handle) + string("shader");
 	ctx.Create(shader_handle, "shader");
 	ctx.Connect(shader_handle, "", attributes_handle, "surfaceshader");
 
@@ -76,10 +79,10 @@ void LightCardTranslator::CreateNSINodes(const char* Handle, const char* ParentT
 		arg_nvertices,
 		arg_indices
 		));
-	string str = string(handle.c_str());
+	//string str = string(handle.c_str());
 	
-	const char* hndl = handle.c_str();
-	parser->SetAssociatedHandle((BaseList2D*)C4DNode, hndl);
+	//const char* hndl = handle.c_str();
+	//parser->SetAssociatedHandle((BaseList2D*)C4DNode, hndl);
 
 }
 

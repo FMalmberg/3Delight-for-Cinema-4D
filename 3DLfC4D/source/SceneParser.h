@@ -62,9 +62,9 @@ public:
 	virtual const char* GetHandleName(BaseList2D* node);
 
 	//The three functions below are scheduled for deprecation
-	virtual const char* GetUniqueName(char* basename);
-	virtual void SetAssociatedHandle(BaseList2D* node, const char* handle);
-	virtual const char* GetAssociatedHandle(BaseList2D* node);
+	//virtual const char* GetUniqueName(char* basename);
+	//virtual void SetAssociatedHandle(BaseList2D* node, const char* handle);
+	//virtual const char* GetAssociatedHandle(BaseList2D* node);
 
 private:
 	void TraverseShaders(BaseShader* shader, BaseDocument* doc);
@@ -87,16 +87,11 @@ private:
 	RENDER_MODE rendermode;
 	BaseContainer DL_settings;
 
-	
-
-	//bool ExportAOVs;
-
-
 	std::vector<DL_HookPtr> hooks;
 	std::vector<Node> nodes;
 	std::vector<Transform> transforms;
 	
-
+	//To be removed:
 	std::map<std::string, std::string> HandleMap;
 
 	int nMotionSamples;

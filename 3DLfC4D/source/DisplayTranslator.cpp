@@ -16,7 +16,8 @@ void DisplayTranslator::CreateNSINodes(const char* Handle, const char* ParentTra
 	BaseObject* obj=(BaseObject*)C4DNode;
 	BaseContainer* data=obj->GetDataInstance();
 
-	layer_handle=string(parser->GetUniqueName("outputlayer"));
+	layer_handle = string(Handle) + string("outputlayer");
+	//layer_handle=string(parser->GetUniqueName("outputlayer"));
 	ctx.Create(layer_handle, "outputlayer");
 
 	string scalarformat="float";
@@ -58,8 +59,8 @@ void DisplayTranslator::CreateNSINodes(const char* Handle, const char* ParentTra
 		NSI::StringArg("filter", "gaussian")
 	));
 
-	driver_handle=string(parser->GetUniqueName("outputdriver"));
-
+//	driver_handle=string(parser->GetUniqueName("outputdriver"));
+	driver_handle = string(Handle) + string("outputdriver");
 	String file=data->GetString(FILENAME,"frame"_s);
 	Filename filepath=data->GetFilename(PATH,"");
 	filepath=filepath+Filename("/"+file);
@@ -102,8 +103,8 @@ void DisplayTranslator::ConnectNSINodes(const char* Handle, GeListNode* C4DNode,
 			light=light_list->ObjectFromIndex(doc,i);
 			if(light){
 				//Connect light to display
-				string light_handle=string(parser->GetAssociatedHandle(light));
-				ctx.Connect(light_handle,"",layer_handle,"lightset");
+				//string light_handle=string(parser->GetAssociatedHandle(light));
+				//ctx.Connect(light_handle,"",layer_handle,"lightset");
 				
 			}
 		}

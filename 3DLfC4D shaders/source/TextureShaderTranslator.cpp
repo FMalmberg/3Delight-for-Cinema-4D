@@ -7,7 +7,7 @@ void TextureShaderTranslator::CreateNSINodes(const char* Handle, const char* Par
 	NSI::Context ctx(parser->GetContext());
 
 	//Create the shader node
-	string shader_handle = string(parser->GetUniqueName("texture"));
+	string shader_handle(""); // = string(parser->GetUniqueName("texture"));
 	ctx.Create(shader_handle, "shader");
 
 	BaseObject* obj = (BaseObject*)C4DNode;
@@ -25,5 +25,5 @@ void TextureShaderTranslator::CreateNSINodes(const char* Handle, const char* Par
 		NSI::StringArg("texname", texturename)
 		));
 
-	parser->SetAssociatedHandle((BaseList2D*)C4DNode, shader_handle.c_str());
+	//parser->SetAssociatedHandle((BaseList2D*)C4DNode, shader_handle.c_str());
 }

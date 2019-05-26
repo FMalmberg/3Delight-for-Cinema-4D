@@ -12,6 +12,8 @@
 #include <algorithm>
 #include "../../core.framework/source/maxon/stringencoding.h"
 #include <math.h>
+#include <regex>
+
 
 // std::stringstream, std::stringbuf
 using namespace std;
@@ -469,7 +471,12 @@ const char* SceneParser::GetHandleName(BaseList2D* node) {
 	node->FindUniqueID(MAXON_CREATOR_ID, mem, memsize);
 	String ID_STR;
 	ID_STR.SetCString(mem, memsize);
-	handle = StringToStdString(ID_STR);
+	std::string ID_string = StringToStdString(ID_STR)+string("::");
+	handle.clear();
+	for (int i = 0; i < ID_string.size(); i++) {
+		handle = handle + to_string((int)reinterpret_cast<unsigned char &>(ID_string[i]));
+	}
+	handle = handle + string("::");
 	return handle.c_str();
 }
 
@@ -484,6 +491,7 @@ std::string SceneParser::GetIDString(BaseList2D* node){
 
 }
 
+/*
 const char* SceneParser::GetUniqueName(char* basename){
 	string s(basename);
 	names[s]++;
@@ -493,8 +501,9 @@ const char* SceneParser::GetUniqueName(char* basename){
 	ss << s << "_" << n;
 	name = ss.str();
 	return name.c_str();
-}
+}*/
 
+/*
 void SceneParser::SetAssociatedHandle(BaseList2D* node, const char* handle){
 	if(!node){
 		return;
@@ -502,8 +511,9 @@ void SceneParser::SetAssociatedHandle(BaseList2D* node, const char* handle){
 
 	std::string node_ID=GetIDString(node);
 	HandleMap[node_ID]=std::string(handle);
-}
+}*/
 
+/*
 const char* SceneParser::GetAssociatedHandle(BaseList2D* node){
 	auto it=HandleMap.find(GetIDString(node));
 
@@ -511,7 +521,7 @@ const char* SceneParser::GetAssociatedHandle(BaseList2D* node){
 		return "";
 	}
 	return it->second.c_str();
-}
+}*/
 
 
 void SceneParser::SampleMotion(long s, BaseDocument* doc){

@@ -8,7 +8,7 @@ void StandardShaderTranslator::CreateNSINodes(const char* Handle, const char* Pa
 	NSI::Context ctx(parser->GetContext());
 
 	//Create the shader node
-	shader_handle = string(parser->GetUniqueName("standard_material"));
+	//shader_handle = string(parser->GetUniqueName("standard_material"));
 	ctx.Create(shader_handle, "shader");
 	
 	BaseObject* obj = (BaseObject*)C4DNode;
@@ -107,7 +107,7 @@ void StandardShaderTranslator::CreateNSINodes(const char* Handle, const char* Pa
 		NSI::ColorArg("emission_color", &emi_col[0])
 		));
 
-	parser->SetAssociatedHandle((BaseList2D*)C4DNode, shader_handle.c_str());
+	//parser->SetAssociatedHandle((BaseList2D*)C4DNode, shader_handle.c_str());
 }
 
 void StandardShaderTranslator::ConnectNSINodes(const char* Handle, GeListNode* C4DNode, BaseDocument* doc, DL_SceneParser* parser) {
@@ -121,7 +121,7 @@ void StandardShaderTranslator::ConnectNSINodes(const char* Handle, GeListNode* C
 	//Diffuse color
 	BaseList2D* shader = data->GetLink(DIFFUSE_COLOR_SHADER, doc);
 	if (shader) {
-		string link_handle = string(parser->GetAssociatedHandle(shader));
+		string link_handle(""); // = string(parser->GetAssociatedHandle(shader));
 		ApplicationOutput("Linkage @", link_handle.c_str());
 		if (link_handle != "") {
 			ctx.Connect(link_handle, "c_out", shader_handle, "diffuse_color");
@@ -131,7 +131,7 @@ void StandardShaderTranslator::ConnectNSINodes(const char* Handle, GeListNode* C
 	//Diffuse roughness
 	shader = data->GetLink(DIFFUSE_ROUGHNESS_SHADER, doc);
 	if (shader) {
-		string link_handle = string(parser->GetAssociatedHandle(shader));
+		string link_handle(""); // = string(parser->GetAssociatedHandle(shader));
 		if (link_handle != "") {
 			ctx.Connect(link_handle, "f_out", shader_handle, "diffuse_roughness");
 		}
@@ -140,7 +140,7 @@ void StandardShaderTranslator::ConnectNSINodes(const char* Handle, GeListNode* C
 	//Coating color
 	shader = data->GetLink(COATING_COLOR_SHADER, doc);
 	if (shader) {
-		string link_handle = string(parser->GetAssociatedHandle(shader));
+		string link_handle(""); // = string(parser->GetAssociatedHandle(shader));
 		if (link_handle != "") {
 			ctx.Connect(link_handle, "c_out", shader_handle, "coating_color");
 		}
@@ -149,7 +149,7 @@ void StandardShaderTranslator::ConnectNSINodes(const char* Handle, GeListNode* C
 	//Coating roughness
 	shader = data->GetLink(COATING_ROUGHNESS_SHADER, doc);
 	if (shader) {
-		string link_handle = string(parser->GetAssociatedHandle(shader));
+		string link_handle(""); // = string(parser->GetAssociatedHandle(shader));
 		if (link_handle != "") {
 			ctx.Connect(link_handle, "f_out", shader_handle, "coating_roughness");
 		}
@@ -158,7 +158,7 @@ void StandardShaderTranslator::ConnectNSINodes(const char* Handle, GeListNode* C
 	//Specular color
 	shader = data->GetLink(SPECULAR_COLOR_SHADER, doc);
 	if (shader) {
-		string link_handle = string(parser->GetAssociatedHandle(shader));
+		string link_handle(""); // = string(parser->GetAssociatedHandle(shader));
 		if (link_handle != "") {
 			ctx.Connect(link_handle, "c_out", shader_handle, "specular_color");
 		}
@@ -167,7 +167,7 @@ void StandardShaderTranslator::ConnectNSINodes(const char* Handle, GeListNode* C
 	//Specular roughness
 	shader = data->GetLink(SPECULAR_ROUGHNESS_SHADER, doc);
 	if (shader) {
-		string link_handle = string(parser->GetAssociatedHandle(shader));
+		string link_handle(""); // = string(parser->GetAssociatedHandle(shader));
 		if (link_handle != "") {
 			ctx.Connect(link_handle, "f_out", shader_handle, "specular_roughness");
 		}
@@ -176,7 +176,7 @@ void StandardShaderTranslator::ConnectNSINodes(const char* Handle, GeListNode* C
 	//Specular anisotropy
 	shader = data->GetLink(SPECULAR_ANISOTROPY_SHADER, doc);
 	if (shader) {
-		string link_handle = string(parser->GetAssociatedHandle(shader));
+		string link_handle(""); // = string(parser->GetAssociatedHandle(shader));
 		if (link_handle != "") {
 			ctx.Connect(link_handle, "f_out", shader_handle, "specular_anisotropy");
 		}
@@ -185,7 +185,7 @@ void StandardShaderTranslator::ConnectNSINodes(const char* Handle, GeListNode* C
 	//Specular direction
 	shader = data->GetLink(SPECULAR_ANISOTROPY_DIRECTION_SHADER, doc);
 	if (shader) {
-		string link_handle = string(parser->GetAssociatedHandle(shader));
+		string link_handle(""); // = string(parser->GetAssociatedHandle(shader));
 		if (link_handle != "") {
 			ctx.Connect(link_handle, "c_out", shader_handle, "anisotropy_direction");
 		}
@@ -195,7 +195,7 @@ void StandardShaderTranslator::ConnectNSINodes(const char* Handle, GeListNode* C
 	shader = 0;
 	shader = data->GetLink(EMISSION_COLOR_SHADER, doc);
 	if (shader) {
-		string link_handle = string(parser->GetAssociatedHandle(shader));
+		string link_handle(""); // = string(parser->GetAssociatedHandle(shader));
 		if (link_handle != "") {
 			ctx.Connect(link_handle, "c_out", shader_handle, "emission_color");
 		}

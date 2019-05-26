@@ -10,7 +10,7 @@ void RangeTranslator::CreateNSINodes(const char* Handle, const char* ParentTrans
 	NSI::Context ctx(parser->GetContext());
 
 	//Create the shader node
-	shader_handle=string(parser->GetUniqueName("range_shader"));
+	//shader_handle=string(parser->GetUniqueName("range_shader"));
 	ctx.Create(shader_handle, "shader");
 
 	BaseShader* shader=(BaseShader*)C4DNode;
@@ -33,7 +33,7 @@ void RangeTranslator::CreateNSINodes(const char* Handle, const char* ParentTrans
 		NSI::FloatArg("out_max", output_max)
 		));
 
-	parser->SetAssociatedHandle((BaseList2D*)C4DNode, shader_handle.c_str());
+	//parser->SetAssociatedHandle((BaseList2D*)C4DNode, shader_handle.c_str());
 }
 
 void RangeTranslator::ConnectNSINodes(const char* Handle, GeListNode* C4DNode, BaseDocument* doc,DL_SceneParser* parser){
@@ -45,7 +45,7 @@ void RangeTranslator::ConnectNSINodes(const char* Handle, GeListNode* C4DNode, B
 
 	BaseList2D* shader=data->GetLink(INPUT_SHADER, doc);
 	if(shader){
-		string link_handle=string(parser->GetAssociatedHandle(shader));
+		string link_handle(""); // = string(parser->GetAssociatedHandle(shader));
 		if(link_handle!=""){
 			ctx.Connect(link_handle,"c_out",shader_handle,"c_in");
 			ctx.Connect(link_handle, "f_out", shader_handle, "f_in");

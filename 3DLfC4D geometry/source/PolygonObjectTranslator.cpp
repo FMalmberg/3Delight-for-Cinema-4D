@@ -98,7 +98,8 @@ void PolygonObjectTranslator::CreateNSINodes(const char* Handle, const char* Par
 	const CPolygon* polys = object->GetPolygonR();
 
 	//Create a mesh and connect it to the parent transform
-	handle = string(parser->GetUniqueName("mesh"));
+	//handle = string(parser->GetUniqueName("mesh"));
+	handle = string(Handle);
 	transform_handle = string(ParentTransformHandle);
 
 	ctx.Create(handle, "mesh");

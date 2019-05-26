@@ -11,7 +11,7 @@ void EnvironmentLightTranslator::CreateNSINodes(const char* Handle, const char* 
 	NSI::Context ctx(parser->GetContext());
 
 	//Create a mesh and connect it to the parent transform
-	handle=string(parser->GetUniqueName("environment_light"));
+	//handle=string(parser->GetUniqueName("environment_light"));
 	transform_handle=string(ParentTransformHandle);
 
 	//GePrint("Env light");
@@ -39,13 +39,13 @@ void EnvironmentLightTranslator::CreateNSINodes(const char* Handle, const char* 
 	attributes_args.Add(new NSI::IntegerArg("visibility", illumination));
 
 	//Create an attributes node, and connect it to the mesh
-	string attributes_handle=string(parser->GetUniqueName("light_attributes"));
+	string attributes_handle(""); // = string(parser->GetUniqueName("light_attributes"));
 	ctx.Create(attributes_handle, "attributes");
 	ctx.SetAttribute(attributes_handle,attributes_args);
 	ctx.Connect(attributes_handle,"",handle,"geometryattributes");
 
 	//Create a shader for the mesh and connect it to the geometry attributes of the mesh
-	shader_handle=string(parser->GetUniqueName("environmentlight_shader"));
+	//shader_handle=string(parser->GetUniqueName("environmentlight_shader"));
 	ctx.Create(shader_handle, "shader");
 	ctx.Connect(shader_handle,"",attributes_handle,"surfaceshader");
 
@@ -67,7 +67,7 @@ void EnvironmentLightTranslator::CreateNSINodes(const char* Handle, const char* 
 	BaseList2D* texture_shader = data->GetLink(ENVIRONMENT_TEXTURE_SHADER, doc);
 	if (texture_shader)
 	{
-		string texture_handle = string(parser->GetAssociatedHandle(texture_shader));
+		string texture_handle(""); // = string(parser->GetAssociatedHandle(texture_shader));
 		if (texture_handle != "")
 		{
 			ctx.Connect(texture_handle, "outColor", shader_handle, "i_texture");
@@ -75,7 +75,7 @@ void EnvironmentLightTranslator::CreateNSINodes(const char* Handle, const char* 
 	}
 
 
-	parser->SetAssociatedHandle((BaseList2D*)C4DNode, handle.c_str());
+	//parser->SetAssociatedHandle((BaseList2D*)C4DNode, handle.c_str());
 
 }
 

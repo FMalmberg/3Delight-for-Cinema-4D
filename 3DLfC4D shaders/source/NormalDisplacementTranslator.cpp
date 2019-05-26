@@ -6,12 +6,12 @@
 #include "nsi.hpp"
 
 void NormalDisplacementTranslator::CreateNSINodes(const char* Handle, const char* ParentTransformHandle, GeListNode* C4DNode, BaseDocument* doc, DL_SceneParser* parser){
-	GePrint("Displacement"_s);
+	//GePrint("Displacement"_s);
 	
 	NSI::Context ctx(parser->GetContext());
 
 	//Create the shader node
-	shader_handle=string(parser->GetUniqueName("normal_displacement"));
+	//shader_handle=string(parser->GetUniqueName("normal_displacement"));
 	ctx.Create(shader_handle, "shader");
 
 	BaseObject* obj=(BaseObject*)C4DNode;
@@ -33,7 +33,7 @@ void NormalDisplacementTranslator::CreateNSINodes(const char* Handle, const char
 		NSI::FloatArg("scalarzero", scalarzero)
 		));
 
-	parser->SetAssociatedHandle((BaseList2D*)C4DNode, shader_handle.c_str());
+	//parser->SetAssociatedHandle((BaseList2D*)C4DNode, shader_handle.c_str());
 }
 
 void NormalDisplacementTranslator::ConnectNSINodes(const char* Handle, GeListNode* C4DNode, BaseDocument* doc,DL_SceneParser* parser){
@@ -43,7 +43,7 @@ void NormalDisplacementTranslator::ConnectNSINodes(const char* Handle, GeListNod
 
 	BaseList2D* shader=data->GetLink(DISPLACEMENT_STRENGTH_SHADER, doc);
 	if(shader){
-		string link_handle=string(parser->GetAssociatedHandle(shader));
+		string link_handle(""); // = string(parser->GetAssociatedHandle(shader));
 		if(link_handle!=""){
 			ctx.Connect(link_handle,"f_out",shader_handle,"strength");
 		}

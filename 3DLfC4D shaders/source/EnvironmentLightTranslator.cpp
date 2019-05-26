@@ -22,7 +22,8 @@ void TraverseShaders(BaseShader* shader, std::string uv_handle, DL_SceneParser* 
 
 	NSI::Context ctx(parser->GetContext());
 
-	std::string texture_handle = parser->GetAssociatedHandle((BaseList2D*)shader);
+	//std::string texture_handle = parser->GetAssociatedHandle((BaseList2D*)shader);
+	std::string texture_handle = parser->GetHandleName((BaseList2D*)shader);
 
 	ctx.SetAttribute(texture_handle, NSI::IntegerArg("is_connected_to_sky", 1));
 	ctx.Connect(uv_handle, "o_outUV", texture_handle, "uvCoord");
@@ -36,11 +37,12 @@ void EnvironmentLightTranslator::CreateNSINodes(const char* Handle, const char* 
 	NSI::Context ctx(parser->GetContext());
 
 	//Create a mesh and connect it to the parent transform
-	m_handle = string(parser->GetUniqueName("environment_light"));
+	//m_handle = string(parser->GetUniqueName("environment_light"));
+	m_handle = string(Handle);
 	m_transform_handle = string(ParentTransformHandle);
 
-
-	std::string transform_handle2 = string(parser->GetUniqueName("transform"));
+	//std::string transform_handle2 = string(parser->GetUniqueName("transform"));
+	std::string transform_handle2 = string(Handle) + string("transform"); 
 	ctx.Create(transform_handle2, "transform");
 
 	vector<double> change_direction
@@ -80,13 +82,15 @@ void EnvironmentLightTranslator::CreateNSINodes(const char* Handle, const char* 
 	attributes_args.Add(new NSI::IntegerArg("visibility", illumination));
 
 	//Create an attributes node, and connect it to the mesh
-	string attributes_handle = string(parser->GetUniqueName("light_attributes"));
+	//string attributes_handle = string(parser->GetUniqueName("light_attributes"));
+	string attributes_handle = string(Handle) + string("attributes");
 	ctx.Create(attributes_handle, "attributes");
 	ctx.SetAttribute(attributes_handle, attributes_args);
 	ctx.Connect(attributes_handle, "", m_handle, "geometryattributes");
 
 	//Create a shader for the mesh and connect it to the geometry attributes of the mesh
-	m_shader_handle = string(parser->GetUniqueName("environmentlight_shader"));
+	//m_shader_handle = string(parser->GetUniqueName("environmentlight_shader"));
+	m_shader_handle = string(Handle) + string("shader");
 	ctx.Create(m_shader_handle, "shader");
 	ctx.Connect(m_shader_handle, "", attributes_handle, "surfaceshader");
 
@@ -104,7 +108,7 @@ void EnvironmentLightTranslator::CreateNSINodes(const char* Handle, const char* 
 	shader_args.Add(new NSI::IntegerArg("mapping", mapping));
 	ctx.SetAttribute(m_shader_handle, shader_args);
 
-	parser->SetAssociatedHandle((BaseList2D*)C4DNode, m_handle.c_str());
+	//parser->SetAssociatedHandle((BaseList2D*)C4DNode, m_handle.c_str());
 
 }
 
@@ -116,8 +120,10 @@ void EnvironmentLightTranslator::SampleMotion(DL_SampleInfo* info, const char* H
 	BaseObject *obj = (BaseObject*)C4DNode;
 	BaseContainer *data = obj->GetDataInstance();
 
+	//Temporarily commenting out the code below/Filip
+	//Should this really be in SampleMotion and not in ConnectNodes?
 
-	Filename uv_shaderpath = Filename(GeGetPluginPath() + Filename("OSL") + Filename("uvCoordEnvironment.oso"));
+	/*Filename uv_shaderpath = Filename(GeGetPluginPath() + Filename("OSL") + Filename("uvCoordEnvironment.oso"));
 	std::string uv_handle = parser->GetUniqueName("Uv_Environment");
 	ctx.Create(uv_handle, "shader");
 	vector<char> c_shaderpath = StringToChars(uv_shaderpath.GetString());
@@ -138,7 +144,7 @@ void EnvironmentLightTranslator::SampleMotion(DL_SampleInfo* info, const char* H
 	std::string material_handle = parser->GetAssociatedHandle((BaseList2D*)material);
 	std::string to_erase = "attribute_";
 	eraseSubStr(material_handle, to_erase);
-	ctx.Connect(material_handle, "outColor", m_shader_handle, "i_texture");
+	ctx.Connect(material_handle, "outColor", m_shader_handle, "i_texture");*/
 
 
 }

@@ -23,7 +23,7 @@ void NSI_Export_Shader::CreateNSINodes(const char* Handle, const char* ParentTra
 	NSI::Context ctx(parser->GetContext());
 
 	BaseShader* shader = (BaseShader*)C4DNode;
-	m_shader_handle = parser->GetUniqueName(shader->GetTypeName().GetCStringCopy());
+	m_shader_handle = string(Handle); // parser->GetUniqueName(shader->GetTypeName().GetCStringCopy());
 	ctx.Create(m_shader_handle, "shader");
 	Filename shaderpath = Filename(GeGetPluginPath() + Filename("OSL") + Filename(shader->GetTypeName().GetCStringCopy()));
 	vector<char> c_shaderpath = StringToChars(shaderpath.GetString());
@@ -86,7 +86,7 @@ void NSI_Export_Shader::CreateNSINodes(const char* Handle, const char* ParentTra
 	
 	ctx.SetAttribute(m_shader_handle, args);
 
-	parser->SetAssociatedHandle((BaseList2D*)C4DNode, m_shader_handle.c_str());
+	//parser->SetAssociatedHandle((BaseList2D*)C4DNode, m_shader_handle.c_str());
 }
 
 void NSI_Export_Shader::ConnectNSINodes(const char* Handle, GeListNode* C4DNode, BaseDocument* doc, DL_SceneParser* parser)
@@ -128,7 +128,7 @@ void NSI_Export_Shader::ConnectNSINodes(const char* Handle, GeListNode* C4DNode,
 		if (!shader)
 			continue;
 
-		std::string link_shader = parser->GetAssociatedHandle(shader);
+		std::string link_shader = parser->GetHandleName(shader); // parser->GetAssociatedHandle(shader);
 		ctx.Connect(link_shader, osl_source_attr, m_shader_handle, osl_parameter_name);
 		
 		#ifdef VERBOSE

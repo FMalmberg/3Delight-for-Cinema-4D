@@ -38,11 +38,11 @@ string getDropDownNames(Description* const description, Int32 group_id, Int32 Se
 void Delight_OpenVDBTranslator::CreateNSINodes(const char* Handle, const char* ParentTransformHandle, GeListNode* C4DNode, BaseDocument* doc, DL_SceneParser* parser)
 {
 	NSI::Context ctx(parser->GetContext());
-	m_handle = string(parser->GetUniqueName("OpenVDBObject"));
+	m_handle = string(Handle); // string(parser->GetUniqueName("OpenVDBObject"));
 	m_transform_handle = string(ParentTransformHandle);
 	ctx.Create(m_handle, "volume");
 
-	std::string transform_handle2 = string(parser->GetUniqueName("transform"));
+	std::string transform_handle2 = string(Handle) + string("transform"); // string(parser->GetUniqueName("transform"));
 	ctx.Create(transform_handle2, "transform");
 
 	vector<double> change_direction
@@ -64,7 +64,7 @@ void Delight_OpenVDBTranslator::CreateNSINodes(const char* Handle, const char* P
 	ctx.Connect(m_handle, "", transform_handle2, "objects");
 
 
-	m_attributes_handle = string(parser->GetUniqueName("OpenVDBAttributes"));
+	m_attributes_handle = string(Handle) + string("attributes"); // string(parser->GetUniqueName("OpenVDBAttributes"));
 	ctx.Create(m_attributes_handle, "attributes");
 
 	BaseList2D* baselist = (BaseList2D*)C4DNode;
@@ -115,7 +115,7 @@ void Delight_OpenVDBTranslator::CreateNSINodes(const char* Handle, const char* P
 	args.Add(new NSI::DoubleArg("velocityscale", velocity_scale));
 	ctx.SetAttribute(m_handle, args);
 
-	m_shader_handle = string(parser->GetUniqueName("OpenVDBShader"));
+	m_shader_handle = string(Handle)+string("shader"); // string(parser->GetUniqueName("OpenVDBShader"));
 	ctx.Create(m_shader_handle, "shader");
 	args.clear();
 
@@ -303,7 +303,7 @@ void Delight_OpenVDBTranslator::CreateNSINodes(const char* Handle, const char* P
 		->SetValuePointer(&ramp_curve_interpolations[0]));
 
 	ctx.SetAttribute(m_shader_handle, args);
-	parser->SetAssociatedHandle((BaseList2D*)C4DNode, m_shader_handle.c_str());
+	//parser->SetAssociatedHandle((BaseList2D*)C4DNode, m_shader_handle.c_str());
 }
 
 void Delight_OpenVDBTranslator::ConnectNSINodes(const char* Handle, GeListNode* C4DNode, BaseDocument* doc, DL_SceneParser* parser)

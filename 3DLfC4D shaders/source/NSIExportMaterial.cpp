@@ -22,9 +22,9 @@
 void NSI_Export_Material::CreateNSINodes(const char* Handle, const char* ParentTransformHandle, GeListNode* C4DNode, BaseDocument* doc, DL_SceneParser* parser)
 {
 	NSI::Context ctx(parser->GetContext());
-	m_material_handle = string(parser->GetUniqueName("c4d_material"));
+	m_material_handle = string(Handle) + string("shader"); // string(parser->GetUniqueName("c4d_material"));
 	ctx.Create(m_material_handle, "shader");
-	m_material_attributes = string(parser->GetUniqueName("c4d_material_attribute"));
+	m_material_attributes = string(Handle); // string(parser->GetUniqueName("c4d_material_attribute"));
 	ctx.Create(m_material_attributes, "attributes");
 
 	BaseMaterial* material = (BaseMaterial*)C4DNode;
@@ -39,7 +39,7 @@ void NSI_Export_Material::CreateNSINodes(const char* Handle, const char* ParentT
 
 	ctx.SetAttribute(m_material_handle, NSI::StringArg("shaderfilename", std::string(&c_shaderpath[0])));
 
-	parser->SetAssociatedHandle((BaseList2D*)C4DNode, m_material_attributes.c_str());
+	//parser->SetAssociatedHandle((BaseList2D*)C4DNode, m_material_attributes.c_str());
 }
 
 void NSI_Export_Material::ConnectNSINodes(const char* Handle, GeListNode* C4DNode, BaseDocument* doc, DL_SceneParser* parser)
@@ -79,7 +79,8 @@ void NSI_Export_Material::ConnectNSINodes(const char* Handle, GeListNode* C4DNod
 			ctx.SetAttribute(m_material_handle, NSI::IntegerArg(use_shader, 1));
 			osl_source_attr = "outColor";
 		}
-		std::string link_shader = parser->GetAssociatedHandle(shader);
+		//std::string link_shader = parser->GetAssociatedHandle(shader);
+		std::string link_shader = parser->GetHandleName(shader);
 		ctx.Connect(link_shader, osl_source_attr, m_material_handle, osl_parameter_name);
 
 #ifdef VERBOSE

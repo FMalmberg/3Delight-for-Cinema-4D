@@ -245,7 +245,7 @@ void RenderOptionsHook::CreateNSINodes(BaseDocument* i_doc, DL_SceneParser* i_pa
 
 	if(pos!=-1)
 	docName = docName.substr(0, pos);
-	ApplicationOutput("Document @", docName.c_str());
+	//ApplicationOutput("Document @", docName.c_str());
 
 	Filename fn = settings->GetFilename(DL_DEFAULT_IMAGE_FILENAME);
 	std::string dir = fn.GetString().GetCStringCopy();
@@ -306,7 +306,8 @@ void RenderOptionsHook::CreateNSINodes(BaseDocument* i_doc, DL_SceneParser* i_pa
 		*/
 		if (ouputLayerDisplay)
 		{
-			m_layer_handle = string(i_parser->GetUniqueName("DisplayLayer"));
+			//m_layer_handle = string(i_parser->GetUniqueName("DisplayLayer"));
+			m_layer_handle = string("3dlfc4d::DisplayLayer") + std::to_string(i);
 			ctx.Create(m_layer_handle, "outputlayer");
 
 			ctx.SetAttribute(m_layer_handle, (
@@ -320,7 +321,7 @@ void RenderOptionsHook::CreateNSINodes(BaseDocument* i_doc, DL_SceneParser* i_pa
 				NSI::StringArg("filter", filter_output.c_str())
 				));
 
-			ctx.Connect(m_layer_handle, "", "scene_camera_screen", "outputlayers");
+			ctx.Connect(m_layer_handle, "", "3dlfc4d::scene_camera_screen", "outputlayers");
 			ctx.Connect(m_display_driver_handle, "", m_layer_handle, "outputdrivers");
 		}
 
@@ -331,7 +332,8 @@ void RenderOptionsHook::CreateNSINodes(BaseDocument* i_doc, DL_SceneParser* i_pa
 		*/
 		if (outputLayerFile)
 		{
-			m_layer_file = string(i_parser->GetUniqueName("file_outputlayer"));
+			//m_layer_file = string(i_parser->GetUniqueName("file_outputlayer"));
+			m_layer_file = string("3dlfc4d::file_outputlayer") + std::to_string(i);
 			ctx.Create(m_layer_file, "outputlayer");
 
 			ctx.SetAttribute(m_layer_file, (
@@ -350,7 +352,7 @@ void RenderOptionsHook::CreateNSINodes(BaseDocument* i_doc, DL_SceneParser* i_pa
 					NSI::StringArg("colorprofile", "srgb")
 					));
 			}
-			ctx.Connect(m_layer_file, "", "scene_camera_screen", "outputlayers");
+			ctx.Connect(m_layer_file, "", "3dlfc4d::scene_camera_screen", "outputlayers");
 			ctx.Connect(m_file_driver_handle, "", m_layer_file, "outputdrivers");
 		}
 
@@ -361,7 +363,8 @@ void RenderOptionsHook::CreateNSINodes(BaseDocument* i_doc, DL_SceneParser* i_pa
 		*/
 		if (ouputLayerImage)
 		{
-			m_layer_jpg = string(i_parser->GetUniqueName("image_outputlayer"));
+			//m_layer_jpg = string(i_parser->GetUniqueName("image_outputlayer"));
+			m_layer_jpg = string("3dlfc4d::image_outputlayer") + std::to_string(i);
 			ctx.Create(m_layer_jpg, "outputlayer");
 
 			ctx.SetAttribute(m_layer_jpg, (
@@ -376,7 +379,8 @@ void RenderOptionsHook::CreateNSINodes(BaseDocument* i_doc, DL_SceneParser* i_pa
 				));
 
 
-			m_output_driver_handle = string(i_parser->GetUniqueName("driver"));
+			//m_output_driver_handle = string(i_parser->GetUniqueName("driver"));
+			m_output_driver_handle = string("3dlfc4d::jpg_driver") + std::to_string(i);
 			ctx.Create(m_output_driver_handle, "outputdriver");
 
 			ctx.SetAttribute(m_output_driver_handle, (
@@ -385,7 +389,7 @@ void RenderOptionsHook::CreateNSINodes(BaseDocument* i_doc, DL_SceneParser* i_pa
 				));
 
 			ctx.Connect(m_output_driver_handle, "", m_layer_jpg, "outputdrivers");
-			ctx.Connect(m_layer_jpg, "", "scene_camera_screen", "outputlayers");
+			ctx.Connect(m_layer_jpg, "", "3dlfc4d::scene_camera_screen", "outputlayers");
 		}
 	}
 }

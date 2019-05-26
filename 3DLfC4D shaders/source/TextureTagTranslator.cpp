@@ -18,7 +18,8 @@ void TextureTagTranslator::ConnectNSINodes(const char* Handle, GeListNode* C4DNo
 
 	BaseMaterial * material = tag->GetMaterial();
 	if (material) {
-		string attributes_handle = string(parser->GetAssociatedHandle((BaseList2D*)material));
+		//string attributes_handle = string(parser->GetAssociatedHandle((BaseList2D*)material));
+		string attributes_handle = parser->GetHandleName((BaseList2D*)material);
 		if (attributes_handle != "") {
 			ctx.Connect(attributes_handle, "", transform_handle, "geometryattributes");
 		}

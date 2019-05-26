@@ -58,8 +58,9 @@ void VisibilityTagTranslator::CreateNSINodes(const char* Handle, const char* Par
 		matte = 1;
 	}
 
-	//Create an attributes node, and connect it to the mesh
-	string attributes_handle = string(parser->GetUniqueName("visibility_attributes"));
+	//Create an attributes node, and connect it to the parent transform
+	//string attributes_handle = string(parser->GetUniqueName("visibility_attributes"));
+	string attributes_handle = string(Handle);
 	ctx.Create(attributes_handle, "attributes");
 	ctx.SetAttribute(attributes_handle, (
 		NSI::IntegerArg("visibility.camera", camera_visibility), //,
