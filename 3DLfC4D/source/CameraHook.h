@@ -8,7 +8,7 @@
 class CameraHook:public DL_HookPlugin{
 public:
 	void CreateNSINodes(BaseDocument* doc, DL_SceneParser* parser);
-	void SampleMotion(DL_SampleInfo* info, BaseDocument* document, DL_SceneParser* parser);
+	void SampleAttributes(DL_SampleInfo* info, BaseDocument* document, DL_SceneParser* parser);
 
 private:
 

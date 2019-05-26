@@ -13,7 +13,7 @@ private:
 
 public:
 	Transform(BaseObject* object, DL_SceneParser* parser, std::string parent);
-	void SampleMotion(DL_SampleInfo* info,  BaseDocument* document, DL_SceneParser* parser);
+	void SampleAttributes(DL_SampleInfo* info,  BaseDocument* document, DL_SceneParser* parser);
 	std::string GetHandle();
 };
 

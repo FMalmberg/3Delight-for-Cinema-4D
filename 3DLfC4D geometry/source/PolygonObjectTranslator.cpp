@@ -33,7 +33,7 @@ int GetUVIndex(int poly_index, float u, float v, map<int, vector<int> > & conmap
 	return result;
 }
 
-PolygonObject* GetMeshFromNode(GeListNode* C4DNode){
+PolygonObject* GetMeshFromNode(BaseList2D* C4DNode){
 	BaseObject* obj=(BaseObject*)C4DNode;
 
 	//By default, we assume that the node is a polygon object and perform a direct cast
@@ -64,7 +64,7 @@ PolygonObject* GetMeshFromNode(GeListNode* C4DNode){
 	return mesh;
 }
 
-void PolygonObjectTranslator::CreateNSINodes(const char* Handle, const char* ParentTransformHandle, GeListNode* C4DNode, BaseDocument* doc, DL_SceneParser* parser){
+void PolygonObjectTranslator::CreateNSINodes(const char* Handle, const char* ParentTransformHandle, BaseList2D* C4DNode, BaseDocument* doc, DL_SceneParser* parser){
 	NSI::Context ctx(parser->GetContext());
 
 	skip = false;
@@ -259,7 +259,7 @@ void PolygonObjectTranslator::CreateNSINodes(const char* Handle, const char* Par
 
 }
 
-void PolygonObjectTranslator::SampleMotion(DL_SampleInfo* info, const char* Handle, GeListNode* C4DNode, BaseDocument* doc, DL_SceneParser* parser){
+void PolygonObjectTranslator::SampleAttributes(DL_SampleInfo* info, const char* Handle, BaseList2D* C4DNode, BaseDocument* doc, DL_SceneParser* parser){
 	if (skip){ return; }
 
 	NSI::Context ctx(parser->GetContext());

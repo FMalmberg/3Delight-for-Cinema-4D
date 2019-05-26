@@ -19,7 +19,7 @@
 	materials' parameter has used that shader and then use nsiConnect to connect
 	that shader with it's material and parameter
 */
-void NSI_Export_Material::CreateNSINodes(const char* Handle, const char* ParentTransformHandle, GeListNode* C4DNode, BaseDocument* doc, DL_SceneParser* parser)
+void NSI_Export_Material::CreateNSINodes(const char* Handle, const char* ParentTransformHandle, BaseList2D* C4DNode, BaseDocument* doc, DL_SceneParser* parser)
 {
 	NSI::Context ctx(parser->GetContext());
 	m_material_handle = string(Handle) + string("shader"); // string(parser->GetUniqueName("c4d_material"));
@@ -42,7 +42,7 @@ void NSI_Export_Material::CreateNSINodes(const char* Handle, const char* ParentT
 	//parser->SetAssociatedHandle((BaseList2D*)C4DNode, m_material_attributes.c_str());
 }
 
-void NSI_Export_Material::ConnectNSINodes(const char* Handle, GeListNode* C4DNode, BaseDocument* doc, DL_SceneParser* parser)
+void NSI_Export_Material::ConnectNSINodes(const char* Handle, BaseList2D* C4DNode, BaseDocument* doc, DL_SceneParser* parser)
 {
 	NSI::Context ctx(parser->GetContext());
 
@@ -89,7 +89,7 @@ void NSI_Export_Material::ConnectNSINodes(const char* Handle, GeListNode* C4DNod
 	}
 }
 
-void NSI_Export_Material::SampleMotion(DL_SampleInfo* info, const char* Handle, GeListNode* C4DNode, BaseDocument* doc, DL_SceneParser* parser) {
+void NSI_Export_Material::SampleAttributes(DL_SampleInfo* info, const char* Handle, BaseList2D* C4DNode, BaseDocument* doc, DL_SceneParser* parser) {
 	if (info->sample > 0) {
 		return; //Don't do motion blur sampling of shader parameters, only first sample is exported
 	}

@@ -11,7 +11,7 @@ public:
 	virtual void Init(BaseDocument* doc, DL_SceneParser* parser){}
 	virtual void CreateNSINodes(BaseDocument* doc, DL_SceneParser* parser){}
 	virtual void ConnectNSINodes(BaseDocument* doc, DL_SceneParser* parser){}
-	virtual void SampleMotion(DL_SampleInfo* info, BaseDocument* doc, DL_SceneParser* parser){}
+	virtual void SampleAttributes(DL_SampleInfo* info, BaseDocument* doc, DL_SceneParser* parser){}
 };
 
 template<class T>

@@ -6,7 +6,7 @@
 #include <vector>
 using namespace std;
 
-void DL_material_translator::CreateNSINodes(const char* Handle, const char* ParentTransformHandle, GeListNode* C4DNode, BaseDocument* doc, DL_SceneParser* parser) {
+void DL_material_translator::CreateNSINodes(const char* Handle, const char* ParentTransformHandle, BaseList2D* C4DNode, BaseDocument* doc, DL_SceneParser* parser) {
 	NSI::Context ctx(parser->GetContext());
 
 	//Create an attributes node
@@ -26,7 +26,7 @@ void DL_material_translator::CreateNSINodes(const char* Handle, const char* Pare
 	//parser->SetAssociatedHandle(material, attributes_handle.c_str());
 }
 
-void DL_material_translator::ConnectNSINodes(const char* Handle, GeListNode* C4DNode, BaseDocument* doc, DL_SceneParser* parser) {
+void DL_material_translator::ConnectNSINodes(const char* Handle, BaseList2D* C4DNode, BaseDocument* doc, DL_SceneParser* parser) {
 	NSI::Context ctx(parser->GetContext());
 
 	BaseMaterial * material = (BaseMaterial*)C4DNode;

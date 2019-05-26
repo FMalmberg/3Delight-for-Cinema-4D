@@ -188,6 +188,7 @@ bool SceneParser::InitScene(bool animate, long frame) {
 	//Create hooks
 	hooks = PM.GetHooks();
 	for (long i = 0; i<hooks.size(); i++) {
+		hooks[i]->Init(doc, this);
 		hooks[i]->CreateNSINodes(doc, this);
 	}
 
@@ -221,12 +222,12 @@ void SceneParser::SampleFrameMotion() {
 
 		AnimateDoc(doc, motionSampleTimes[s]);
 		for (long i = 0; i<hooks.size(); i++) {
-			hooks[i]->SampleMotion(&info, doc, this);
+			hooks[i]->SampleAttributes(&info, doc, this);
 		}
 
 		for (long i = 0; i<transforms.size(); i++) {
 
-			transforms[i].SampleMotion(&info, doc, this);
+			transforms[i].SampleAttributes(&info, doc, this);
 		}
 
 		DL_Translator* translator;
@@ -235,7 +236,7 @@ void SceneParser::SampleFrameMotion() {
 			BaseList2D* c4d_node = nodes[i].GetC4DNode(doc);
 			if (translator && c4d_node) {
 				string handle = GetHandleName(c4d_node);
-				translator->SampleMotion(&info, handle.c_str(),nodes[i].GetC4DNode(doc), doc, this);
+				translator->SampleAttributes(&info, handle.c_str(),nodes[i].GetC4DNode(doc), doc, this);
 			}
 		}
 
@@ -255,11 +256,11 @@ void SceneParser::InteractiveUpdate() {
 	info.sample_time = 0;
 
 	for (long i = 0; i<hooks.size(); i++) {
-		hooks[i]->SampleMotion(&info, doc, this);
+		hooks[i]->SampleAttributes(&info, doc, this);
 	}
 
 	for (long i = 0; i<transforms.size(); i++) {
-		transforms[i].SampleMotion(&info, doc, this);
+		transforms[i].SampleAttributes(&info, doc, this);
 	}
 
 	DL_Translator* translator;
@@ -273,7 +274,7 @@ void SceneParser::InteractiveUpdate() {
 			translator = nodes[i].GetTranslator();
 			if (translator && c4d_node) {
 				string handle = GetHandleName(c4d_node);
-				translator->SampleMotion(&info, handle.c_str(), nodes[i].GetC4DNode(doc), doc, this);
+				translator->SampleAttributes(&info, handle.c_str(), nodes[i].GetC4DNode(doc), doc, this);
 			}
 		}
 	}
@@ -381,7 +382,7 @@ bool SceneParser::Parse(BaseDocument* document, long frame){
 		if(i!=0){
 			AnimateDoc(doc,motionSampleTimes[i]);
 		}
-		SampleMotion(i, doc);
+		//SampleAttributes(i, doc);
 	}
 
 	hooks.clear();

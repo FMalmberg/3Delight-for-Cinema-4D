@@ -5,7 +5,7 @@
 #include "DL_Utilities.h"
 #include "nsi.hpp"
 
-void GlassShaderTranslator::CreateNSINodes(const char* Handle, const char* ParentTransformHandle, GeListNode* C4DNode, BaseDocument* doc, DL_SceneParser* parser){
+void GlassShaderTranslator::CreateNSINodes(const char* Handle, const char* ParentTransformHandle, BaseList2D* C4DNode, BaseDocument* doc, DL_SceneParser* parser){
 	NSI::Context ctx(parser->GetContext());
 
 	ApplicationOutput(ParentTransformHandle);
@@ -60,7 +60,7 @@ void GlassShaderTranslator::CreateNSINodes(const char* Handle, const char* Paren
 	//parser->SetAssociatedHandle((BaseList2D*)C4DNode, shader_handle.c_str());
 }
 
-void GlassShaderTranslator::ConnectNSINodes(const char* Handle, GeListNode* C4DNode, BaseDocument* doc, DL_SceneParser* parser){
+void GlassShaderTranslator::ConnectNSINodes(const char* Handle, BaseList2D* C4DNode, BaseDocument* doc, DL_SceneParser* parser){
 
 	NSI::Context ctx(parser->GetContext());
 

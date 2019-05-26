@@ -18,7 +18,7 @@
 	ConnectNSINodes() will check for the if any of the used shaders on the material 
 	have a subshader linked with them.
 */
-void NSI_Export_Shader::CreateNSINodes(const char* Handle, const char* ParentTransformHandle, GeListNode* C4DNode, BaseDocument* doc, DL_SceneParser* parser)
+void NSI_Export_Shader::CreateNSINodes(const char* Handle, const char* ParentTransformHandle, BaseList2D* C4DNode, BaseDocument* doc, DL_SceneParser* parser)
 {
 	NSI::Context ctx(parser->GetContext());
 
@@ -89,7 +89,7 @@ void NSI_Export_Shader::CreateNSINodes(const char* Handle, const char* ParentTra
 	//parser->SetAssociatedHandle((BaseList2D*)C4DNode, m_shader_handle.c_str());
 }
 
-void NSI_Export_Shader::ConnectNSINodes(const char* Handle, GeListNode* C4DNode, BaseDocument* doc, DL_SceneParser* parser)
+void NSI_Export_Shader::ConnectNSINodes(const char* Handle, BaseList2D* C4DNode, BaseDocument* doc, DL_SceneParser* parser)
 {
 	/*
 		In this function we search the applied shaders if they have any other shader

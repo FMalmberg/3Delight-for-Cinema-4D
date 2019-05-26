@@ -84,7 +84,7 @@ void CameraHook::CreateNSINodes(BaseDocument* doc, DL_SceneParser* parser){
 
 }
 
-void CameraHook::SampleMotion(DL_SampleInfo* info,  BaseDocument* document, DL_SceneParser* parser){
+void CameraHook::SampleAttributes(DL_SampleInfo* info,  BaseDocument* document, DL_SceneParser* parser){
 	Float aperture=camera->GetAperture();
 	Float focus=camera->GetFocus();
 	float horizontal_fov=RadToDeg(2*ATan(0.5*aperture/focus));

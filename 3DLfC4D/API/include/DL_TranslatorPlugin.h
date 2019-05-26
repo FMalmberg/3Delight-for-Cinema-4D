@@ -10,10 +10,10 @@ public:
 	virtual ~DL_TranslatorPlugin(){  };
 	virtual void Free(){ delete this; }
 
-	virtual void Init(GeListNode* C4DNode, BaseDocument* doc, DL_SceneParser* parser){}
-	virtual void CreateNSINodes(const char* Handle, const char* ParentTransformHandle, GeListNode* C4DNode, BaseDocument* doc, DL_SceneParser* parser){}
-	virtual void ConnectNSINodes(const char* Handle, GeListNode* C4DNode, BaseDocument* doc,DL_SceneParser* parser){}
-	virtual void SampleMotion(DL_SampleInfo* info, const char* Handle, GeListNode* C4DNode, BaseDocument* doc,DL_SceneParser* parser){}
+	virtual void Init(BaseList2D* C4DNode, BaseDocument* doc, DL_SceneParser* parser){}
+	virtual void CreateNSINodes(const char* Handle, const char* ParentTransformHandle, BaseList2D* C4DNode, BaseDocument* doc, DL_SceneParser* parser){}
+	virtual void ConnectNSINodes(const char* Handle, BaseList2D* C4DNode, BaseDocument* doc,DL_SceneParser* parser){}
+	virtual void SampleAttributes(DL_SampleInfo* info, const char* Handle, BaseList2D* C4DNode, BaseDocument* doc,DL_SceneParser* parser){}
 };
 
 template<typename T>

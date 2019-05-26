@@ -11,8 +11,8 @@
 class PolygonObjectTranslator : public DL_TranslatorPlugin{
 
 public:
-	virtual void CreateNSINodes(const char* Handle, const char* ParentTransformHandle, GeListNode* C4DNode, BaseDocument* doc, DL_SceneParser* parser);
-	virtual void SampleMotion(DL_SampleInfo* info, const char* Handle, GeListNode* C4DNode, BaseDocument* doc,DL_SceneParser* parser);
+	virtual void CreateNSINodes(const char* Handle, const char* ParentTransformHandle, BaseList2D* C4DNode, BaseDocument* doc, DL_SceneParser* parser);
+	virtual void SampleAttributes(DL_SampleInfo* info, const char* Handle, BaseList2D* C4DNode, BaseDocument* doc,DL_SceneParser* parser);
 
 private:
 	bool skip;
@@ -23,6 +23,8 @@ private:
 	int pointcount;
 	int polycount;
 	int n_facevertices;
+
+
 /*	std::vector< std::vector<float> > P_samples;
 	std::vector< std::vector<float> > N_samples;
 	bool has_uv;

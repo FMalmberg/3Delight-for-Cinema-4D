@@ -7,7 +7,7 @@
 #include "nsi.hpp"
 //#include "Util.h"
 
-void EnvironmentLightTranslator::CreateNSINodes(const char* Handle, const char* ParentTransformHandle, GeListNode* C4DNode, BaseDocument* doc, DL_SceneParser* parser){
+void EnvironmentLightTranslator::CreateNSINodes(const char* Handle, const char* ParentTransformHandle, BaseList2D* C4DNode, BaseDocument* doc, DL_SceneParser* parser){
 	NSI::Context ctx(parser->GetContext());
 
 	//Create a mesh and connect it to the parent transform
@@ -79,7 +79,7 @@ void EnvironmentLightTranslator::CreateNSINodes(const char* Handle, const char* 
 
 }
 
-void EnvironmentLightTranslator::SampleMotion(DL_SampleInfo* info, const char* Handle, GeListNode* C4DNode, BaseDocument* doc,DL_SceneParser* parser){
+void EnvironmentLightTranslator::SampleAttributes(DL_SampleInfo* info, const char* Handle, BaseList2D* C4DNode, BaseDocument* doc,DL_SceneParser* parser){
 	
 	NSI::Context ctx(parser->GetContext());
 

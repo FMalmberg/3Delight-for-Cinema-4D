@@ -6,7 +6,7 @@
 
 //Forward  declarations
 class BaseDocument;
-class GeListNode;
+class BaseList2D;
 
 //virtual interface
 class DL_Translator{
@@ -14,10 +14,10 @@ class DL_Translator{
 public:
 	virtual void Free() = 0;
 
-	virtual void Init(GeListNode* C4DNode, BaseDocument* doc, DL_SceneParser* parser) = 0;
-	virtual void CreateNSINodes(const char* Handle, const char* ParentTransformHandle, GeListNode* C4DNode, BaseDocument* doc, DL_SceneParser* parser) = 0;
-	virtual void ConnectNSINodes(const char* Handle, GeListNode* C4DNode, BaseDocument* doc,DL_SceneParser* parser) = 0;
-	virtual void SampleMotion(DL_SampleInfo* info, const char* Handle, GeListNode* C4DNode, BaseDocument* doc,DL_SceneParser* parser) = 0;
+	virtual void Init(BaseList2D* C4DNode, BaseDocument* doc, DL_SceneParser* parser) = 0;
+	virtual void CreateNSINodes(const char* Handle, const char* ParentTransformHandle, BaseList2D* C4DNode, BaseDocument* doc, DL_SceneParser* parser) = 0;
+	virtual void ConnectNSINodes(const char* Handle, BaseList2D* C4DNode, BaseDocument* doc,DL_SceneParser* parser) = 0;
+	virtual void SampleAttributes(DL_SampleInfo* info, const char* Handle, BaseList2D* C4DNode, BaseDocument* doc,DL_SceneParser* parser) = 0;
 
 };
 

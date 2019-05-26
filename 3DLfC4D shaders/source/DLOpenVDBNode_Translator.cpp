@@ -35,7 +35,7 @@ string getDropDownNames(Description* const description, Int32 group_id, Int32 Se
 }
 
 
-void Delight_OpenVDBTranslator::CreateNSINodes(const char* Handle, const char* ParentTransformHandle, GeListNode* C4DNode, BaseDocument* doc, DL_SceneParser* parser)
+void Delight_OpenVDBTranslator::CreateNSINodes(const char* Handle, const char* ParentTransformHandle, BaseList2D* C4DNode, BaseDocument* doc, DL_SceneParser* parser)
 {
 	NSI::Context ctx(parser->GetContext());
 	m_handle = string(Handle); // string(parser->GetUniqueName("OpenVDBObject"));
@@ -306,7 +306,7 @@ void Delight_OpenVDBTranslator::CreateNSINodes(const char* Handle, const char* P
 	//parser->SetAssociatedHandle((BaseList2D*)C4DNode, m_shader_handle.c_str());
 }
 
-void Delight_OpenVDBTranslator::ConnectNSINodes(const char* Handle, GeListNode* C4DNode, BaseDocument* doc, DL_SceneParser* parser)
+void Delight_OpenVDBTranslator::ConnectNSINodes(const char* Handle, BaseList2D* C4DNode, BaseDocument* doc, DL_SceneParser* parser)
 {
 	NSI::Context ctx(parser->GetContext());
 	ctx.Connect(m_shader_handle, "", m_attributes_handle, "volumeshader");

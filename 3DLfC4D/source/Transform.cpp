@@ -13,7 +13,7 @@ Transform::Transform(BaseObject* object, DL_SceneParser* parser, std::string par
 	ctx.Connect(handle, "", parent, "objects");
 }
 
-void Transform::SampleMotion(DL_SampleInfo* info,  BaseDocument* document, DL_SceneParser* parser){
+void Transform::SampleAttributes(DL_SampleInfo* info,  BaseDocument* document, DL_SceneParser* parser){
 	NSI::Context ctx(parser->GetContext());
 
 	//Sample transform matrix
@@ -23,8 +23,6 @@ void Transform::SampleMotion(DL_SampleInfo* info,  BaseDocument* document, DL_Sc
 	NSI::Argument xform("transformationmatrix");
 	xform.SetType(NSITypeDoubleMatrix);
 	xform.SetValuePointer((void*)&v[0]);
-
-	
 
 	ctx.SetAttributeAtTime(handle, info->sample_time, (
 			xform

@@ -32,7 +32,7 @@ void TraverseShaders(BaseShader* shader, std::string uv_handle, DL_SceneParser* 
 	TraverseShaders(shader->GetNext(), uv_handle, parser);
 }
 
-void EnvironmentLightTranslator::CreateNSINodes(const char* Handle, const char* ParentTransformHandle, GeListNode* C4DNode, BaseDocument* doc, DL_SceneParser* parser){
+void EnvironmentLightTranslator::CreateNSINodes(const char* Handle, const char* ParentTransformHandle, BaseList2D* C4DNode, BaseDocument* doc, DL_SceneParser* parser){
 
 	NSI::Context ctx(parser->GetContext());
 
@@ -113,7 +113,7 @@ void EnvironmentLightTranslator::CreateNSINodes(const char* Handle, const char* 
 }
 
 
-void EnvironmentLightTranslator::SampleMotion(DL_SampleInfo* info, const char* Handle, GeListNode* C4DNode, BaseDocument* doc,DL_SceneParser* parser){
+void EnvironmentLightTranslator::SampleAttributes(DL_SampleInfo* info, const char* Handle, BaseList2D* C4DNode, BaseDocument* doc,DL_SceneParser* parser){
 	
 	NSI::Context ctx(parser->GetContext());
 
@@ -121,7 +121,7 @@ void EnvironmentLightTranslator::SampleMotion(DL_SampleInfo* info, const char* H
 	BaseContainer *data = obj->GetDataInstance();
 
 	//Temporarily commenting out the code below/Filip
-	//Should this really be in SampleMotion and not in ConnectNodes?
+	//Should this really be in SampleAttributes and not in ConnectNodes?
 
 	/*Filename uv_shaderpath = Filename(GeGetPluginPath() + Filename("OSL") + Filename("uvCoordEnvironment.oso"));
 	std::string uv_handle = parser->GetUniqueName("Uv_Environment");
