@@ -112,25 +112,22 @@ void EnvironmentLightTranslator::CreateNSINodes(const char* Handle, const char* 
 
 }
 
-
-void EnvironmentLightTranslator::SampleAttributes(DL_SampleInfo* info, const char* Handle, BaseList2D* C4DNode, BaseDocument* doc,DL_SceneParser* parser){
-	
+void EnvironmentLightTranslator::ConnectNSINodes(const char* Handle, BaseList2D* C4DNode, BaseDocument* doc, DL_SceneParser* parser)
+{
 	NSI::Context ctx(parser->GetContext());
 
 	BaseObject *obj = (BaseObject*)C4DNode;
 	BaseContainer *data = obj->GetDataInstance();
 
-	//Temporarily commenting out the code below/Filip
-	//Should this really be in SampleAttributes and not in ConnectNodes?
-
-	/*Filename uv_shaderpath = Filename(GeGetPluginPath() + Filename("OSL") + Filename("uvCoordEnvironment.oso"));
-	std::string uv_handle = parser->GetUniqueName("Uv_Environment");
+	Filename uv_shaderpath = Filename(GeGetPluginPath() + Filename("OSL") + Filename("uvCoordEnvironment.oso"));
+	std::string uv_handle = string(Handle)+string("uv_Coord");
 	ctx.Create(uv_handle, "shader");
 	vector<char> c_shaderpath = StringToChars(uv_shaderpath.GetString());
 
 	ctx.SetAttribute(uv_handle, NSI::StringArg("shaderfilename", std::string(&c_shaderpath[0])));
 
-
+	//Get The connected Material to the Sky object (Environment). 
+	//Materials can have hdri textures (bitmap) connected.
 	TextureTag* tag = static_cast<TextureTag*>(obj->GetTag(Ttexture));
 	if (!tag)
 		return;
@@ -141,10 +138,6 @@ void EnvironmentLightTranslator::SampleAttributes(DL_SampleInfo* info, const cha
 	BaseList2D* shader = material->GetFirstShader();
 	TraverseShaders((BaseShader*)shader, uv_handle, parser);
 
-	std::string material_handle = parser->GetAssociatedHandle((BaseList2D*)material);
-	std::string to_erase = "attribute_";
-	eraseSubStr(material_handle, to_erase);
-	ctx.Connect(material_handle, "outColor", m_shader_handle, "i_texture");*/
-
-
+	std::string material_handle = parser->GetHandleName((BaseList2D*)material)+string("shader");
+	ctx.Connect(material_handle, "outColor", m_shader_handle, "i_texture");
 }
