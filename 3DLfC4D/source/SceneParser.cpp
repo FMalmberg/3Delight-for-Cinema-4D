@@ -558,7 +558,9 @@ void SceneParser::TraverseShaders(BaseShader* shader, BaseDocument* doc){
 	DL_Translator* translator = n.GetTranslator();
 	if (translator){
 		nodes.push_back(n);
-		translator->CreateNSINodes("", "",shader, doc, this);
+		string handle = GetHandleName(shader);
+		translator->Init(shader, doc, this);
+		translator->CreateNSINodes(handle.c_str(), "",shader, doc, this);
 	}
 
 	TraverseShaders(shader->GetDown(),doc);
