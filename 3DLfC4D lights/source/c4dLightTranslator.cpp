@@ -828,8 +828,12 @@ void c4dLightTranslator::SampleAttributes(DL_SampleInfo* info, const char* Handl
 	else if (data.GetInt32() == LIGHT_TYPE_OMNI)
 	{
 
-		obj->GetParameter(DescID(LIGHT_DETAILS_OUTERRADIUS), data, DESCFLAGS_GET::NONE);
-		float radius = data.GetFloat();
+		//obj->GetParameter(DescID(LIGHT_DETAILS_OUTERRADIUS), data, DESCFLAGS_GET::NONE);
+		//float radius = data.GetFloat();
+		
+		//Set radius to a small, but finite value.
+		//If control over the radius is desired, the user can select to use a spherical area light instead
+		float radius = 0.1;
 
 		ctx.SetAttributeAtTime(m_handle, info->sample_time, (
 			NSI::FloatArg("width", radius)
