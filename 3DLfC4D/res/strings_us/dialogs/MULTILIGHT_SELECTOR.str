@@ -1,0 +1,11 @@
+// C4D-DialogResource
+
+DIALOGSTRINGS MULTILIGHT_SELECTOR
+{
+	TDLG "Multi-Light Selector";
+	MULTI_LIGHT "Multi-Light";
+	MULTILIGHT "MultiLight";
+	DL_DISPLAY_LIGHTS "Display All Lights";
+	DL_LIGHTS_REFRESH_NAME "Refresh";
+	DL_MULTI_LIGHT_TREEVIEW "MultiLight";
+}

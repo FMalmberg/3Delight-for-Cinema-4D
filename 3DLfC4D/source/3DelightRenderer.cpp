@@ -10,6 +10,8 @@
 #include <assert.h> 
 #include <algorithm>
 #include "SceneParser.h"
+#include <customgui_inexclude.h>
+
 
 void NSIErrorHandlerC4D(void *userdata, int level, int code, const char *message)
 {
@@ -56,6 +58,8 @@ bool Render(BaseDocument* doc, long frame, RENDER_MODE mode, bool progressive, B
 		streamParam.name = "errorhandler";
 		streamParam.data = &eh;
 		streamParam.type = NSITypePointer;
+		streamParam.count = 1;
+		streamParam.flags = 0;
 		context_handle = NSIBegin(1, &streamParam);
 	}
 	else if (action == "Export")
@@ -213,6 +217,7 @@ Bool RenderSettings::Message(GeListNode* i_node, Int32 i_type, void* i_data)
 			if (dc->_descId[0].id == DL_CREATE_RENDER_SETTINGS) //If render button is clicked
 			{
 				dldata->SetString(DL_ISCLICKED, "Render"_s);
+				Render(doc, frame, PREVIEW_RENDER, true, dldata);
 			}
 			//If Export to NSI File button is clicked
 			if (dc->_descId[0].id == DL_EXPORT_RENDER_SETTINGS) 
@@ -227,9 +232,8 @@ Bool RenderSettings::Message(GeListNode* i_node, Int32 i_type, void* i_data)
 					folder.FileSelect(FILESELECTTYPE::ANYTHING, FILESELECT::SAVE, "Select Folder"_s);
 					dldata->SetFilename(DL_FOLDER_OUTPUT, folder);
 				}
+				Render(doc, frame, PREVIEW_RENDER, true, dldata);
 			}
-			Render(doc, frame, PREVIEW_RENDER, true,dldata);
-			break;
 		}
 	}
 	return true;
@@ -278,15 +282,15 @@ Bool RenderSettings::Init(GeListNode *i_node)
 	dldata->SetInt32(DL_BATCH_OUTPUT_MODE, DL_ENABLE_AS_SELECTED);
 	dldata->SetInt32(DL_INTERACTIVE_OUTPUT_MODE, DL_ENABLE_AS_SELECTED_INTERACTIVE);
 
+	
+	Filename file = GeGetPluginPath() + Filename("NSI");
+	dldata->SetFilename(DL_DEFAULT_IMAGE_FILENAME, file);
+
 	dldata->SetInt32(DL_RESOLUTION, DL_HALF);
 	dldata->SetInt32(DL_SAMPLING, DL_TEN_PERCENT);
 	dldata->SetFloat(DL_PIXEL_ASPECT_RATIO, 0);
+
 	dldata->RemoveData(DL_EIGHT_BIT);
-
-	Filename fn = GeGetStartupPath();
-	fn = fn + "\NSI";
-	dldata->SetFilename(DL_DEFAULT_IMAGE_FILENAME, fn);
-
 
 	return TRUE;
 }

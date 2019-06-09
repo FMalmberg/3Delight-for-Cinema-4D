@@ -21,6 +21,7 @@ STRINGTABLE myres
 	DL_FOLDER_OUTPUT "";
 	DL_DEFAULT_IMAGE_BITDEPTH "";
 
+	DL_CUSTOM_MULTI_LIGHT "";
 	DL_GROUP_QUALITY "Quality";
 	DL_TEXTEDIT  "";
 	DL_SHADING_SAMPLES "Shading Samples";
@@ -120,6 +121,7 @@ STRINGTABLE myres
 	IMAGE_04_OFF "Image 14";
 	GV_ABS_INPUT "ABSINPUT";
 	GV_ABS_OUTPUT  "ABSOUTPUT";
+	DL_MULTILIGHT_GROUP "Multi-Light";
 
 
 	DL_ENABLE_AS_SELECTED_INTERACTIVE   "Enable file output as selected";
@@ -187,4 +189,5 @@ STRINGTABLE myres
 	DL_RAYCACHE				"Use Raycache";
 	DL_GROUP_LWF			"Color management";
 	DL_GAMMA				"Monitor gamma";
+	
 }
