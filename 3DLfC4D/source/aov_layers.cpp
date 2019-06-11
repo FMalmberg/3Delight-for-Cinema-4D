@@ -6,6 +6,7 @@
 #include <string>
 #include <algorithm>
 #include <map>
+#include <tuple>
 #include "3DelightRenderer.h"
 
 using namespace std;
@@ -14,6 +15,7 @@ using namespace std;
 #define ID_CUSTOMDATATYPE_LAYERS 1245668
 
 
+//AOV Structure
 struct LayersData
 {
 	Int32	id;
@@ -54,9 +56,9 @@ static void ApplicationOutputF(const Char* i_format, ...)
 
 	va_start(arp, i_format);
 	vsprintf_safe(buf, sizeof(buf), i_format, arp);
-	ApplicationOutput(String(buf));
 	va_end(arp);
 }
+
 
 /**
 	- Description stores information on the parameters found
@@ -91,34 +93,21 @@ Bool iCustomDataTypeAOV::CreateLayout()
 	{
 		m_aov_listview.AttachListView(this, DL_SELECTED_LAYERS_LISTVIEW);
 	}
-
 	m_dialog.m_data = &m_data;
+	
+	
 	return SUPER::CreateLayout();
 };
 
-/**
-	This function is used to enable or disable buttons based on user activities
-*/
-void iCustomDataTypeAOV::m_update_buttons()
-{
-	if (!m_selection) 
-	{
-		Enable(AOV_ADD, FALSE);
-		return;
-	}
-	Enable(AOV_REMOVE, m_aov_listview.GetSelection(m_selection) != 0);
-	Enable(AOV_DUPLICATE, m_aov_listview.GetSelection(m_selection) != 0);
-	Enable(AOV_VIEW, m_aov_listview.GetSelection(m_selection) != 0);
-}
 
 
 Bool iCustomDataTypeAOV::InitValues()
 {
 	BaseContainer layout;
 	BaseContainer data;
+	BaseContainer multilight_data;
 	Int32 ItemId = 1;
 	m_aov_listview.SetProperty(SLV_MULTIPLESELECTION, true);
-
 	layout = BaseContainer();
 	layout.SetInt32('Dspl', LV_COLUMN_BMP);
 	layout.SetInt32('Fldr', LV_COLUMN_BMP);
@@ -142,7 +131,7 @@ Bool iCustomDataTypeAOV::InitValues()
 		data.SetString('name', maxon::String(name));
 		data.SetInt32('Dspl', m_data.m_output_to_framebuffer[Position] ? DL_DISPLAY_ON : DL_DISPLAY_OFF);
 		data.SetInt32('Fldr', m_data.m_output_to_file[Position] ? DL_FOLDER_ON : DL_FOLDER_OFF);
-		data.SetInt32('Jpg',  m_data.m_output_to_jpeg[Position] ? DL_JPG_ON : DL_JPG_OFF);
+		data.SetInt32('Jpg', m_data.m_output_to_jpeg[Position] ? DL_JPG_ON : DL_JPG_OFF);
 		m_aov_listview.SetItem(ItemId++, data);
 	}
 
@@ -150,6 +139,25 @@ Bool iCustomDataTypeAOV::InitValues()
 	m_update_buttons();
 	return SUPER::InitValues();
 };
+
+
+
+/**
+	This function is used to enable or disable buttons based on user activities
+*/
+void iCustomDataTypeAOV::m_update_buttons()
+{
+	if (!m_selection) 
+	{
+		Enable(AOV_ADD, FALSE);
+		return;
+	}
+	Enable(AOV_REMOVE, m_aov_listview.GetSelection(m_selection) != 0);
+	Enable(AOV_DUPLICATE, m_aov_listview.GetSelection(m_selection) != 0);
+	Enable(AOV_VIEW, m_aov_listview.GetSelection(m_selection) != 0);
+	Enable(LV_COLUMN_TEXT, false);
+}
+
 
 AOVDialog::AOVDialog()
 {
@@ -248,6 +256,12 @@ Bool AOVDialog::InitValues()
 Int32 AOVDialog::Message(const BaseContainer& i_msg, BaseContainer& i_result)
 {
 	return GeDialog::Message(i_msg, i_result);
+}
+
+
+Int32 iCustomDataTypeAOV::Message(const BaseContainer& msg, BaseContainer& result)
+{
+	return GeDialog::Message(msg, result);
 }
 
 /**
@@ -554,6 +568,33 @@ Bool iCustomDataTypeAOV::Command(Int32 i_id, const BaseContainer &i_msg)
 			system("C:\\Users\\Ogers\\Documents\\filename.exr");
 		}
 
+		case DL_LIGHTS_REFRESH:
+		{
+			if (m_data.m_selected_layers.GetCount() == 0)
+			{
+				m_data.m_selected_layers.Append(maxon::String(s_shading_components[0].name));
+				m_data.m_selected_id.Append(maxon::Int32(s_shading_components[0].id));
+				m_data.m_output_to_framebuffer.Append(TRUE);
+				m_data.m_output_to_file.Append(TRUE);
+				m_data.m_output_to_jpeg.Append(FALSE);
+			}
+			Int32 ItemId = 1;
+			BaseContainer data;
+			for (auto &value : m_data.m_selected_layers)
+			{
+				Int32 Position = ItemId - 1;
+				maxon::String name = value;
+				data.SetString('name', maxon::String(name));
+				data.SetInt32('Dspl', m_data.m_output_to_framebuffer[Position] ? DL_DISPLAY_ON : DL_DISPLAY_OFF);
+				data.SetInt32('Fldr', m_data.m_output_to_file[Position] ? DL_FOLDER_ON : DL_FOLDER_OFF);
+				data.SetInt32('Jpg', m_data.m_output_to_jpeg[Position] ? DL_JPG_ON : DL_JPG_OFF);
+				m_aov_listview.SetItem(ItemId++, data);
+			}
+
+
+			CreateLayout();
+		}
+
 	}
 
 	/**
@@ -674,7 +715,7 @@ Bool iCustomDataTypeAOV::SetData(const TriState<GeData> &i_tristate)
 
 		iferr(m_data.m_output_to_jpeg.CopyFrom(data->m_output_to_jpeg))
 			return false;
-
+	
 		m_data.m_check = data->m_check;
 		m_aov_listview.DataChanged();
 	}
@@ -846,9 +887,9 @@ public:
 			i_hf->WriteBool(d->m_output_to_framebuffer[i]);
 			i_hf->WriteBool(d->m_output_to_file[i]);
 			i_hf->WriteBool(d->m_output_to_jpeg[i]);
-			
 		}
 
+		
 		return true;
 	}
 
@@ -870,6 +911,7 @@ public:
 					Bool output_to_framebuffer;
 					Bool output_to_file;
 					Bool output_to_jpeg;
+
 					if (i_hf->ReadString(&layer))
 					{
 						iferr(d->m_selected_layers.Append(layer))
@@ -900,7 +942,7 @@ public:
 							return false;
 					}
 				}
-			}
+			}		
 		}
 		return true;
 	}

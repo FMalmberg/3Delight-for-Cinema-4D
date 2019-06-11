@@ -25,6 +25,7 @@ public:
 	maxon::BaseArray<maxon::Bool> m_output_to_framebuffer;
 	maxon::BaseArray<maxon::Bool> m_output_to_file;
 	maxon::BaseArray<maxon::Bool> m_output_to_jpeg;
+
 	bool m_check = true;
 	iCustomDataTypeLayers()
 	{
@@ -86,6 +87,7 @@ public:
 	virtual Bool CreateLayout();
 	virtual Bool InitValues();
 	virtual Bool Command(Int32 i_id, const BaseContainer &i_msg);
+	virtual Int32 Message(const BaseContainer& msg, BaseContainer& result);
 	virtual Bool SetData(const TriState<GeData> &i_tristate);
 	virtual TriState<GeData> GetData();
 };

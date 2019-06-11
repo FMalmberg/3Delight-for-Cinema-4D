@@ -312,10 +312,10 @@ CONTAINER myres
 
 		GROUP DL_GROUP_IMAGE_LAYERS
 		{
-							SCALE_H;FIT_H;
-
-		GROUP{
-							SCALE_H;FIT_H;
+			SCALE_H;FIT_H;
+			GROUP
+			{
+				SCALE_H;FIT_H;
 
 				FILENAME DL_DEFAULT_IMAGE_FILENAME
 				{
@@ -324,80 +324,76 @@ CONTAINER myres
 				}
 
 				
-					LONG DL_DEFAULT_IMAGE_FORMAT
+				LONG DL_DEFAULT_IMAGE_FORMAT
+				{
+					ANIM OFF;
+					CYCLE
 					{
-						ANIM OFF;
-						CYCLE
-						{
-							DL_FORMAT_TIFF;
-							DL_FORMAT_OPEN_EXR;
-							DL_FORMAT_OPEN_EXR_DEEP;
-							DL_FORMAT_JPEG;
-							DL_FORMAT_PNG;
-						}
+						DL_FORMAT_TIFF;
+						DL_FORMAT_OPEN_EXR;
+						DL_FORMAT_OPEN_EXR_DEEP;
+						DL_FORMAT_JPEG;
+						DL_FORMAT_PNG;
 					}
+				}
 					
-					LONG DL_DEFAULT_IMAGE_BITDEPTH
+				LONG DL_DEFAULT_IMAGE_BITDEPTH
+				{
+					ANIM OFF;
+					HIDDEN;	
+					CYCLE
 					{
-						ANIM OFF;
-						HIDDEN;	
-						CYCLE
-						{
-							DL_EIGHT_BIT;
-							DL_SIXTEEN_BIT;
-							DL_SIXTEEN_BIT_FLOAT;
-							DL_THIRTYTWO_BIT;
-						}
+						DL_EIGHT_BIT;
+						DL_SIXTEEN_BIT;
+						DL_SIXTEEN_BIT_FLOAT;
+						DL_THIRTYTWO_BIT;
 					}
-					
-					LONG DL_DEFAULT_IMAGE_OUTPUT
+				}
+				
+				LONG DL_DEFAULT_IMAGE_OUTPUT
+				{
+					ANIM OFF;
+					CYCLE
 					{
-						ANIM OFF;
-						CYCLE
-						{
-							DL_SIXTEEN_BIT_FLOAT;
-							DL_THIRTYTWO_BIT;
-						}
+						DL_SIXTEEN_BIT_FLOAT;
+						DL_THIRTYTWO_BIT;
 					}
-					
-					
-					LONG DL_DEFAULT_IMAGE_OUTPUT_TIFF
-					{
-						ANIM OFF;
-						HIDDEN;
-						CYCLE
-						{
-							DL_EIGHT_BIT;
-							DL_SIXTEEN_BIT;
-							DL_THIRTYTWO_BIT;
-						}
-					}
-					
-					LONG DL_DEFAULT_IMAGE_OUTPUT_JPG
-					{
-						ANIM OFF;
-						HIDDEN;
-						CYCLE
-						{
-							DL_EIGHT_BIT;
-						}
-					}
-					
-					LONG DL_DEFAULT_IMAGE_OUTPUT_PNG
-					{
-						ANIM OFF;
-						HIDDEN;
-						CYCLE
-						{
-							DL_EIGHT_BIT;
-							DL_SIXTEEN_BIT;
-						}
-					}
+				}
 				
 				
-
+				LONG DL_DEFAULT_IMAGE_OUTPUT_TIFF
+				{
+					ANIM OFF;
+					HIDDEN;
+					CYCLE
+					{
+						DL_EIGHT_BIT;
+						DL_SIXTEEN_BIT;
+						DL_THIRTYTWO_BIT;
+					}
+				}
+			
+				LONG DL_DEFAULT_IMAGE_OUTPUT_JPG
+				{
+					ANIM OFF;
+					HIDDEN;
+					CYCLE
+					{
+						DL_EIGHT_BIT;
+					}
+				}
 				
-
+				LONG DL_DEFAULT_IMAGE_OUTPUT_PNG
+				{
+					ANIM OFF;
+					HIDDEN;
+					CYCLE
+					{
+						DL_EIGHT_BIT;
+						DL_SIXTEEN_BIT;
+					}
+				}
+				
 				BOOL DL_SAVE_IDS_AS_CRYPTOMATTE
 				{
 					ANIM OFF;
@@ -450,7 +446,17 @@ CONTAINER myres
 				}
 			}
 			
-
+			GROUP DL_MULTILIGHT_GROUP
+			{
+			    GROUP
+				{
+					DELIGHTMULTILIGHTCUSTOMTYPE DL_CUSTOM_MULTI_LIGHT
+					{
+						ANIM OFF;
+						CUSTOMGUI DELIGHTMULTILIGHTCUSTOMGUI;
+					}
+				}
+			}
 		}
 
 		GROUP DL_GROUP_OVERRIDES

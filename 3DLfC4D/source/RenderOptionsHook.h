@@ -5,15 +5,17 @@
 #include "c4d.h"
 #include <vector>
 #include "aov_layers.h"
+#include "DL_Multi_Light.h"
 
 
 
 class RenderOptionsHook:public DL_HookPlugin{
 public:
-	virtual void CreateNSINodes(BaseDocument* i_doc, DL_SceneParser* i_parser);
-	virtual void ConnectNSINodes(BaseDocument* i_doc, DL_SceneParser* i_parser);
+	virtual void CreateNSINodes(BaseDocument* doc, DL_SceneParser* parser);
+	virtual void ConnectNSINodes(BaseDocument* doc, DL_SceneParser* parser);
 
 private:
+
 	std::string m_layer_handle;
 	std::string m_layer_jpg;
 	std::string m_layer_file;

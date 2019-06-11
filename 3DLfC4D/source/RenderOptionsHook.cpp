@@ -15,7 +15,62 @@
 
 #define ID_SDK_EXAMPLE_CUSTOMGUI_STRING 1034666
 #define ID_CUSTOMDATATYPE_LAYERS 1245668
+#define ID_CUSTOMGUI_MULTILIGHTS 10346689
+#define ID_CUSTOMDATATYPE_MULTILIGHTS 12456689
 
+/* 
+	Function to get the selected lights from the multilights UI.
+*/
+vector<BaseObject*> getSelectedLights(BaseDocument* doc,vector<Int32> objectID,Int32 all_multi_lights)
+{
+	vector<BaseObject*> light_list;
+
+	BaseObject* object= doc->GetFirstObject();
+	if (!object)
+		return light_list;
+
+	bool process = true;
+	Int32 Position = all_multi_lights;
+	while (object)
+	{
+		if (process && object->GetType() == Olight)
+		{
+			for (int i = 0; i < objectID.size(); i++)
+			{
+				/*
+					Finding the objects that are selected in the Multi_light UI
+					objectID contains the ID of the selected objects in the UI and
+					now we are getting the corresponing object for that ID
+				*/
+				if (objectID[i] == Position)
+				{
+					light_list.push_back(object);
+				}
+			}
+			Position--;
+		}
+			
+		if (object->GetDown() && process)
+		{
+			object = object->GetDown();
+			process = true;
+		}
+
+		else if (object->GetNext())
+		{
+			object = object->GetNext();
+			process = true;
+		}
+
+		else if (object->GetUp())
+		{
+			object = object->GetUp();
+			process = false;
+		}
+		else object = NULL;
+	}
+	return light_list;
+}
 
 struct DL_LayersData
 {
@@ -187,15 +242,18 @@ std::tuple<string,string,string> OutputLayer(DL_SceneParser* i_parser)
 	Here we get the information from the render settings and according to
 	the retrieved information we pass these values with on nsi based on its criteria.
 */
-void RenderOptionsHook::CreateNSINodes(BaseDocument* i_doc, DL_SceneParser* i_parser)
+void RenderOptionsHook::CreateNSINodes(BaseDocument* doc, DL_SceneParser* parser)
 {
-	NSI::Context ctx(i_parser->GetContext());
-	BaseContainer* settings= i_parser->GetSettings();
+	NSI::Context ctx(parser->GetContext());
+	BaseContainer* settings= parser->GetSettings();
 	
 	const CustomDataType* dt = settings->
 		GetCustomDataType(DL_CUSTOM_AOV_LAYER, ID_CUSTOMDATATYPE_LAYERS);
+	const CustomDataType* multi_light_dt = settings->
+		GetCustomDataType(DL_CUSTOM_MULTI_LIGHT, ID_CUSTOMDATATYPE_MULTILIGHTS);
 
 	iCustomDataTypeLayers* data = (iCustomDataTypeLayers*)(dt);
+	iCustomDataTypeLights* multi_light_data = (iCustomDataTypeLights*)(multi_light_dt);
 
 	if (!data)
 	{ 
@@ -204,10 +262,17 @@ void RenderOptionsHook::CreateNSINodes(BaseDocument* i_doc, DL_SceneParser* i_pa
 		data->m_selected_id.Append(50);
 		data->m_output_to_framebuffer.Append(TRUE);
 		data->m_output_to_file.Append(TRUE);
-		data->m_output_to_jpeg.Append(FALSE);
+		data->m_output_to_jpeg.Append(FALSE);		
+	}
+
+	if (!multi_light_data)
+	{
+		multi_light_data = NewObjClear(iCustomDataTypeLights);
 	}
 
 	double samplingReduceFactor = 1;
+	bool use_displacement = 1;
+	bool use_subsurface = 1;
 	if (settings->GetBool(DL_ENABLE_INTERACTIVE_PREVIEW) == true)
 	{
 		int sampling = settings->GetInt32(DL_SAMPLING);
@@ -221,10 +286,13 @@ void RenderOptionsHook::CreateNSINodes(BaseDocument* i_doc, DL_SceneParser* i_pa
 			samplingReduceFactor = 0.25;
 		else if (sampling == DL_HUNDRED_PERCENT) 
 			samplingReduceFactor = 1;
+
+		use_displacement = !settings->GetBool(DL_DISABLE_DISPLACEMENT);
+		use_subsurface = !settings->GetBool(DL_DISABLE_SUBSURFACE);
 	}
 
 	
-	NSI::Context context(i_parser->GetContext());
+	NSI::Context context(parser->GetContext());
 	
 	int shading_samples = max(1, (int)(settings->GetInt32(DL_SHADING_SAMPLES)
 		*samplingReduceFactor + 0.5));
@@ -235,9 +303,9 @@ void RenderOptionsHook::CreateNSINodes(BaseDocument* i_doc, DL_SceneParser* i_pa
 	int diffuse_depth = settings->GetInt32(DL_MAX_DIFFUSE_DEPTH);
 	int reflection_depth = settings->GetInt32(DL_MAX_REFLECTION_DEPTH);
 	int refraction_depth = settings->GetInt32(DL_MAX_REFRACTION_DEPTH);
+	int hair_depth = settings->GetInt32(DL_MAX_HAIR_DEPTH);
+	double max_distance = settings->GetFloat(DL_MAX_DISTANCE);
 
-
-	BaseDocument *doc = GetActiveDocument();
 	string docName = doc->GetDocumentName().GetString().GetCStringCopy();
 	
 	int pos = -1;
@@ -257,14 +325,39 @@ void RenderOptionsHook::CreateNSINodes(BaseDocument* i_doc, DL_SceneParser* i_pa
 		NSI::IntegerArg("quality.volumesamples", volume_samples),
 		NSI::IntegerArg("maximumraydepth.diffuse", diffuse_depth),
 		NSI::IntegerArg("maximumraydepth.reflection", reflection_depth),
-		NSI::IntegerArg("maximumraydepth.refraction", refraction_depth)
+		NSI::IntegerArg("maximumraydepth.refraction", refraction_depth),
+		NSI::IntegerArg("maximumraydepth.hair", hair_depth)
 		));
+
+
+	ctx.SetAttribute(NSI_SCENE_GLOBAL, (
+		NSI::DoubleArg("maximumraylength.specular", max_distance),
+		NSI::DoubleArg("maximumraylength.diffuse", max_distance),
+		NSI::DoubleArg("maximumraylength.reflection", max_distance),
+		NSI::DoubleArg("maximumraylength.refraction", max_distance),
+		NSI::DoubleArg("maximumraylength.hair", max_distance)
+		));
+	
+	ctx.SetAttribute(NSI_SCENE_GLOBAL, (
+		NSI::IntegerArg("show.displacement", use_displacement),
+		NSI::IntegerArg("show.osl.subsurface", use_subsurface)
+		));
+	
+	vector<Int32> selected_lights_guid;
+	for (int i = 0; i < multi_light_data->m_selected_lights_itemID.GetCount(); i++)
+		selected_lights_guid.push_back(multi_light_data->m_selected_lights_itemID[i]);
+
+	//Getting selected objects
+	ApplicationOutput("Count @", multi_light_data->m_all_multi_lights.GetCount());
+	vector<BaseObject*> selected_lights = getSelectedLights(doc, selected_lights_guid, multi_light_data->m_all_multi_lights.GetCount());
+	//This returns 0 because the GUID provided by the aov layer differs from the GUI of the object here.
 
 	string filter_output = getFilter(settings->GetInt32(DL_PIXEL_FILTER));
 	int m_layer_number = data->m_selected_layers.GetCount();
+	int m_multi_lights = multi_light_data->m_multi_light_selected_layers.GetCount();
 	int sortkey = 0;
 
-	auto layeroutput = OutputLayer(i_parser);
+	auto layeroutput = OutputLayer(parser);
 	m_extension = get<0>(layeroutput);
 	m_output_format = get<1>(layeroutput);
 	m_scalar_format = get<2>(layeroutput);
@@ -277,6 +370,8 @@ void RenderOptionsHook::CreateNSINodes(BaseDocument* i_doc, DL_SceneParser* i_pa
 		));
 
     fn = settings->GetFilename(DL_DEFAULT_IMAGE_FILENAME);
+	if (!fn.IsPopulated())
+		fn = GeGetPluginPath();
 	dir = fn.GetString().GetCStringCopy();
 
 	std::string filename = dir + "\\filename" + m_extension;
@@ -320,9 +415,36 @@ void RenderOptionsHook::CreateNSINodes(BaseDocument* i_doc, DL_SceneParser* i_pa
 				NSI::IntegerArg("sortkey", sortkey++),
 				NSI::StringArg("filter", filter_output.c_str())
 				));
-
+				
 			ctx.Connect(m_layer_handle, "", "3dlfc4d::scene_camera_screen", "outputlayers");
 			ctx.Connect(m_display_driver_handle, "", m_layer_handle, "outputdrivers");
+			
+			//Outputing Multilights in the Rendering.
+			for (int j = 0; j < selected_lights.size(); j++)
+			{
+				string multi_light_handle = string("3dlfc4d::multi_light" + std::to_string(j));
+				ctx.Create(multi_light_handle, "outputlayer");
+				ctx.SetAttribute(multi_light_handle, (
+					NSI::StringArg("variablename", m_aov.c_str()),
+					NSI::StringArg("layertype", "color"),
+					NSI::StringArg("scalarformat", m_output_format.c_str()),
+					NSI::IntegerArg("withalpha", 1),
+					NSI::StringArg("filter", filter_output.c_str()),
+					NSI::IntegerArg("sortkey", sortkey++),
+					NSI::StringArg("variablesource", m_variable_source.c_str())
+					));
+
+				ctx.SetAttribute(multi_light_handle,
+					NSI::IntegerArg("drawoutlines", 1));
+				ctx.Connect(multi_light_handle, "", "3dlfc4d::scene_camera_screen", "outputlayers");
+				
+					BaseList2D* passed_light = (BaseList2D*)selected_lights[j];
+					if (passed_light) {
+						string light_handle = string("X_") + parser->GetHandleName(passed_light);
+						ctx.Connect(light_handle, "", multi_light_handle, "lightset");
+						ctx.Connect(m_display_driver_handle, "", multi_light_handle, "outputdrivers");
+					}
+			}
 		}
 
 		/**
@@ -394,7 +516,9 @@ void RenderOptionsHook::CreateNSINodes(BaseDocument* i_doc, DL_SceneParser* i_pa
 	}
 }
 
-void RenderOptionsHook::ConnectNSINodes(BaseDocument* i_doc, DL_SceneParser* i_parser)
+void RenderOptionsHook::ConnectNSINodes(BaseDocument* doc, DL_SceneParser* parser)
 {
-	NSI::Context ctx(i_parser->GetContext());
+
+	NSI::Context ctx(parser->GetContext());
+	BaseContainer* settings = parser->GetSettings();
 }
