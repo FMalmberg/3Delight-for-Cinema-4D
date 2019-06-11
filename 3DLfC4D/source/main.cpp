@@ -42,8 +42,8 @@ Bool PluginStart(void)
 	if (!RegisterInteractiveRenderManager()) return FALSE;
 	//if (!RegisterInteractiveRenderManager())return FALSE;
 	//if (!RegisterDisplay()) return FALSE;
-	//if (!RegisterDL_CameraTag()) return FALSE;
-	//if (!RegisterDL_MotionBlurTag()) return FALSE;
+	if (!RegisterDL_CameraTag()) return FALSE;
+	if (!RegisterDL_MotionBlurTag()) return FALSE;
 	if (!RegisterDL_VisibilityTag()) return FALSE;
 	if (!RegisterCustomListView()) return FALSE;
 
