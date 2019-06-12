@@ -47,17 +47,17 @@ public:
 		return this->_selected;
 	}
 
-	Bool Select()
+	void Select()
 	{
 		this->_selected = TRUE;
 	}
 
-	Bool Deselect()
+	void Deselect()
 	{
 		this->_selected = FALSE;
 	}
 
-	Bool UsedSky()
+	void UsedSky()
 	{
 		this->_usedSky = TRUE;
 	}
