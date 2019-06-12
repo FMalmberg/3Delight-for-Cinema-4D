@@ -26,11 +26,20 @@ vector<BaseObject*> getSelectedLights(BaseDocument* doc,vector<Int32> objectID,I
 	vector<BaseObject*> light_list;
 
 	BaseObject* object= doc->GetFirstObject();
+	BaseObject* Sky = nullptr;
 	if (!object)
 		return light_list;
-
+	Int32 skyUsed = 0;
 	bool process = true;
-	Int32 Position = all_multi_lights;
+	Int32 Position = all_multi_lights-1;
+
+	for (int i = 0; i < objectID.size(); i++)
+	{
+		if (objectID[i] == 0)
+		{
+			skyUsed = 1;
+		}
+	}
 	while (object)
 	{
 		if (process && object->GetType() == Olight)
@@ -49,7 +58,12 @@ vector<BaseObject*> getSelectedLights(BaseDocument* doc,vector<Int32> objectID,I
 			}
 			Position--;
 		}
-			
+
+		if (process && object->GetType() == Osky)
+		{
+			Sky = object;
+		}
+
 		if (object->GetDown() && process)
 		{
 			object = object->GetDown();
@@ -68,6 +82,12 @@ vector<BaseObject*> getSelectedLights(BaseDocument* doc,vector<Int32> objectID,I
 			process = false;
 		}
 		else object = NULL;
+	}
+
+	if (skyUsed == 1)
+	{
+		ApplicationOutput("Pusshed");
+		light_list.push_back(Sky);
 	}
 	return light_list;
 }
@@ -316,6 +336,8 @@ void RenderOptionsHook::CreateNSINodes(BaseDocument* doc, DL_SceneParser* parser
 	//ApplicationOutput("Document @", docName.c_str());
 
 	Filename fn = settings->GetFilename(DL_DEFAULT_IMAGE_FILENAME);
+	if (!fn.IsPopulated())
+		fn = GeGetPluginPath();
 	std::string dir = fn.GetString().GetCStringCopy();
 	dir = dir + "\\" + docName;
 
@@ -348,7 +370,7 @@ void RenderOptionsHook::CreateNSINodes(BaseDocument* doc, DL_SceneParser* parser
 		selected_lights_guid.push_back(multi_light_data->m_selected_lights_itemID[i]);
 
 	//Getting selected objects
-	ApplicationOutput("Count @", multi_light_data->m_all_multi_lights.GetCount());
+	ApplicationOutput("Count @", selected_lights_guid.size());
 	vector<BaseObject*> selected_lights = getSelectedLights(doc, selected_lights_guid, multi_light_data->m_all_multi_lights.GetCount());
 	//This returns 0 because the GUID provided by the aov layer differs from the GUI of the object here.
 

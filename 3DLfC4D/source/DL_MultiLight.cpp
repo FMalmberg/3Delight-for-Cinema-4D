@@ -20,6 +20,7 @@ class MultiLightCustomTree
 public:
 	String Name = "";
 	Bool _selected = FALSE;
+	Bool _usedSky = FALSE;
 	Int32 ListPosition;
 	Int32 objectGUID;
 	AutoAlloc<BaseLink> link;
@@ -27,6 +28,11 @@ public:
 	MultiLightCustomTree(String Name)
 	{
 		this->Name = Name;
+		if (Name == "Environment")
+		{
+			BaseObject* const skyObject = BaseObject::Alloc(Osky);
+			this->objectGUID = 1000000000;
+		}
 	}
 
 	MultiLightCustomTree(BaseObject* object, Int position)
@@ -51,6 +57,11 @@ public:
 		this->_selected = FALSE;
 	}
 
+	Bool UsedSky()
+	{
+		this->_usedSky = TRUE;
+	}
+
 	String TO_STRING()
 	{
 		return (this->Name);
@@ -67,20 +78,28 @@ vector<MultiLightCustomTree*> Populate_TreeView()
 	vector<MultiLightCustomTree*> light_list;
 	AutoAlloc<BaseLink> link;
 	BaseObject* object = GetActiveDocument()->GetFirstObject();
+	MultiLightCustomTree* Environment = new MultiLightCustomTree("Environment");
+	light_list.push_back(Environment);
+
 	if (!object)
 		return light_list;
 
-	MultiLightCustomTree* light = new MultiLightCustomTree("Lights");
-	light_list.push_back(light);
 	bool process = true;
-	Int32 listPosition = 1;
+	Int32 listPosition = 2;
 	while (object)
 	{
 		if (process && object->GetType() == Olight)
 		{
+
 			MultiLightCustomTree* light_object = new MultiLightCustomTree(object, listPosition++);
 			light_list.push_back(light_object);
 		}
+
+		if (process && object->GetType() == Osky)
+		{
+			Environment->UsedSky();
+		}
+
 		if (object->GetDown() && process)
 		{
 			object = object->GetDown();
@@ -106,7 +125,13 @@ vector<MultiLightCustomTree*> Populate_TreeView()
 		opposite way, we are reversing the vectorto get the desired result.
 		Starting from the second items as the first one is the light group.
 	*/
-	reverse(light_list.begin() + 1, light_list.begin() + light_list.size());
+	if (listPosition != 2)
+	{
+		MultiLightCustomTree* light_group = new MultiLightCustomTree("Lights");
+		light_list.push_back(light_group);
+	}
+
+	reverse(light_list.begin()+1, light_list.begin() + light_list.size());
 	return light_list;
 }
 
@@ -163,7 +188,7 @@ public:
 		Int32 index = std::distance(mylist.begin(), it);
 		Int32 nextIndex = index + 1;
 
-		if (currentObject == mylist[0])
+		if (mylist.size() > 0 && currentObject == mylist[0])
 			return NULL;
 
 		if (nextIndex < mylist.size())
@@ -191,7 +216,7 @@ public:
 			return String();
 		String    name = String();
 		MultiLightCustomTree* lights = (MultiLightCustomTree*)obj;
-		if (lights == mylist[0])
+		if (lights == mylist[0] || (mylist.size() > 1 && lights == mylist[1]))
 			name = lights->TO_STRING();
 		else
 			name = String("   ") + lights->TO_STRING();
@@ -216,9 +241,14 @@ public:
 	{
 		if (!root || !obj)
 			return;
+
+
 		MultiLightCustomTree  *lights = (MultiLightCustomTree*)obj;
-		if (lights != mylist[0])
+
+		if ((mylist.size() > 1 && lights != mylist[1]) || (lights == mylist[0] && lights->_usedSky == TRUE))
 		{
+			if (lights == mylist[0] && lights->_usedSky == FALSE)
+				return;
 			if (mode == SELECTION_NEW)
 			{
 				if (lights->isSelected())
@@ -242,7 +272,10 @@ public:
 	//Called to specify the text colors of object @formatParam{obj}
 	void GetColors(void *root, void *userdata, void *obj, GeData* pNormal, GeData* pSelected)
 	{
+
 		MultiLightCustomTree  *lights = (MultiLightCustomTree*)obj;
+		if (lights == mylist[0] && lights->_usedSky==FALSE)
+			pNormal->SetVector(Vector(0, 0, 0));
 		pSelected->SetVector(Vector(1, 1, 1));
 	}
 
@@ -250,7 +283,7 @@ public:
 	void GetBackgroundColor(void* root, void* userdata, void* obj, Int32 line, GeData* col)
 	{
 		MultiLightCustomTree  *lights = (MultiLightCustomTree*)obj;
-		if (lights == mylist[0])
+		if (mylist.size() > 1 && lights == mylist[1])
 			col->SetVector(Vector(0.27, 0.27, 0.27));
 
 		if (lights->isSelected())
@@ -308,15 +341,15 @@ Bool iCustomDataTypeMultiLights::CreateLayout()
 		Int32 treeSize = all_lights.mylist.size();
 		if (treeSize > 0)
 		{
-			for (int i = 1; i < treeSize; i++)
+			for (int i = 0; i < treeSize; i++)
 			{
 				for (int j = 0; j < m_data.m_selected_lights_itemID.GetCount(); j++)
 				{
 					//Checks for the selected lights that were on the m_selected_lights_GUID
 					//stored before the layout was changed.
-					if (all_lights.mylist[treeSize - i]->objectGUID == m_data.m_selected_lights_GUID[j])
+					if (all_lights.mylist[treeSize - i-1]->objectGUID == m_data.m_selected_lights_GUID[j])
 					{
-						all_lights.mylist[treeSize - i]->Select();
+						all_lights.mylist[treeSize - i-1]->Select();
 					}
 
 				}
@@ -340,42 +373,41 @@ Int32 iCustomDataTypeMultiLights::Message(const BaseContainer& msg, BaseContaine
 {
 	switch (msg.GetId())
 	{
-		case BFM_INTERACTEND:
+	case BFM_INTERACTEND:
+	{
+		ApplicationOutput("ASDD");
+		/*
+			Getting the state of the tree after an interaction is finished in the view.
+			This includes clicking somewhere on the view where you can select or deselect
+			ligts, or clicking buttons in the view etc. After we store the latest state of the
+			tree in the vectors below:
+			m_multi_light_selected_layers => Store the names of the selected lights
+			m_selected_lights_itemID => Store the selected lights row number. This is used as their ID in the RenderOptionsHook.
+			m_data.m_selected_lights_GUID => Store the selected lights Unique GUID.
+			Used for reording of selections when the order of the lights is changed manually
+		*/
+		m_light_view->Refresh();
+		m_data.m_multi_light_selected_layers.Reset();
+		m_data.m_selected_lights_itemID.Reset();
+		m_data.m_selected_lights_GUID.Reset();
+		m_data.m_all_multi_lights.Reset();
+		Int32 treeSize = all_lights.mylist.size();
+		if (treeSize > 0)
 		{
-			ApplicationOutput("ASDD");
-			/*
-				Getting the state of the tree after an interaction is finished in the view.
-				This includes clicking somewhere on the view where you can select or deselect
-				ligts, or clicking buttons in the view etc. After we store the latest state of the
-				tree in the vectors below:
-				m_multi_light_selected_layers => Store the names of the selected lights
-				m_selected_lights_itemID => Store the selected lights row number. This is used as their ID in the RenderOptionsHook.
-				m_data.m_selected_lights_GUID => Store the selected lights Unique GUID.
-				Used for reording of selections when the order of the lights is changed manually
-			*/
-			m_light_view->Refresh();
-			m_data.m_multi_light_selected_layers.Reset();
-			m_data.m_selected_lights_itemID.Reset();
-			m_data.m_selected_lights_GUID.Reset();
-			m_data.m_all_multi_lights.Reset();
-			Int32 treeSize = all_lights.mylist.size();
-			if (treeSize > 0)
+			for (int i = 0; i < treeSize; i++)
 			{
-				for (int i = 1; i < treeSize; i++)
+				m_data.m_all_multi_lights.Append(all_lights.mylist[i]->TO_STRING());
+				//Adding only the selected light objects in the BaseArray
+				if (all_lights.mylist[i]->isSelected())
 				{
-					m_data.m_all_multi_lights.Append(all_lights.mylist[i]->TO_STRING());
-					//Adding only the selected light objects in the BaseArray
-					if (all_lights.mylist[i]->isSelected())
-					{
-						m_data.m_multi_light_selected_layers.Append(all_lights.mylist[i]->TO_STRING());
-						m_data.m_selected_lights_itemID.Append(i);
-						m_data.m_selected_lights_GUID.Append(all_lights.mylist[i]->objectGUID);
-					}
+					m_data.m_multi_light_selected_layers.Append(all_lights.mylist[i]->TO_STRING());
+					m_data.m_selected_lights_itemID.Append(i);
+					m_data.m_selected_lights_GUID.Append(all_lights.mylist[i]->objectGUID);
 				}
 			}
-			m_light_view->Refresh();
-
 		}
+		m_light_view->Refresh();
+	}
 	}
 
 
@@ -414,15 +446,15 @@ Bool iCustomDataTypeMultiLights::CoreMessage(Int32 id, const BaseContainer& msg)
 		Int32 treeSize = all_lights.mylist.size();
 		if (treeSize > 0)
 		{
-			for (int i = 1; i < treeSize; i++)
+			for (int i = 0; i < treeSize; i++)
 			{
 				for (int j = 0; j < m_data.m_selected_lights_itemID.GetCount(); j++)
 				{
 					//Checks for the selected lights that were on the m_selected_lights_GUID
 					//stored before the layout was changed.
-					if (all_lights.mylist[treeSize - i]->objectGUID == m_data.m_selected_lights_GUID[j])
+					if (all_lights.mylist[treeSize - i-1]->objectGUID == m_data.m_selected_lights_GUID[j])
 					{
-						all_lights.mylist[treeSize - i]->Select();
+						all_lights.mylist[treeSize - i-1]->Select();
 					}
 
 				}
@@ -437,12 +469,13 @@ Bool iCustomDataTypeMultiLights::CoreMessage(Int32 id, const BaseContainer& msg)
 		treeSize = all_lights.mylist.size();
 		if (treeSize > 0)
 		{
-			for (int i = 1; i < treeSize; i++)
+			for (int i = 0; i < treeSize; i++)
 			{
 				m_data.m_all_multi_lights.Append(all_lights.mylist[i]->TO_STRING());
 				//Adding only the selected light objects in the BaseArray
 				if (all_lights.mylist[i]->isSelected())
 				{
+					//ApplicationOutput("Environment Selcted @   @", all_lights.mylist[i]->objectGUID,i);
 					m_data.m_multi_light_selected_layers.Append(all_lights.mylist[i]->TO_STRING());
 					m_data.m_selected_lights_itemID.Append(i);
 					m_data.m_selected_lights_GUID.Append(all_lights.mylist[i]->objectGUID);
