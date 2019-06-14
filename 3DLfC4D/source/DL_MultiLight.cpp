@@ -8,11 +8,14 @@
 #include <map>
 #include <tuple>
 #include "3DelightRenderer.h"
+#include "PluginManager.h"
 
 using namespace std;
 
 #define ID_CUSTOMGUI_MULTILIGHTS 10346689
 #define ID_CUSTOMDATATYPE_MULTILIGHTS 12456689
+
+extern PluginManager PM;
 
 //Class to modify the TreeView dynimaclly in the way we want(define class)
 class MultiLightCustomTree
@@ -41,12 +44,12 @@ public:
 		return this->_selected;
 	}
 
-	Bool Select()
+	void Select()
 	{
 		this->_selected = TRUE;
 	}
 
-	Bool Deselect()
+	void Deselect()
 	{
 		this->_selected = FALSE;
 	}
@@ -76,7 +79,8 @@ vector<MultiLightCustomTree*> Populate_TreeView()
 	Int32 listPosition = 1;
 	while (object)
 	{
-		if (process && object->GetType() == Olight)
+		//if (process && object->GetType() == Olight)
+		if (process && PM.IsLight(object))
 		{
 			MultiLightCustomTree* light_object = new MultiLightCustomTree(object, listPosition++);
 			light_list.push_back(light_object);
