@@ -18,7 +18,11 @@ void FrameStoppedCallback(
 
 
 bool DL_RenderFrame(BaseDocument* doc, long frame, RENDER_MODE mode, bool progressive){
+	
+
+
 	BaseDocument* renderdoc = (BaseDocument*)doc->GetClone(COPYFLAGS::DOCUMENT, nullptr);
+
 
 	NSIContext_t context_handle = NSIBegin(0, 0);
 
