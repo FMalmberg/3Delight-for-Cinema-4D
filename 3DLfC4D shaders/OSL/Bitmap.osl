@@ -5,15 +5,19 @@ float rgb_to_float(color c){
 shader Bitmap(    
     string _1000="",
     float _2010=0,
-    int is_connected_to_sky = 0,    
+    //int is_connected_to_sky = 0,    
     output float f_out=0,
     output color c_out=0,
     output color outColor=0,    
 	output float uvCoord[2] = {0,0}
     )
 {
+
+	int isSky=0;
 	
-	if( is_connected_to_sky == 1 )
+	getattribute("IsSkyObject", isSky);
+	
+	if( isSky== 1 )
     {
          vector R = normalize( I );
         /* Sherical mapping */
@@ -41,4 +45,5 @@ shader Bitmap(
 		f_out=rgb_to_float(c_out);
 		outColor=c_out;
 	}
+	
 }
