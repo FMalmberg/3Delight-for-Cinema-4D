@@ -472,8 +472,10 @@ void c4dLightTranslator::CreateNSINodes(
 		std::string transform = string(Handle) + string("transform"); // string(parser->GetUniqueName("spot_tranform"));
 		ctx.Create(transform, "transform");
 
-		obj->GetParameter(DescID(LIGHT_DETAILS_OUTERDISTANCE), data, DESCFLAGS_GET::NONE);
-		double radius = data.GetFloat();
+		//obj->GetParameter(DescID(LIGHT_DETAILS_OUTERDISTANCE), data, DESCFLAGS_GET::NONE);
+		//double radius = data.GetFloat();
+
+		double radius = 0.1;
 		double scale_direction[16]
 		{
 			1,0,0,0,

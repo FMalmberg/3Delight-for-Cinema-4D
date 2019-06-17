@@ -13,7 +13,7 @@ public:
 	virtual long GetAPIVersion()=0;
 
 	virtual void RegisterHook(HookAllocator allocator) = 0;
-	virtual void RegisterTranslator(long id, TranslatorAllocator allocator) = 0;
+	virtual void RegisterTranslator(long id, TranslatorAllocator allocator, bool IsLight = false) = 0;
 
 };
 

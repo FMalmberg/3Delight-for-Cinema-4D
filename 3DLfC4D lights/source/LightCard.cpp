@@ -63,8 +63,8 @@ DRAWRESULT LightCard::Draw(BaseObject* op, DRAWPASS drawpass, BaseDraw* bd, Base
 		//double halfh=height/2.0;
 		
 		//Cross
-		bd->DrawLine(Vector(-width/2.0,-height/2.0,0),Vector(width/2.0,height/2.0,0),0);
-		bd->DrawLine(Vector(-width/2.0,height/2.0,0),Vector(width/2.0,-height/2.0,0),0);
+		//bd->DrawLine(Vector(-width/2.0,-height/2.0,0),Vector(width/2.0,height/2.0,0),0);
+		//bd->DrawLine(Vector(-width/2.0,height/2.0,0),Vector(width/2.0,-height/2.0,0),0);
 
 		//Direction
 		bd->DrawLine(Vector(0,0,0),Vector(0,0,width/2.0),0);

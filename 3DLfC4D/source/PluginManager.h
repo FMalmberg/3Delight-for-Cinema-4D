@@ -3,6 +3,7 @@
 
 #include <map>
 #include <vector>
+#include <set>
 #include "c4d.h"
 #include "DL_API.h"
 
@@ -16,6 +17,7 @@ class PluginManager : public DL_PluginManager{
 private:
 	TranslatorMap Allocators;
 	std::vector<HookAllocator> HookAllocators;
+	std::set<long> LightTypes;
 	
 public:
 	virtual ~PluginManager();
@@ -23,7 +25,9 @@ public:
 	virtual long GetAPIVersion();
 
 	virtual void RegisterHook(HookAllocator allocator);
-	virtual void RegisterTranslator(long id, TranslatorAllocator allocator);
+	virtual void RegisterTranslator(long id, TranslatorAllocator allocator, bool IsLight=false);
+
+	bool IsLight(BaseList2D* item);
 
 	DL_Translator*  GetTranslator(long id);
 

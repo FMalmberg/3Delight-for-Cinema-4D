@@ -175,7 +175,7 @@ Bool PluginMessage(Int32 id, void *data)
 			pm->RegisterTranslator(DL_CARPAINT, AllocateTranslator<Delight_CarPaint>);
 
 			//C4D Shaders
-			pm->RegisterTranslator(Osky, AllocateTranslator<EnvironmentLightTranslator>);
+			//pm->RegisterTranslator(Osky, AllocateTranslator<EnvironmentLightTranslator>);
 			pm->RegisterTranslator(Xcheckerboard, AllocateTranslator<NSI_Export_Shader>);
 			pm->RegisterTranslator(Xbitmap, AllocateTranslator<NSI_Export_Bitmap>);
 			pm->RegisterTranslator(Ttexture, AllocateTranslator<TextureTagTranslator>);
@@ -184,7 +184,7 @@ Bool PluginMessage(Int32 id, void *data)
 			pm->RegisterTranslator(DL_SKY, AllocateTranslator<Delight_Sky>);
 			pm->RegisterTranslator(DL_WorleyNoise, AllocateTranslator<Delight_WorleyNoise>);
 			pm->RegisterTranslator(DL_Flakes, AllocateTranslator<Delight_Flakes>);
-			pm->RegisterTranslator(ID_ENVIRONMENTLIGHT, AllocateTranslator<EnvironmentLightTranslator>);
+			//pm->RegisterTranslator(ID_ENVIRONMENTLIGHT, AllocateTranslator<EnvironmentLightTranslator>);
 			pm->RegisterTranslator(ID_TEXTURESHADER, AllocateTranslator<TextureShaderTranslator>);
 			
 			pm->RegisterTranslator(DL_COLORBLEND, AllocateTranslator<Delight_ColorBlend>);

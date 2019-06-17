@@ -23,8 +23,16 @@ void PluginManager::RegisterHook(HookAllocator allocator){
 	HookAllocators.push_back(allocator);
 }
 
-void PluginManager::RegisterTranslator(long id, TranslatorAllocator allocator){
+bool PluginManager::IsLight(BaseList2D* item) {
+	if (!item) return false;
+	return LightTypes.find(item->GetType()) != LightTypes.end();
+}
+
+void PluginManager::RegisterTranslator(long id, TranslatorAllocator allocator, bool IsLight){
 	Allocators[id]=allocator;
+	if (IsLight) {
+		LightTypes.insert(id);
+	}
 }
 
 DL_Translator*  PluginManager::GetTranslator(long id){ 

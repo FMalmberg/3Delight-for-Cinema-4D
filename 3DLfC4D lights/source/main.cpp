@@ -15,10 +15,12 @@
 
 //Forward declaration
 //bool RegisterLightCard(void);
+//bool RegisterPointLight(void);
 
 Bool PluginStart(void)
 {
 	//if (!RegisterLightCard()) { return false; }
+	//if (!RegisterPointLight()) { return false; }
 	return true;
 }
 
@@ -38,7 +40,7 @@ Bool PluginMessage(Int32 id, void *data)
 
 	case DL_LOAD_PLUGINS:
 		DL_PluginManager* pm = (DL_PluginManager*)data;
-		pm->RegisterTranslator(Olight, AllocateTranslator<c4dLightTranslator>);
+		pm->RegisterTranslator(Olight, AllocateTranslator<c4dLightTranslator>,true);
 		//pm->RegisterTranslator(ID_LIGHTCARD, AllocateTranslator<LightCardTranslator>);
 		break;
 

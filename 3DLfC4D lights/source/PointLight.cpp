@@ -83,7 +83,7 @@ void PointLight::SetHandle(BaseObject* op, Int32 i, Vector p,const HandleInfo& i
 
 }
 
-Bool RegisterPointLight(void)
+bool RegisterPointLight(void)
 {
 	return RegisterObjectPlugin(ID_POINTLIGHT,"DL_Pointlight"_s,OBJECT_GENERATOR,PointLight::Alloc,"Opointlight"_s,AutoBitmap("Lightcard.tif"_s),0);
 }

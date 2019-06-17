@@ -3,6 +3,7 @@
 #include "DL_API.h"
 #include "PolygonObjectTranslator.h"
 #include "BaseObjectTranslator.h"
+#include "SkyHook.h"
 
 Bool PluginStart(void)
 {
@@ -26,7 +27,7 @@ Bool PluginMessage(Int32 id, void *data)
 
 	case DL_LOAD_PLUGINS:
 		DL_PluginManager* pm = (DL_PluginManager*)data;
-
+		pm->RegisterHook(AllocateHook<SkyHook>);
 		pm->RegisterTranslator(Opolygon, AllocateTranslator<PolygonObjectTranslator>);
 		pm->RegisterTranslator(Oalembicgenerator, AllocateTranslator<PolygonObjectTranslator>);
 		pm->RegisterTranslator(Ocube, AllocateTranslator<PolygonObjectTranslator>);
