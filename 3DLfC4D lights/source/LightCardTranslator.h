@@ -24,6 +24,8 @@ private:
 	//Matrix transform;
 
 	std::string handle;
+	std::string m_cap1;
+	std::string m_cap2;
 	std::string shader_handle;
 	std::string transform_handle;
 	
