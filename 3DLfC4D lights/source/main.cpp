@@ -10,7 +10,7 @@
 #include "IDs.h"
 #include "c4dLightTranslator.h"
 #include "DirectionalLightTranslator.h"
-//#include "IncandescenceLightTranslator.h"
+#include "IncandescenceLightTranslator.h"
 #include "../../3DLfC4D shaders/source/DLSky_Translator.h"
 #include "../../3DLfC4D shaders/source/NSIExportShader.h"
 #include "../../3DLfC4D shaders/res/description/dl_sky.h"
@@ -26,7 +26,7 @@ Bool PluginStart(void)
 	if (!RegisterLightCard()) { return false; }
 	if (!RegisterDirectionalLight()) { return false; }
 	//if (!RegisterPointLight()) { return false; }
-	//if (!RegisterIncandescenceLight()) { return false; }
+	if (!RegisterIncandescenceLight()) { return false; }
 	return true;
 }
 
@@ -50,7 +50,7 @@ Bool PluginMessage(Int32 id, void *data)
 		pm->RegisterTranslator(ID_LIGHTCARD, AllocateTranslator<LightCardTranslator>,true);
 		//pm->RegisterTranslator(ID_POINTLIGHT, AllocateTranslator<PointLightTranslator>, true);
 		pm->RegisterTranslator(ID_DIRECTIONAL_LIGHT, AllocateTranslator<DirectionalLightTranslator>, true);
-		//pm->RegisterTranslator(ID_INCANDESCENCELIGHT, AllocateTranslator<IncandescenceLightTranslator>, true);
+		pm->RegisterTranslator(ID_INCANDESCENCELIGHT, AllocateTranslator<IncandescenceLightTranslator>, true);
 		break;
 		
 	}
