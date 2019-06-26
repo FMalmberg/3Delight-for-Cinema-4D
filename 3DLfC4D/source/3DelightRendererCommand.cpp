@@ -86,6 +86,6 @@ Bool DL_3DelightRender_command::Execute(BaseDocument* doc)
 
 Bool Register3DelightCommand(void)
 {
-	return RegisterCommandPlugin(DL_RENDER_COMMAND, "3Delight Render"_s, PLUGINFLAG_HIDEPLUGINMENU, AutoBitmap("shelf_launchRender_200.png"_s), String("Render"_s), NewObjClear(DL_3DelightRender_command));
+	return RegisterCommandPlugin(ID_RENDER_COMMAND, "3Delight Render"_s, PLUGINFLAG_HIDEPLUGINMENU, AutoBitmap("shelf_launchRender_200.png"_s), String("Render"_s), NewObjClear(DL_3DelightRender_command));
 }
 

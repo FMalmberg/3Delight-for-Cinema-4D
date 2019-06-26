@@ -11,6 +11,7 @@
 #include "VisibilityTagTranslator.h"
 #include "IDs.h"
 #include <windows.h>
+#include "nsi_dynamic.hpp"
 
 
 void Create3DelightMenu(BaseContainer* bc)
@@ -30,7 +31,7 @@ void Create3DelightMenu(BaseContainer* bc)
 			{
 				BaseContainer sc;
 				sc.InsData(MENURESOURCE_SUBTITLE, String("3Delight"));
-
+						
 				BaseContainer MaterialsSubMenu;
 				MaterialsSubMenu.InsData(MENURESOURCE_SUBTITLE, String("Materials"));
 				MaterialsSubMenu.InsData(MENURESOURCE_COMMAND, String("PLUGIN_CMD_1052718")); //DL_Principled
@@ -67,40 +68,11 @@ void Create3DelightMenu(BaseContainer* bc)
 				sc.InsData(MENURESOURCE_SUBMENU, RenderSubMenu);
 
 				bc->InsDataAfter(MENURESOURCE_STRING, sc, dat);
-
 			}
 			//ApplicationOutput(subtitle);
 		}
 	}
 }
-
-//
-//void AddSubMenus(BaseContainer* bc)
-//{
-//	if (!bc) return;
-//	BrowseContainer browse(bc);
-//	Int32 id = 0;
-//	GeData * dat = nullptr;
-//
-//	while (browse.GetNext(&id, &dat))
-//	{
-//		
-//			BaseContainer* container = dat->GetContainer();
-//			String subtitle = container->GetString(MENURESOURCE_SUBTITLE);
-//			if (subtitle == "3Delight")
-//			{
-//				AddSubMenus(dat->GetContainer());
-//			}
-//			//if(dat)
-//			//ApplicationOutput(dat->GetString());
-//	}
-//}
-
-
-
-
-//Global plugin manager, 
-//Stores pointers to allocators for translator plugins	
 
 PluginManager PM;
 
@@ -119,21 +91,23 @@ Bool RegisterInteractiveRenderingStart(void);
 Bool RegisterInteractiveRenderingStop(void);
 Bool RegisterInteractiveRenderManager(void);
 Bool Register3DelightCommand(void);
-Bool RegisterUserGuide(void);
 
 Bool PluginStart(void)
 {
 	const char *env = getenv("DELIGHT");
-	if (env != nullptr)
+	std::string _3delight_path(env);
+	_3delight_path += "/bin/3Delight.DLL";
+		
+	NSI::DynamicAPI nsi_api = NSI::DynamicAPI(_3delight_path.c_str());
+	NSIContext_t     nsi_ctx;
+	bool all_good = false;
+	nsi_ctx = nsi_api.NSIBegin(0, nullptr);
+	if (nsi_ctx != NSI_BAD_CONTEXT)
 	{
-		std::string _3delight_path(env);
-		_3delight_path += "/bin/3Delight.DLL";
-		LoadLibraryA(_3delight_path.c_str());
+		nsi_api.NSIEnd(nsi_ctx);
+		all_good = true;
 	}
-	else
-	{
-		MessageDialog("Could not load 3Delight Library"_s);
-	}
+
 	//if (!RegisterCustomGUITest()) return FALSE;
 	if (!RegisterRenderFrame()) return FALSE;
 	if (!RegisterRenderSequence()) return FALSE;
@@ -144,7 +118,6 @@ Bool PluginStart(void)
 	if (!Register3DelightPlugin()) return FALSE;
 	if (!RegisterInteractiveRenderManager()) return FALSE;
 	if (!Register3DelightCommand()) return FALSE;
-	if (!RegisterUserGuide()) return FALSE;
 
 	
 	if (!RegisterDisplay()) return FALSE;
