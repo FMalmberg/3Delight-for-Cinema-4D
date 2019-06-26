@@ -36,7 +36,7 @@ void RangeTranslator::CreateNSINodes(const char* Handle, const char* ParentTrans
 	//parser->SetAssociatedHandle((BaseList2D*)C4DNode, shader_handle.c_str());
 }
 
-void RangeTranslator::ConnectNSINodes(const char* Handle, BaseList2D* C4DNode, BaseDocument* doc,DL_SceneParser* parser){
+void RangeTranslator::ConnectNSINodes(const char* Handle, const char* ParentTransformHandle, BaseList2D* C4DNode, BaseDocument* doc,DL_SceneParser* parser){
 		
 	NSI::Context ctx(parser->GetContext());
 

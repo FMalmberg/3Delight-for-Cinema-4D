@@ -11,6 +11,7 @@ void DL_material_translator::CreateNSINodes(const char* Handle, const char* Pare
 
 	//Create an attributes node
 	//attributes_handle = string(parser->GetUniqueName("transform_attributes"));
+	string attributes_handle = string(Handle) + string("attributes");
 	ctx.Create(attributes_handle, "attributes");
 	ctx.Connect(attributes_handle, "", ".root", "geometryattributes");
 
@@ -26,7 +27,7 @@ void DL_material_translator::CreateNSINodes(const char* Handle, const char* Pare
 	//parser->SetAssociatedHandle(material, attributes_handle.c_str());
 }
 
-void DL_material_translator::ConnectNSINodes(const char* Handle, BaseList2D* C4DNode, BaseDocument* doc, DL_SceneParser* parser) {
+void DL_material_translator::ConnectNSINodes(const char* Handle, const char* ParentTransformHandle, BaseList2D* C4DNode, BaseDocument* doc, DL_SceneParser* parser) {
 	NSI::Context ctx(parser->GetContext());
 
 	BaseMaterial * material = (BaseMaterial*)C4DNode;

@@ -10,11 +10,11 @@ public:
 	virtual void SampleAttributes(DL_SampleInfo* info, const char* Handle, BaseList2D* C4DNode, BaseDocument* doc, DL_SceneParser* parser);
 
 private:
-	std::string m_handle;
+	/*std::string m_handle;
 	std::string m_shader_handle;
 	std::string m_transform_handle;
 	std::string m_attributes_handle;
 	std::string m_cap1;
-	std::string m_cap2;
+	std::string m_cap2;*/
 
 };

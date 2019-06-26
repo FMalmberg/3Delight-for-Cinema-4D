@@ -12,6 +12,8 @@
 void NSI_Export_Bitmap::CreateNSINodes(const char* Handle, const char* ParentTransformHandle, BaseList2D* C4DNode, BaseDocument* doc, DL_SceneParser* parser)
 {
 
+	string m_shader_handle = string(Handle);
+
 	NSI_Export_Shader::CreateNSINodes(Handle ,ParentTransformHandle, C4DNode, doc, parser);
 
 	NSI::Context ctx(parser->GetContext());

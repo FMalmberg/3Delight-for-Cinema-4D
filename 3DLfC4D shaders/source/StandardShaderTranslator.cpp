@@ -110,7 +110,7 @@ void StandardShaderTranslator::CreateNSINodes(const char* Handle, const char* Pa
 	//parser->SetAssociatedHandle((BaseList2D*)C4DNode, shader_handle.c_str());
 }
 
-void StandardShaderTranslator::ConnectNSINodes(const char* Handle, BaseList2D* C4DNode, BaseDocument* doc, DL_SceneParser* parser) {
+void StandardShaderTranslator::ConnectNSINodes(const char* Handle, const char* ParentTransformHandle, BaseList2D* C4DNode, BaseDocument* doc, DL_SceneParser* parser) {
 
 	NSI::Context ctx(parser->GetContext());
 

@@ -22,9 +22,10 @@
 void NSI_Export_Material::CreateNSINodes(const char* Handle, const char* ParentTransformHandle, BaseList2D* C4DNode, BaseDocument* doc, DL_SceneParser* parser)
 {
 	NSI::Context ctx(parser->GetContext());
-	m_material_handle = string(Handle) + string("shader"); // string(parser->GetUniqueName("c4d_material"));
+	string m_material_handle = string(Handle) + string("shader"); 
+	string m_material_attributes = string(Handle); 
+	
 	ctx.Create(m_material_handle, "shader");
-	m_material_attributes = string(Handle); // string(parser->GetUniqueName("c4d_material_attribute"));
 	ctx.Create(m_material_attributes, "attributes");
 
 	BaseMaterial* material = (BaseMaterial*)C4DNode;
@@ -42,9 +43,12 @@ void NSI_Export_Material::CreateNSINodes(const char* Handle, const char* ParentT
 	//parser->SetAssociatedHandle((BaseList2D*)C4DNode, m_material_attributes.c_str());
 }
 
-void NSI_Export_Material::ConnectNSINodes(const char* Handle, BaseList2D* C4DNode, BaseDocument* doc, DL_SceneParser* parser)
+void NSI_Export_Material::ConnectNSINodes(const char* Handle, const char* ParentTransformHandle, BaseList2D* C4DNode, BaseDocument* doc, DL_SceneParser* parser)
 {
 	NSI::Context ctx(parser->GetContext());
+
+	string m_material_handle = string(Handle) + string("shader");
+	string m_material_attributes = string(Handle);
 
 	BaseMaterial* material = (BaseMaterial*)C4DNode;
 	BaseContainer* material_container = material->GetDataInstance();
@@ -93,6 +97,9 @@ void NSI_Export_Material::SampleAttributes(DL_SampleInfo* info, const char* Hand
 	if (info->sample > 0) {
 		return; //Don't do motion blur sampling of shader parameters, only first sample is exported
 	}
+
+	string m_material_handle = string(Handle) + string("shader");
+	string m_material_attributes = string(Handle);
 
 	NSI::Context ctx(parser->GetContext());
 

@@ -8,25 +8,45 @@
 #include <memory> //Shared pointer
 
 typedef std::shared_ptr<DL_Translator> DL_TranslatorPtr;
-typedef std::shared_ptr<BaseLink> BaseLinkPtr;
+//typedef std::shared_ptr<BaseLink> BaseLinkPtr;
 
-class Node{ //: public DL_Node{
+
+struct HierarchyData {
+	bool isVisible;
+	int cachePos; //Position in the cache hierarchy. Used to keep track of virtual objects. 
+	int deformationSamples;
+	int transformSamples;
+	std::string parent_transform;
+};
+
+class Node{ 
 private:
 	
-	bool isVisible;
-	BaseLinkPtr c4d_node_link;
+	
+	BaseList2D* c4d_node;
 	DL_TranslatorPtr translator;
 
+
 public:
-	Int64 dirty_checksum;
+	HierarchyData hdata;
+	std::string handle;
+
+	/*bool isVisible;
+	int cachePos; //Position in the cache hierarchy. Used to keep track of virtual objects. 
+	int motionSamples;
+	std::string parent_transform;*/
+
+	Int64 dirty_checksum; //Used to determine if the node has been modified and needs to be updated during interactive rendering
+	
 	Node(BaseList2D* listnode); 
 
-	void SetVisibility(bool visible);
+	//void SetVisibility(bool visible);
 
 	DL_Translator* GetTranslator();
-	//void SetTranslator(DL_Translator* translator); //Manually override translator for this node
-	BaseList2D* GetC4DNode(BaseDocument* doc);
-	bool IsVisible();
+	BaseList2D* GetC4DNode();
+	
+	//Remove this function, use direct access instead
+	//bool IsVisible();
 
 };
 

@@ -5,16 +5,19 @@
 #include <vector>
 using namespace std;
 
-void TextureTagTranslator::CreateNSINodes(const char* Handle, const char* ParentTransformHandle, BaseList2D* C4DNode, BaseDocument* doc, DL_SceneParser* parser) {
+/*void TextureTagTranslator::CreateNSINodes(const char* Handle, const char* ParentTransformHandle, BaseList2D* C4DNode, BaseDocument* doc, DL_SceneParser* parser) {
 	//NSI::Context ctx(parser->GetContext());
+	
 	transform_handle = std::string(ParentTransformHandle);
 
-}
+}*/
 
-void TextureTagTranslator::ConnectNSINodes(const char* Handle, BaseList2D* C4DNode, BaseDocument* doc, DL_SceneParser* parser) {
+void TextureTagTranslator::ConnectNSINodes(const char* Handle, const char* ParentTransformHandle, BaseList2D* C4DNode, BaseDocument* doc, DL_SceneParser* parser) {
 	NSI::Context ctx(parser->GetContext());
 
 	TextureTag* tag = (TextureTag*)C4DNode;
+	string transform_handle = std::string(ParentTransformHandle);
+
 
 	BaseMaterial * material = tag->GetMaterial();
 	if (material) {

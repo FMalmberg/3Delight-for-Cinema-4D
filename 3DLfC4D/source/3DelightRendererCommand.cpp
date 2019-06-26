@@ -68,7 +68,7 @@ Bool DL_3DelightRender_command::Execute(BaseDocument* doc)
 	BaseTime t = doc->GetTime();
 	long frame = t.GetFrame(doc->GetFps());
 	bool RenderOK = sp.InitScene(true, frame);
-	sp.SampleFrameMotion();
+	sp.SampleFrameMotion(frame);
 
 	BaseDocument::Free(renderdoc);
 

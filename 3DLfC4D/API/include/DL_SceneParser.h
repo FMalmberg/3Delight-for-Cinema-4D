@@ -17,9 +17,9 @@ public:
 	
 	virtual const char* GetHandleName(BaseList2D* node) = 0;
 
-	virtual void RequestMinimumShutterTime(float t)=0;
-	virtual float GetShutterOpen()=0;
-	virtual float GetShutterClose()=0;
+	//virtual void RequestMinimumShutterTime(float t)=0;
+	//virtual float GetShutterOpen()=0;
+	//virtual float GetShutterClose()=0;
 	virtual BaseContainer* GetSettings()=0;
 	virtual RENDER_MODE GetRenderMode()=0;
 	

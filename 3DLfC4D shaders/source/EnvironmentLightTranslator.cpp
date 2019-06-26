@@ -112,7 +112,7 @@ void EnvironmentLightTranslator::CreateNSINodes(const char* Handle, const char* 
 
 }
 
-void EnvironmentLightTranslator::ConnectNSINodes(const char* Handle, BaseList2D* C4DNode, BaseDocument* doc, DL_SceneParser* parser)
+void EnvironmentLightTranslator::ConnectNSINodes(const char* Handle, const char* ParentTransformHandle, BaseList2D* C4DNode, BaseDocument* doc, DL_SceneParser* parser)
 {
 	NSI::Context ctx(parser->GetContext());
 

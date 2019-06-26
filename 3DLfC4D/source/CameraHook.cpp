@@ -6,16 +6,21 @@
 #include "DL_TypeConversions.h"
 using namespace std;
 
+void CameraHook::Init(BaseDocument* doc, DL_SceneParser* parser) {
+	transform_name = string("3dlfc4d::scene_camera_transform"); //string(parser->GetUniqueName("transform"));
+	camera_name = string("3dlfc4d::scene_camera");
+}
+
 void CameraHook::CreateNSINodes(BaseDocument* doc, DL_SceneParser* parser){
 
 	NSI::Context ctx(parser->GetContext());
 
-	ctx.Create("3dlfc4d::scene_camera", "perspectivecamera");
-	transform_name = string("3dlfc4d::scene_camera_transform"); //string(parser->GetUniqueName("transform"));
+	ctx.Create(camera_name, "perspectivecamera");
+	//transform_name = string("3dlfc4d::scene_camera_transform"); //string(parser->GetUniqueName("transform"));
 	ctx.Create(transform_name, "transform");
 	ctx.Create("3dlfc4d::scene_camera_screen", "screen");
 
-	ctx.Connect("3dlfc4d::scene_camera", "", transform_name, "objects");
+	ctx.Connect(camera_name, "", transform_name, "objects");
 	ctx.Connect(transform_name, "", ".root", "objects");
 	ctx.Connect("3dlfc4d::scene_camera_screen", "", "3dlfc4d::scene_camera", "screens");
 
@@ -46,13 +51,7 @@ void CameraHook::CreateNSINodes(BaseDocument* doc, DL_SceneParser* parser){
 	screenwindow_arg.SetCount(2);
 	screenwindow_arg.SetValuePointer((void*)&screen_window[0]);
 
-	double shutter_range[2];
-	shutter_range[0]=parser->GetShutterOpen();
-	shutter_range[1]=parser->GetShutterClose();
-	NSI::Argument shutter_arg("shutterrange");
-	shutter_arg.SetType(NSITypeDouble);
-	shutter_arg.SetCount(2);
-	shutter_arg.SetValuePointer((void*)&shutter_range[0]);
+	
 
 	double shutter_opening[2];
 	shutter_opening[0]=0.5*(1.0-DL_Settings->GetFloat(DL_SHUTTER_OPENING_EFFICIENCY,1));
@@ -64,13 +63,12 @@ void CameraHook::CreateNSINodes(BaseDocument* doc, DL_SceneParser* parser){
 
 	//Get scene camera
 	BaseDraw* bd=doc->GetActiveBaseDraw();
-	camera=(CameraObject*)bd->GetSceneCamera(doc);
+	CameraObject* camera=(CameraObject*)bd->GetSceneCamera(doc);
 
 	int pixel_samples=DL_Settings->GetInt32(DL_PIXEL_SAMPLES,16);
 	
 
-	ctx.SetAttribute("3dlfc4d::scene_camera",(
-			shutter_arg,
+	ctx.SetAttribute(camera_name,(
 			shutteropening_arg,
 			NSI::IntegerArg("depthoffield.enable",enable_dof),
 			NSI::DoubleArg("depthoffield.fstop",fstop)
@@ -84,14 +82,34 @@ void CameraHook::CreateNSINodes(BaseDocument* doc, DL_SceneParser* parser){
 
 }
 
-void CameraHook::SampleAttributes(DL_SampleInfo* info,  BaseDocument* document, DL_SceneParser* parser){
+void CameraHook::SampleAttributes(DL_SampleInfo* info,  BaseDocument* doc, DL_SceneParser* parser){
+	NSI::Context ctx(parser->GetContext());
+
+	if (info->sample==0) { //Set camera shutter range at first motion sample
+		double shutter_range[2];
+		shutter_range[0] = info->shutter_open_time;
+		shutter_range[1] = info->shutter_close_time;
+		NSI::Argument shutter_arg("shutterrange");
+		shutter_arg.SetType(NSITypeDouble);
+		shutter_arg.SetCount(2);
+		shutter_arg.SetValuePointer((void*)&shutter_range[0]);
+
+		ctx.SetAttribute("3dlfc4d::scene_camera", (
+			shutter_arg
+			));
+	}
+	
+	//Get scene camera
+	BaseDraw* bd = doc->GetActiveBaseDraw();
+	CameraObject* camera = (CameraObject*)bd->GetSceneCamera(doc);
+
 	Float aperture=camera->GetAperture();
 	Float focus=camera->GetFocus();
 	float horizontal_fov=RadToDeg(2*ATan(0.5*aperture/focus));
 
 	float focal_length_cm = focus / 10;
 	
-	NSI::Context ctx(parser->GetContext());
+
 
 	BaseContainer* camdata = camera->GetDataInstance();
 	double focus_distance = camdata->GetFloat(CAMERAOBJECT_TARGETDISTANCE);
@@ -115,7 +133,7 @@ void CameraHook::SampleAttributes(DL_SampleInfo* info,  BaseDocument* document, 
 			xform
 		));
 
-
+	
 	//Sample fov
 	ctx.SetAttributeAtTime("3dlfc4d::scene_camera",info->sample_time,(
 			NSI::FloatArg("fov",horizontal_fov),

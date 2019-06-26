@@ -40,4 +40,5 @@ public:
 	virtual Bool GetDEnabling(GeListNode* i_node, const DescID& i_id, const GeData& i_data, DESCFLAGS_ENABLE i_flags, const BaseContainer* i_itemdesc);
 	virtual Bool GetDDescription(GeListNode *i_node, Description *i_description, DESCFLAGS_DESC &i_flags);
 	virtual Bool Message(GeListNode* i_node, Int32 i_type, void* i_data);
+	virtual RENDERRESULT Execute(BaseVideoPost * node, VideoPostStruct * vps);
 };

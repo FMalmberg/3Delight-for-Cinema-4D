@@ -80,7 +80,7 @@ void DisplayTranslator::CreateNSINodes(const char* Handle, const char* ParentTra
 
 }
 
-void DisplayTranslator::ConnectNSINodes(const char* Handle, BaseList2D* C4DNode, BaseDocument* doc,DL_SceneParser* parser){
+void DisplayTranslator::ConnectNSINodes(const char* Handle, const char* ParentTransformHandle, BaseList2D* C4DNode, BaseDocument* doc,DL_SceneParser* parser){
 	if (parser->GetRenderMode() != FINAL_RENDER){ //Don't output AOVs for preview render
 		return;
 	}

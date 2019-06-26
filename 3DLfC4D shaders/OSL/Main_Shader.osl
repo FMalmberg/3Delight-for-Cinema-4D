@@ -117,7 +117,6 @@ shader Main_Shader(
 	if(color_model==1) //Oren_Nayar
 		Ci=color_result*oren_nayar(N*diffusion_result,color_roughness)*color_diffuse_level;
 		
-
 	
 }
 

@@ -1,5 +1,5 @@
 OpenShadingLanguage 1.00
-# Compiled by oslc 1.10.0dev
+# Compiled by oslc 1.11.0dev
 # options: -q -o ..\build\win64-x64-release-free\2016.5\..\osl\areaLight.oso -I../../osl_shaders
 surface areaLight	%meta{string[1],tags,"light"} 
 param	color	i_color	1 1 1		%meta{string,label,"Color"} %meta{string,attribute,"color"}  %read{16,16} %write{2147483647,-1}
@@ -75,7 +75,7 @@ temp	float	$tmp39	%read{85,85} %write{84,84}
 const	string	$const15	"spread_to_focus"		%read{76,76} %write{2147483647,-1}
 const	string	$const16	"clamp"		%read{77,77} %write{2147483647,-1}
 temp	float	$tmp40	%read{79,79} %write{78,78}
-const	float	$const17	9.9999997e-06		%read{81,83} %write{2147483647,-1}
+const	float	$const17	9.99999975e-06		%read{81,83} %write{2147483647,-1}
 temp	int	$tmp41	%read{82,82} %write{81,81}
 const	string	$const18	"emission"		%read{85,85} %write{2147483647,-1}
 temp	closure color	$tmp42	%read{87,87} %write{86,86}
@@ -215,24 +215,24 @@ code ___main___
 # ../../osl_shaders/areaLight.osl:176
 # 	Ci += result * emission( "focus", spread_to_focus(spread) );
 	functioncall	$const15 85 	%line{176} %argrw{"r"}
-# X:/r2d2\src\osl_shaders\utils.h:260
+# W:/r2d2\src\osl_shaders\utils.h:260
 # 	float x = clamp(spread, 0.0, 1.0);
-	functioncall	$const16 80 	%filename{"X:/r2d2\src\osl_shaders\utils.h"} %line{260} %argrw{"r"}
-# X:/r2d2\src\3delight\win64-x64-release-free\osl\stdosl.h:163
+	functioncall	$const16 80 	%filename{"W:/r2d2\src\osl_shaders\utils.h"} %line{260} %argrw{"r"}
+# W:/r2d2\src\3delight\win64-x64-release-free\osl\stdosl.h:163
 # float  clamp (float x, float minval, float maxval) { return max(min(x,maxval),minval); }
-	min		$tmp40 spread $const7 	%filename{"X:/r2d2\src\3delight\win64-x64-release-free\osl\stdosl.h"} %line{163} %argrw{"wrr"}
+	min		$tmp40 spread $const7 	%filename{"W:/r2d2\src\3delight\win64-x64-release-free\osl\stdosl.h"} %line{163} %argrw{"wrr"}
 	max		___349_x $tmp40 $const12 	%argrw{"wrr"}
-# X:/r2d2\src\osl_shaders\utils.h:261
+# W:/r2d2\src\osl_shaders\utils.h:261
 # 	x *= x;
-	mul		___349_x ___349_x ___349_x 	%filename{"X:/r2d2\src\osl_shaders\utils.h"} %line{261} %argrw{"wrr"}
-# X:/r2d2\src\osl_shaders\utils.h:264
+	mul		___349_x ___349_x ___349_x 	%filename{"W:/r2d2\src\osl_shaders\utils.h"} %line{261} %argrw{"wrr"}
+# W:/r2d2\src\osl_shaders\utils.h:264
 # 	if( x<1e-5)
 	lt		$tmp41 ___349_x $const17 	%line{264} %argrw{"wrr"}
 	if		$tmp41 84 84 	%argrw{"r"}
-# X:/r2d2\src\osl_shaders\utils.h:265
+# W:/r2d2\src\osl_shaders\utils.h:265
 # 		x=1e-5;
 	assign		___349_x $const17 	%line{265} %argrw{"wr"}
-# X:/r2d2\src\osl_shaders\utils.h:267
+# W:/r2d2\src\osl_shaders\utils.h:267
 # 	return 1 / x;
 	div		$tmp39 $const7 ___349_x 	%line{267} %argrw{"wrr"}
 # ../../osl_shaders/areaLight.osl:176

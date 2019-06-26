@@ -19,8 +19,6 @@ void FrameStoppedCallback(
 
 bool DL_RenderFrame(BaseDocument* doc, long frame, RENDER_MODE mode, bool progressive){
 	
-
-
 	BaseDocument* renderdoc = (BaseDocument*)doc->GetClone(COPYFLAGS::DOCUMENT, nullptr);
 
 
@@ -34,7 +32,7 @@ bool DL_RenderFrame(BaseDocument* doc, long frame, RENDER_MODE mode, bool progre
 
 	//Render scene
 	bool RenderOK = sp.InitScene(true, frame);
-	sp.SampleFrameMotion();
+	sp.SampleFrameMotion(frame);
 
 	BaseDocument::Free(renderdoc);
 
@@ -48,7 +46,6 @@ bool DL_RenderFrame(BaseDocument* doc, long frame, RENDER_MODE mode, bool progre
 		NSI::PointerArg("stoppedcallback", (void*)&FrameStoppedCallback),
 		NSI::PointerArg("stoppedcallbackdata", 0)
 		));
-
 
 	return RenderOK;
 

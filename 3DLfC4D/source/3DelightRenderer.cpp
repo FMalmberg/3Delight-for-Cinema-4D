@@ -83,7 +83,7 @@ bool Render(BaseDocument* doc, long frame, RENDER_MODE mode, bool progressive, B
 
 	//Render scene
 	bool RenderOK = sp.InitScene(true, frame);
-	sp.SampleFrameMotion();
+	sp.SampleFrameMotion(frame);
 
 	BaseDocument::Free(renderdoc);
 
@@ -293,6 +293,38 @@ Bool RenderSettings::Init(GeListNode *i_node)
 	dldata->RemoveData(DL_EIGHT_BIT);
 
 	return TRUE;
+}
+
+RENDERRESULT RenderSettings::Execute(BaseVideoPost * node, VideoPostStruct * vps) {
+	if (vps->vp != VIDEOPOSTCALL::RENDER && vps->open) {
+
+			VolumeData* vd = vps->vd;
+			if (!vd) return RENDERRESULT::OK;
+
+			ApplicationOutput("Rendering with 3delight");
+
+			VPBuffer * buffer = vps->render->GetBuffer(VPBUFFER_RGBA, NOTOK); //Get the default image buffer. We will render to this buffer.
+			long width = buffer->GetBw();
+			long height = buffer->GetBh();
+			ApplicationOutput("W: "+String::IntToString(width));
+			ApplicationOutput("H: " + String::IntToString(height));
+			Int32 bit_depth = buffer->GetInfo(VPGETINFO::BITDEPTH);
+
+			MultipassBitmap* im = (MultipassBitmap*)buffer; //Cast VPbuffer to MultiPassBitmap is safe, they are the same type internally
+
+			im->Clear(255, 0, 0); //Set all pixels to red, just to demonstrate that we can actually manipulate the buffer
+
+			BaseDocument* doc = vps->doc; //Document to be rendered
+
+		//...Do rendering with 3delight here, following what we do in the RenderFrame command. 
+		//...We need to add a special display driver, that writes the rendered image data from 3delight to "RGBA_buffer"
+
+	//	vd->SkipRenderProcess(); //Skip normal c4d rendering process, since we do all rendering ourselves using 3delight
+		//return RENDERRESULT::USERBREAK;
+
+		
+	}
+	return RENDERRESULT::OK;
 }
 
 

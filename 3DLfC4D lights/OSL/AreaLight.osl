@@ -1,3 +1,0 @@
-surface AreaLight(float intensity=1, color tint=1) {
-	 Ci =  intensity * tint * emission();
-}

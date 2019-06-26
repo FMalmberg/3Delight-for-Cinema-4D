@@ -106,15 +106,25 @@ void c4dLightTranslator::CreateNSINodes(
 	BaseList2D* C4DNode, BaseDocument* doc, DL_SceneParser* parser)
 {
 	NSI::Context ctx(parser->GetContext());
-	m_transform_handle = string(ParentTransformHandle);
 	
-
+	//Handles
+	std::string m_handle= string(Handle);
+	std::string m_shader_handle = string(Handle) + string("shader");
+	std::string m_transform_handle= string(ParentTransformHandle);
+	std::string m_attributes_handle= string(Handle) + string("attributes");
+	std::string m_cap1= string(Handle) + string("cap_front");
+	std::string m_cap2= string(Handle) + string("cap_back");
+	std::string transform_cap = string(Handle) + string("cap_front_transform");
+	std::string transform_cap2 = string(Handle) + string("cap_back_transform");
+	std::string scale_transform = string(Handle) + string("scale_transform"); 
+	std::string transform_handle2 = string(Handle) + string("env_transform");
+	
 	BaseList2D *obj = (BaseList2D*)C4DNode;
 	GeData data;
 
-	m_handle = string(Handle);
-	m_attributes_handle = string(Handle) + string("attributes");
-	m_shader_handle = string(Handle) + string("shader");
+	//m_handle = string(Handle);
+	//m_attributes_handle = string(Handle) + string("attributes");
+	//m_shader_handle = string(Handle) + string("shader");
 
 	obj->GetParameter(DescID(LIGHT_AREADETAILS_SIZEX), data, DESCFLAGS_GET::NONE);
 	float halfwidth = float(data.GetFloat()*0.5);
@@ -131,8 +141,8 @@ void c4dLightTranslator::CreateNSINodes(
 		obj->GetParameter(DescID(LIGHT_AREADETAILS_SHAPE), data, DESCFLAGS_GET::NONE);
 		Int32 shape = data.GetInt32();
 
-		std::string transform_cap;
-		std::string transform_cap2;
+		//std::string transform_cap;
+		//std::string transform_cap2;
 		switch (shape)
 		{
 		case LIGHT_AREADETAILS_SHAPE_RECTANGLE:
@@ -157,18 +167,18 @@ void c4dLightTranslator::CreateNSINodes(
 			ctx.Create(m_handle, "mesh");
 
 			//m_cap1 = string(parser->GetUniqueName("cylinder_cap_front"));
-			m_cap1 = string(Handle) + string("cap_front");
+			//m_cap1 = string(Handle) + string("cap_front");
 			ctx.Create(m_cap1, "particles");
 
 			//m_cap2 = string(parser->GetUniqueName("cylinder_cap_back"));
-			m_cap2 = string(Handle) + string("cap_back");
+			//m_cap2 = string(Handle) + string("cap_back");
 
 			ctx.Create(m_cap2, "particles");
 
-			transform_cap = string(Handle)+string("cap_front_transform");
+			//transform_cap = string(Handle)+string("cap_front_transform");
 			ctx.Create(transform_cap, "transform");
 
-			transform_cap2 = string(Handle) + string("cap_back_transform");
+			//transform_cap2 = string(Handle) + string("cap_back_transform");
 			ctx.Create(transform_cap2, "transform");
 			if (shape == LIGHT_AREADETAILS_SHAPE_LINE)
 			{
@@ -267,7 +277,7 @@ void c4dLightTranslator::CreateNSINodes(
 
 
 		//std::string scale_transform = string(parser->GetUniqueName("scale_tranform"));
-		std::string scale_transform = string(Handle) + string("scale_transform");
+		//std::string scale_transform = string(Handle) + string("scale_transform");
 		ctx.Create(scale_transform, "transform");
 		/*
 		The default length size in Cinema4D is alwyas 200 cm, whereas the default scale parameters for
@@ -335,19 +345,19 @@ void c4dLightTranslator::CreateNSINodes(
 		int camera_visibility = data.GetInt32();
 
 		//string attributes_handle = string(parser->GetUniqueName("cinema4dLight"));
-		string attributes_handle = string(Handle) + string("attributes");
-		ctx.Create(attributes_handle, "attributes");
-		ctx.SetAttribute(attributes_handle, (
+		//string attributes_handle = string(Handle) + string("attributes");
+		ctx.Create(m_attributes_handle, "attributes");
+		ctx.SetAttribute(m_attributes_handle, (
 			NSI::IntegerArg("visibility.camera", camera_visibility)
 			));
-		ctx.Connect(attributes_handle, "", m_handle, "geometryattributes");
-		ctx.Connect(attributes_handle, "", m_cap1, "geometryattributes");
-		ctx.Connect(attributes_handle, "", m_cap2, "geometryattributes");
+		ctx.Connect(m_attributes_handle, "", m_handle, "geometryattributes");
+		ctx.Connect(m_attributes_handle, "", m_cap1, "geometryattributes");
+		ctx.Connect(m_attributes_handle, "", m_cap2, "geometryattributes");
 
 		//m_shader_handle = string(parser->GetUniqueName("light_shading"));
 		//m_shader_handle = string(Handle) + string("shader");
 		ctx.Create(m_shader_handle, "shader");
-		ctx.Connect(m_shader_handle, "", attributes_handle, "surfaceshader");
+		ctx.Connect(m_shader_handle, "", m_attributes_handle, "surfaceshader");
 
 		Filename shaderpath = Filename(GeGetPluginPath() + Filename("OSL") + Filename("AreaLight.oso"));
 		vector<char> c_shaderpath = StringToChars(shaderpath.GetString());
@@ -404,7 +414,7 @@ void c4dLightTranslator::CreateNSINodes(
 	{
 		//m_handle = string(parser->GetUniqueName("directional_light"));
 		//std::string transform_handle2 = string(parser->GetUniqueName("env_transform"));
-		std::string transform_handle2 = string(Handle) + string("env_transform"); // string(parser->GetUniqueName("env_transform"));
+		//std::string transform_handle2 = string(Handle) + string("env_transform"); // string(parser->GetUniqueName("env_transform"));
 
 		ctx.Create(transform_handle2, "transform");
 
@@ -497,17 +507,17 @@ void c4dLightTranslator::CreateNSINodes(
 		int camera_visibility = data.GetInt32();
 
 		//string attributes_handle = string(parser->GetUniqueName("cinema4dLightSpotLight"));
-		string attributes_handle = string(Handle) + string("attributes"); //string(parser->GetUniqueName("cinema4dLightSpotLight"));
-		ctx.Create(attributes_handle, "attributes");
-		ctx.SetAttribute(attributes_handle, (
+		//string attributes_handle = string(Handle) + string("attributes"); //string(parser->GetUniqueName("cinema4dLightSpotLight"));
+		ctx.Create(m_attributes_handle, "attributes");
+		ctx.SetAttribute(m_attributes_handle, (
 			NSI::IntegerArg("visibility.camera", camera_visibility)
 			));
 
 		//m_shader_handle = string(parser->GetUniqueName("spot_shading"));
 		ctx.Create(m_shader_handle, "shader");
 		ctx.Connect(transform, "", m_transform_handle, "objects");
-		ctx.Connect(attributes_handle, "", m_handle, "geometryattributes");
-		ctx.Connect(m_shader_handle, "", attributes_handle, "surfaceshader");
+		ctx.Connect(m_attributes_handle, "", m_handle, "geometryattributes");
+		ctx.Connect(m_shader_handle, "", m_attributes_handle, "surfaceshader");
 		ctx.Connect(m_handle, "", transform, "objects");
 
 		Filename shaderpath = Filename(GeGetPluginPath() + Filename("OSL") + Filename("spotLight.oso"));
@@ -521,6 +531,17 @@ void c4dLightTranslator::CreateNSINodes(
 void c4dLightTranslator::SampleAttributes(DL_SampleInfo* info, const char* Handle, BaseList2D* C4DNode, BaseDocument* doc, DL_SceneParser* parser)
 {
 	NSI::Context ctx(parser->GetContext());
+
+	//Handles
+	std::string m_handle = string(Handle);
+	std::string m_shader_handle = string(Handle) + string("shader");
+	std::string m_attributes_handle = string(Handle) + string("attributes");
+	std::string m_cap1 = string(Handle) + string("cap_front");
+	std::string m_cap2 = string(Handle) + string("cap_back");
+	std::string transform_cap = string(Handle) + string("cap_front_transform");
+	std::string transform_cap2 = string(Handle) + string("cap_back_transform");
+	std::string scale_transform = string(Handle) + string("scale_transform");
+	std::string transform_handle2 = string(Handle) + string("env_transform");
 
 	BaseList2D *obj = (BaseList2D*)C4DNode;
 

@@ -2,7 +2,7 @@ STRINGTABLE Tmotionsamples
 {
 	Tmotionsamples	"DL_MotionblurTag";
 	USE_TRANSFORMATION_BLUR "Transformation blur";
-	TRANSFORMATION_EXTRA_SAMPLES "Extra samples";
+	TRANSFORMATION_EXTRA_SAMPLES "Additional samples";
 	USE_DEFORMATION_BLUR "Deformation blur";
-	DEFORMATION_EXTRA_SAMPLES	"Extra samples";
+	DEFORMATION_EXTRA_SAMPLES	"Additional samples";
 }

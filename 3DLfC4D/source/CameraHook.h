@@ -7,13 +7,14 @@
 
 class CameraHook:public DL_HookPlugin{
 public:
+	void Init(BaseDocument* doc, DL_SceneParser* parser);
 	void CreateNSINodes(BaseDocument* doc, DL_SceneParser* parser);
-	void SampleAttributes(DL_SampleInfo* info, BaseDocument* document, DL_SceneParser* parser);
+	void SampleAttributes(DL_SampleInfo* info, BaseDocument* doc, DL_SceneParser* parser);
 
 private:
 
-	CameraObject* camera;
 	std::string transform_name;
+	std::string camera_name;
 	
 };
 

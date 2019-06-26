@@ -40,7 +40,7 @@ PolygonObject* GetMeshFromNode(BaseList2D* C4DNode){
 	PolygonObject* mesh = (PolygonObject*)C4DNode; 
 	
 	String type = (String::IntToString(obj->GetType()));
-	ApplicationOutput(type);
+	//ApplicationOutput(type);
 	//If the object is an alembic generator, we get the polygon mesh from the cache instead
 	if (obj->GetType() == Oalembicgenerator){ 
 		BaseObject* cache = obj->GetCache();
@@ -64,11 +64,44 @@ PolygonObject* GetMeshFromNode(BaseList2D* C4DNode){
 	return mesh;
 }
 
-void PolygonObjectTranslator::CreateNSINodes(const char* Handle, const char* ParentTransformHandle, BaseList2D* C4DNode, BaseDocument* doc, DL_SceneParser* parser){
-	NSI::Context ctx(parser->GetContext());
+void PolygonObjectTranslator::Init(BaseList2D* C4DNode, BaseDocument* doc, DL_SceneParser* parser) {
+	//---------------------------//
+	//Check for SDS
+	is_subd = false;
+	//subdivision_scheme = "";
+	UV_subdivision_mode = SDSOBJECT_SUBDIVIDE_UV_STANDARD;
 
-	skip = false;
-	
+	BaseObject* tmp = (BaseObject*)C4DNode;
+	BaseObject* tmp2 = tmp;
+	tmp = tmp->GetUp();
+
+	while (tmp != NULL && !(tmp->GetType() == Osds && tmp->GetDeformMode())) {
+		tmp2 = tmp;
+		tmp = tmp->GetUp();
+	}
+
+	if (tmp != NULL && tmp->GetType() == Osds) {
+		if (tmp2 == tmp->GetDown()) {
+			is_subd = true;
+			//subdivision_scheme = "catmull-clark";
+			BaseContainer* sds_settings = tmp->GetDataInstance();
+			UV_subdivision_mode = sds_settings->GetInt32(SDSOBJECT_SUBDIVIDE_UV, SDSOBJECT_SUBDIVIDE_UV_STANDARD);
+		}
+	}
+	//---------------------------//
+
+	//Check for Phong tag
+	BaseObject* object = (BaseObject*)C4DNode;
+	BaseTag* phongtag = object->GetTag(Tphong);
+	has_phong = false;
+	if (phongtag != NULL) {
+		has_phong = true;
+	}
+}
+
+
+void PolygonObjectTranslator::CreateNSINodes(const char* Handle, const char* ParentTransformHandle, BaseList2D* C4DNode, BaseDocument* doc, DL_SceneParser* parser){
+	NSI::Context ctx(parser->GetContext());	
 	
 	BaseObject* baseobject = (BaseObject*)C4DNode;
 	PolygonObject* object = GetMeshFromNode(C4DNode);
@@ -93,50 +126,30 @@ void PolygonObjectTranslator::CreateNSINodes(const char* Handle, const char* Par
 	//	}
 	//}
 
-	polycount = object->GetPolygonCount();
-	pointcount = object->GetPointCount();
+	int polycount = object->GetPolygonCount();
+	int pointcount = object->GetPointCount();
 	const CPolygon* polys = object->GetPolygonR();
 
 	//Create a mesh and connect it to the parent transform
 	//handle = string(parser->GetUniqueName("mesh"));
-	handle = string(Handle);
-	transform_handle = string(ParentTransformHandle);
+	string handle = string(Handle);
+	string transform_handle = string(ParentTransformHandle);
 
 	ctx.Create(handle, "mesh");
 	ctx.Connect(handle, "", transform_handle, "objects");
 
-	//---------------------------//
-	//Check for SDS
-	is_subd = false;
+	
 	string subdivision_scheme = "";
-	long UV_subdivision_mode = SDSOBJECT_SUBDIVIDE_UV_STANDARD;
-
-	BaseObject* tmp = (BaseObject*)C4DNode;
-	BaseObject* tmp2 = tmp;
-	tmp = tmp->GetUp();
-
-	while (tmp != NULL && !(tmp->GetType() == Osds && tmp->GetDeformMode())){
-		tmp2 = tmp;
-		tmp = tmp->GetUp();
+	if (is_subd) {
+		subdivision_scheme = "catmull-clark";
 	}
-
-	if (tmp != NULL && tmp->GetType() == Osds){
-		if (tmp2 == tmp->GetDown()){
-			is_subd = true;
-			subdivision_scheme = "catmull-clark";
-			BaseContainer* sds_settings = tmp->GetDataInstance();
-			UV_subdivision_mode = sds_settings->GetInt32(SDSOBJECT_SUBDIVIDE_UV, SDSOBJECT_SUBDIVIDE_UV_STANDARD);
-		}
-	}
-	//---------------------------//
-
 
 	//Check for Phong tag
 	BaseTag* phongtag = object->GetTag(Tphong);
-	has_phong = false;
+	/*bool has_phong = false;
 	if (phongtag != NULL){
 		has_phong = true;
-	}
+	}*/
 
 	vector<int> nvertices(polycount);
 	vector<int> indices;
@@ -180,7 +193,7 @@ void PolygonObjectTranslator::CreateNSINodes(const char* Handle, const char* Par
 		}
 	}
 
-	n_facevertices = facevarying_indices.size();
+	int n_facevertices = facevarying_indices.size();
 
 	ctx.SetAttribute(handle, (
 		arg_nvertices,
@@ -260,13 +273,11 @@ void PolygonObjectTranslator::CreateNSINodes(const char* Handle, const char* Par
 }
 
 void PolygonObjectTranslator::SampleAttributes(DL_SampleInfo* info, const char* Handle, BaseList2D* C4DNode, BaseDocument* doc, DL_SceneParser* parser){
-	if (skip){ return; }
 
 	NSI::Context ctx(parser->GetContext());
 
 	PolygonObject* mesh = GetMeshFromNode(C4DNode);
 	if (!mesh){
-		skip = true;
 		return;
 	}
 
@@ -299,14 +310,12 @@ void PolygonObjectTranslator::SampleAttributes(DL_SampleInfo* info, const char* 
 	//Can we skip motion blur sampling if deformed==NULL?
 	//No, the mesh may still have PLA. 
 
-	//Don't sample if the polygon or vertex count changed since the NSI mesh node was created
-	if (!(deformed->GetPointCount() == pointcount &&  deformed->GetPolygonCount() == polycount)){
-		skip = true;
-		return;
-	}
 	
 	const Vector* points = deformed->GetPointR();
 	const CPolygon* polys = deformed->GetPolygonR();
+
+	int pointcount = deformed->GetPointCount();
+	int polycount = deformed->GetPolygonCount();
 
 	//Vertex positions
 	vector<float> P(pointcount * 3);
@@ -322,6 +331,8 @@ void PolygonObjectTranslator::SampleAttributes(DL_SampleInfo* info, const char* 
 	arg_P.SetCount(pointcount);
 	arg_P.SetValuePointer((void*)&P[0]);
 
+	string handle = string(Handle);
+
 	ctx.SetAttributeAtTime(handle, info->sample_time, (
 		arg_P
 		));
@@ -329,14 +340,14 @@ void PolygonObjectTranslator::SampleAttributes(DL_SampleInfo* info, const char* 
 	//Phong normals
 	if (has_phong && !is_subd){
 		vector<float> N;
-		N.reserve(n_facevertices * 3);
+		N.reserve(polycount*4*3);
 		Vector32* normals = deformed->CreatePhongNormals();
 		Vector32 tmp;
 		long nverts;
 		for (int j = 0; j < polycount; j++){
 			nverts = 3;
 			if (polys[j].c != polys[j].d){ nverts = 4; }
-
+			
 			for (int n = 0; n < nverts; n++){
 				tmp = normals[4 * j + n];
 				N.push_back(tmp.x);
@@ -348,7 +359,7 @@ void PolygonObjectTranslator::SampleAttributes(DL_SampleInfo* info, const char* 
 
 		NSI::Argument arg_N("N");
 		arg_N.SetType(NSITypeNormal);
-		arg_N.SetCount(n_facevertices);
+		arg_N.SetCount(N.size());
 		arg_N.SetValuePointer((void*)&N[0]);
 		arg_N.SetFlags(NSIParamPerVertex);
 

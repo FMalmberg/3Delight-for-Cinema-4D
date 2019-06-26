@@ -16,7 +16,7 @@ public:
 
 	virtual void Init(BaseList2D* C4DNode, BaseDocument* doc, DL_SceneParser* parser) = 0;
 	virtual void CreateNSINodes(const char* Handle, const char* ParentTransformHandle, BaseList2D* C4DNode, BaseDocument* doc, DL_SceneParser* parser) = 0;
-	virtual void ConnectNSINodes(const char* Handle, BaseList2D* C4DNode, BaseDocument* doc,DL_SceneParser* parser) = 0;
+	virtual void ConnectNSINodes(const char* Handle, const char* ParentTransformHandle, BaseList2D* C4DNode, BaseDocument* doc,DL_SceneParser* parser) = 0;
 	virtual void SampleAttributes(DL_SampleInfo* info, const char* Handle, BaseList2D* C4DNode, BaseDocument* doc,DL_SceneParser* parser) = 0;
 
 };

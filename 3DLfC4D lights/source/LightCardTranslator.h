@@ -23,9 +23,9 @@ private:
 	//Vector color;
 	//Matrix transform;
 
-	std::string handle;
-	std::string shader_handle;
-	std::string transform_handle;
+	//std::string handle;
+	//std::string shader_handle;
+	//std::string transform_handle;
 	
 };
 
