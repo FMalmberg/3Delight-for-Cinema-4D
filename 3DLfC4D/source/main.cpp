@@ -13,6 +13,92 @@
 #include <windows.h>
 
 
+void Create3DelightMenu(BaseContainer* bc)
+{
+	if (!bc) return;
+	BrowseContainer browse(bc);
+	Int32 id = 0;
+	GeData * dat = nullptr;
+
+	while (browse.GetNext(&id, &dat))
+	{
+		if (id == MENURESOURCE_SUBMENU)
+		{
+			BaseContainer* container = dat->GetContainer();
+			String subtitle = container->GetString(MENURESOURCE_SUBTITLE);
+			if (container && subtitle == "IDS_EDITOR_PLUGINS")
+			{
+				BaseContainer sc;
+				sc.InsData(MENURESOURCE_SUBTITLE, String("3Delight"));
+
+				BaseContainer MaterialsSubMenu;
+				MaterialsSubMenu.InsData(MENURESOURCE_SUBTITLE, String("Materials"));
+				MaterialsSubMenu.InsData(MENURESOURCE_COMMAND, String("PLUGIN_CMD_1052718")); //DL_Principled
+				MaterialsSubMenu.InsData(MENURESOURCE_COMMAND, String("PLUGIN_CMD_1052717")); //DL_Glass
+				MaterialsSubMenu.InsData(MENURESOURCE_COMMAND, String("PLUGIN_CMD_1052719")); //DL_HAIRANDFUR
+				MaterialsSubMenu.InsData(MENURESOURCE_COMMAND, String("PLUGIN_CMD_1052720")); //DL_METAL
+				MaterialsSubMenu.InsData(MENURESOURCE_COMMAND, String("PLUGIN_CMD_1052721")); //DL_SKIN
+				MaterialsSubMenu.InsData(MENURESOURCE_COMMAND, String("PLUGIN_CMD_1052722")); //DL_SUBSTANCE
+				MaterialsSubMenu.InsData(MENURESOURCE_COMMAND, String("PLUGIN_CMD_1052724")); //DL_CARPAINT
+
+
+				BaseContainer ObjectsSubMenu;
+				ObjectsSubMenu.InsData(MENURESOURCE_SUBTITLE, String("Objects"));
+				ObjectsSubMenu.InsData(MENURESOURCE_COMMAND, "PLUGIN_CMD_" + String::IntToString(ID_ENVIRONMENTLIGHT));
+				ObjectsSubMenu.InsData(MENURESOURCE_COMMAND, "PLUGIN_CMD_" + String::IntToString(DL_OPENVDB));
+
+
+				BaseContainer LightsSubMenu;
+				LightsSubMenu.InsData(MENURESOURCE_SUBTITLE, String("Lights"));
+				LightsSubMenu.InsData(MENURESOURCE_COMMAND, "PLUGIN_CMD_" + String::IntToString(ID_LIGHTCARD));
+				LightsSubMenu.InsData(MENURESOURCE_COMMAND, "PLUGIN_CMD_" + String::IntToString(ID_DIRECTIONAL_LIGHT));
+				LightsSubMenu.InsData(MENURESOURCE_COMMAND, "PLUGIN_CMD_" + String::IntToString(ID_POINTLIGHT));
+				LightsSubMenu.InsData(MENURESOURCE_COMMAND, "PLUGIN_CMD_" + String::IntToString(ID_INCANDESCENCELIGHT));
+
+				BaseContainer RenderSubMenu;
+				RenderSubMenu.InsData(MENURESOURCE_SUBTITLE, String("Render"));
+				RenderSubMenu.InsData(MENURESOURCE_COMMAND, "PLUGIN_CMD_" + String::IntToString(ID_RENDER_COMMAND));
+				RenderSubMenu.InsData(MENURESOURCE_COMMAND, "PLUGIN_CMD_" + String::IntToString(ID_INTERACTIVE_RENDERING_START));
+				RenderSubMenu.InsData(MENURESOURCE_COMMAND, "PLUGIN_CMD_" + String::IntToString(ID_INTERACTIVE_RENDERING_STOP));
+				
+				sc.InsData(MENURESOURCE_SUBMENU, MaterialsSubMenu);
+				sc.InsData(MENURESOURCE_SUBMENU, ObjectsSubMenu);
+				sc.InsData(MENURESOURCE_SUBMENU, LightsSubMenu);
+				sc.InsData(MENURESOURCE_SUBMENU, RenderSubMenu);
+
+				bc->InsDataAfter(MENURESOURCE_STRING, sc, dat);
+
+			}
+			//ApplicationOutput(subtitle);
+		}
+	}
+}
+
+//
+//void AddSubMenus(BaseContainer* bc)
+//{
+//	if (!bc) return;
+//	BrowseContainer browse(bc);
+//	Int32 id = 0;
+//	GeData * dat = nullptr;
+//
+//	while (browse.GetNext(&id, &dat))
+//	{
+//		
+//			BaseContainer* container = dat->GetContainer();
+//			String subtitle = container->GetString(MENURESOURCE_SUBTITLE);
+//			if (subtitle == "3Delight")
+//			{
+//				AddSubMenus(dat->GetContainer());
+//			}
+//			//if(dat)
+//			//ApplicationOutput(dat->GetString());
+//	}
+//}
+
+
+
+
 //Global plugin manager, 
 //Stores pointers to allocators for translator plugins	
 
@@ -33,6 +119,7 @@ Bool RegisterInteractiveRenderingStart(void);
 Bool RegisterInteractiveRenderingStop(void);
 Bool RegisterInteractiveRenderManager(void);
 Bool Register3DelightCommand(void);
+Bool RegisterUserGuide(void);
 
 Bool PluginStart(void)
 {
@@ -56,11 +143,8 @@ Bool PluginStart(void)
 	if (!RegisterInteractiveRenderingStop()) return FALSE;
 	if (!Register3DelightPlugin()) return FALSE;
 	if (!RegisterInteractiveRenderManager()) return FALSE;
-	//if (!RegisterInteractiveRenderManager())return FALSE;
-	//if (!RegisterDisplay()) return FALSE;
-	if (!RegisterDL_CameraTag()) return FALSE;
-	if (!RegisterDL_MotionBlurTag()) return FALSE;
 	if (!Register3DelightCommand()) return FALSE;
+	if (!RegisterUserGuide()) return FALSE;
 
 	
 	if (!RegisterDisplay()) return FALSE;
@@ -105,6 +189,7 @@ Bool PluginMessage(Int32 id, void* data)
 		break;
 	}
 	case DL_LOAD_PLUGINS:
+	{
 		DL_PluginManager* pm = (DL_PluginManager*)data;
 		pm->RegisterHook(AllocateHook<CameraHook>);
 		pm->RegisterHook(AllocateHook<RenderOptionsHook>);
@@ -112,8 +197,18 @@ Bool PluginMessage(Int32 id, void* data)
 		pm->RegisterTranslator(ID_DL_VISIBILITYTAG, AllocateTranslator<VisibilityTagTranslator>);
 		//pm->RegisterTranslator(,AllocateTranslator<QualityValuesParser>);
 		break;
+	}
+	
+	case C4DPL_BUILDMENU:
+	{
+		BaseContainer* bc = GetMenuResource("M_EDITOR"_s);
+		if (!bc) return FALSE;
+		Create3DelightMenu(bc);
+		break;
+	}
 
 	}
 
+	
 	return false;
 }

@@ -1,0 +1,10 @@
+STRINGTABLE oincandescencelight
+{
+	oincandescencelight "Incandescenece Light";
+
+	INCANDESCENCE_LIGHT_COLOR "Color";
+	INCANDESCENCE_LIGHT_INTENSITY "Intensity";
+	INCANDESCENCE_LIGHT_EXPOSURE "Exposure";
+	INCANDESCENCE_LIGHT_GEOMETRY "Geometry";
+	INCANDESCENCE_LIGHT_ILLUMINATES "Illuminates by default";
+}
