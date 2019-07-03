@@ -1,6 +1,6 @@
 #include "c4d.h"
 #include "c4d_symbols.h"
-#include "myres.h"
+#include "dlrendersettings.h"
 #include "3DelightRenderer.h"
 #include <iostream>
 #include "DL_Render.h"
@@ -46,7 +46,53 @@ void NSIErrorHandlerC4D(void *userdata, int level, int code, const char *message
 }
 
 
-bool Render(BaseDocument* doc, long frame, RENDER_MODE mode, bool progressive, BaseContainer* settings) {
+
+Bool AddCycleButton(Description *dc, Int32 id, const DescID &groupid, const String &name, const BaseContainer &itemnames)
+{
+	const DescID* singleid = dc->GetSingleDescID();
+
+	if (!singleid || ((DescID)id).IsPartOf(*singleid, NULL))
+	{
+		BaseContainer bc = GetCustomDataTypeDefault(DTYPE_LONG);
+
+		//  Set CycleButton properties
+		bc.SetBool(DESC_ANIMATE, false);
+		bc.SetInt32(DESC_CUSTOMGUI, CUSTOMGUI_CYCLEBUTTON);
+		bc.SetInt32(DESC_DEFAULT, 0);
+		bc.SetInt32(DESC_SCALEH, TRUE);
+		bc.SetString(DESC_NAME, name);
+		bc.SetContainer(DESC_CYCLE, itemnames);
+
+		//  Create CycleButton
+		return dc->SetParameter(DescLevel(id, DTYPE_LONG, 0), bc, groupid);
+	}
+
+	return TRUE;
+}
+
+
+Bool AddEmpty(Description *dc, Int32 id, const DescID &groupid)
+{
+	const DescID* singleid = dc->GetSingleDescID();
+
+	if (!singleid || ((DescID)id).IsPartOf(*singleid, NULL))
+	{
+		BaseContainer bc = GetCustomDataTypeDefault(DTYPE_STATICTEXT);
+
+		//  Set CycleButton properties
+		bc.SetBool(DESC_ANIMATE, false);
+		bc.SetInt32(DESC_SCALEH, TRUE);
+
+		//  Create CycleButton
+		return dc->SetParameter(DescLevel(id, DTYPE_STATICTEXT, 0), bc, groupid);
+	}
+
+	return TRUE;
+}
+
+
+
+bool Render3Dl(BaseDocument* doc, long frame, RENDER_MODE mode, bool progressive, BaseContainer* settings) {
 	BaseDocument* renderdoc = (BaseDocument*)doc->GetClone(COPYFLAGS::DOCUMENT, nullptr);
 
 	NSIContext_t context_handle = NSIBegin(0, 0);
@@ -117,7 +163,7 @@ Bool ShowDescriptionElement(GeListNode *i_node, Description *i_descr, Int32 i_My
 }
 
 /**
-	Gets the currently used parameter description of the entity 
+	Gets the currently used parameter description of the entity
 	which in this case is the plugin with Id ID_RENDERSETTINGS.
 */
 Bool RenderSettings::GetDDescription(
@@ -126,6 +172,15 @@ Bool RenderSettings::GetDDescription(
 {
 	i_description->LoadDescription(ID_RENDERSETTINGS);
 	i_flags |= DESCFLAGS_DESC::LOADED;
+
+	BaseContainer names;
+	names.SetString(0, "Render"_s);
+	names.SetString(1, "Export to NSI File..."_s);
+
+	AddCycleButton(i_description, RENDER_CYCLEBUTTON, DescID(RENDER), "", names);
+	AddEmpty(i_description, RENDER_CYCLEBUTTON+1, DescID(RENDER));
+	AddEmpty(i_description, RENDER_CYCLEBUTTON+2, DescID(RENDER));
+
 	BaseContainer *bc = ((BaseTag*)i_node)->GetDataInstance();
 
 	Bool OPEN_EXR_FORMAT =
@@ -207,21 +262,24 @@ Bool RenderSettings::Message(GeListNode* i_node, Int32 i_type, void* i_data)
 {
 	switch (i_type)
 	{
-		case MSG_DESCRIPTION_COMMAND:
+	case MSG_DESCRIPTION_COMMAND:
+	{
+		DescriptionCommand* dc = (DescriptionCommand*)i_data;
+		BaseContainer* dldata = ((BaseVideoPost*)i_node)->GetDataInstance();
+		BaseDocument* doc = GetActiveDocument();
+		BaseTime t = doc->GetTime();
+		if (dc->_descId[0].id == RENDER_CYCLEBUTTON)
 		{
-			DescriptionCommand* dc = (DescriptionCommand*)i_data;
-			BaseContainer* dldata = ((BaseVideoPost*)i_node)->GetDataInstance();
-			BaseDocument* doc = GetActiveDocument();
-			BaseTime t = doc->GetTime();
+			Int32 action = dldata->GetInt32(RENDER_CYCLEBUTTON);
 			long frame = t.GetFrame(doc->GetFps());
-			if (dc->_descId[0].id == DL_CREATE_RENDER_SETTINGS) //If render button is clicked
+			if (action==0) //If render button is clicked
 			{
 				dldata->SetString(DL_ISCLICKED, "Render"_s);
-				Render(doc, frame, PREVIEW_RENDER, true, dldata);
+				Render3Dl(doc, frame, PREVIEW_RENDER, true, dldata);
 			}
 			//If Export to NSI File button is clicked
-			if (dc->_descId[0].id == DL_EXPORT_RENDER_SETTINGS) 
-			{ 
+			else if (action==1)
+			{
 				dldata->SetString(DL_ISCLICKED, "Export"_s);
 				if (dldata->GetFilename(DL_FOLDER_OUTPUT).GetString() == "")
 				{
@@ -232,9 +290,11 @@ Bool RenderSettings::Message(GeListNode* i_node, Int32 i_type, void* i_data)
 					folder.FileSelect(FILESELECTTYPE::ANYTHING, FILESELECT::SAVE, "Select Folder"_s);
 					dldata->SetFilename(DL_FOLDER_OUTPUT, folder);
 				}
-				Render(doc, frame, PREVIEW_RENDER, true, dldata);
+				Render3Dl(doc, frame, PREVIEW_RENDER, true, dldata);
 			}
 		}
+		
+	}
 	}
 	return true;
 }
@@ -282,7 +342,7 @@ Bool RenderSettings::Init(GeListNode *i_node)
 	dldata->SetInt32(DL_BATCH_OUTPUT_MODE, DL_ENABLE_AS_SELECTED);
 	dldata->SetInt32(DL_INTERACTIVE_OUTPUT_MODE, DL_ENABLE_AS_SELECTED_INTERACTIVE);
 
-	
+
 	Filename file = GeGetPluginPath() + Filename("NSI");
 	dldata->SetFilename(DL_DEFAULT_IMAGE_FILENAME, file);
 
@@ -295,34 +355,36 @@ Bool RenderSettings::Init(GeListNode *i_node)
 	return TRUE;
 }
 
-RENDERRESULT RenderSettings::Execute(BaseVideoPost * node, VideoPostStruct * vps) {
-	if (vps->vp != VIDEOPOSTCALL::RENDER && vps->open) {
+RENDERRESULT RenderSettings::Execute(BaseVideoPost * node, VideoPostStruct * vps) 
+{
+	if (vps->vp == VIDEOPOSTCALL::RENDER && !vps->open) 
+	{
 
-			VolumeData* vd = vps->vd;
-			if (!vd) return RENDERRESULT::OK;
+		VolumeData* vd = vps->vd;
+		if (!vd) return RENDERRESULT::OK;
 
-			ApplicationOutput("Rendering with 3delight");
+		ApplicationOutput("Rendering with 3delight");
 
-			VPBuffer * buffer = vps->render->GetBuffer(VPBUFFER_RGBA, NOTOK); //Get the default image buffer. We will render to this buffer.
-			long width = buffer->GetBw();
-			long height = buffer->GetBh();
-			ApplicationOutput("W: "+String::IntToString(width));
-			ApplicationOutput("H: " + String::IntToString(height));
-			Int32 bit_depth = buffer->GetInfo(VPGETINFO::BITDEPTH);
+		VPBuffer * buffer = vps->render->GetBuffer(VPBUFFER_RGBA, NOTOK); //Get the default image buffer. We will render to this buffer.
+		long width = buffer->GetBw();
+		long height = buffer->GetBh();
+		ApplicationOutput("W: " + String::IntToString(width));
+		ApplicationOutput("H: " + String::IntToString(height));
+		Int32 bit_depth = buffer->GetInfo(VPGETINFO::BITDEPTH);
 
-			MultipassBitmap* im = (MultipassBitmap*)buffer; //Cast VPbuffer to MultiPassBitmap is safe, they are the same type internally
+		MultipassBitmap* im = (MultipassBitmap*)buffer; //Cast VPbuffer to MultiPassBitmap is safe, they are the same type internally
+		im->Clear(255, 0, 0); //Set all pixels to red, just to demonstrate that we can actually manipulate the buffer
 
-			im->Clear(255, 0, 0); //Set all pixels to red, just to demonstrate that we can actually manipulate the buffer
-
-			BaseDocument* doc = vps->doc; //Document to be rendered
-
-		//...Do rendering with 3delight here, following what we do in the RenderFrame command. 
+		BaseDocument* doc = vps->doc; //Document to be rendered
+		//...Do rendering with 3delight here, following what we do in the RenderFrame command. //Donee
 		//...We need to add a special display driver, that writes the rendered image data from 3delight to "RGBA_buffer"
 
-	//	vd->SkipRenderProcess(); //Skip normal c4d rendering process, since we do all rendering ourselves using 3delight
-		//return RENDERRESULT::USERBREAK;
 
-		
+
+
+		//vd->SkipRenderProcess(); 
+		//Skip normal c4d rendering process, since we do all rendering ourselves using 3delight
+		//return RENDERRESULT::USERBREAK;
 	}
 	return RENDERRESULT::OK;
 }
@@ -338,7 +400,6 @@ Bool Register3DelightPlugin(void)
 	RegisterIcon(DL_JPG_ON, GeGetPluginResourcePath() + "jpg-on.png");
 	RegisterIcon(DL_JPG_OFF, GeGetPluginResourcePath() + "jpg.png");
 
-	return RegisterVideoPostPlugin(ID_RENDERSETTINGS, "3Delight"_s, PLUGINFLAG_VIDEOPOST_ISRENDERER, RenderSettings::Alloc, "myres"_s, 0, 0); 
+	return RegisterVideoPostPlugin(ID_RENDERSETTINGS, "3Delight"_s, PLUGINFLAG_VIDEOPOST_ISRENDERER, RenderSettings::Alloc, "dlrendersettings"_s, 0, 0);
 	//PLUGINFLAG_VIDEOPOST_ISRENDERER
 }
-

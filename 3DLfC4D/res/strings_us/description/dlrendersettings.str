@@ -1,13 +1,14 @@
-STRINGTABLE myres
+STRINGTABLE dlrendersettings
 {
-	myres			"3 Delight Renderer";
+	dlrendersettings			"3Delight Renderer";
 
 	DL_TEXT_CHECKER  "chk";
 	DL_RENDER_LAYER			"Render Layer";
 	DL_MASTER_LAYER  "masterLayer";
 	DL_LAYER_1		"layer1";
 	DL_LAYER_2		"layer2";
-
+	EMPTY1 "";
+	EMPTY2 "";
 	DL_GROUP_COMMON			"Common";
 	DL_CUSTOM_AOV_LAYER "";
 	DL_GROUP_3DELIGHT			"3Delight";
@@ -129,7 +130,7 @@ STRINGTABLE myres
 	DL_DISABLE_FILE_OUTPUT 		"Disable File Output";
 
 	DL_GROUP_OVERRIDES  "Overrides";
-	DL_ENABLE_INTERACTIVE_PREVIEW	"Enable Interactive Previewwing with Speed Boost";    
+	DL_ENABLE_INTERACTIVE_PREVIEW	"Enable Interactive Previewing with Speed Boost";    
 	DL_DISABLE_MOTION_BLUR   "Disable Motion Blur";
 	DL_DISABLE_DEPTH_OF_FIELD   "Disable Depth of Field";
 	DL_DISABLE_DISPLACEMENT  "Disable Displacement";

@@ -1,6 +1,6 @@
 #include "RenderOptionsHook.h"
 #include "IDs.h"
-#include "myres.h"
+#include "dlrendersettings.h"
 #include "nsi.hpp"
 #include <algorithm>
 #include <iostream>
@@ -42,7 +42,7 @@ vector<BaseObject*> getSelectedLights(BaseDocument* doc,vector<Int32> objectID,I
 	}
 	while (object)
 	{
-		if (process && object->GetType() == Olight)
+		if (process &&( object->GetType() == Olight || object->GetType() == ID_LIGHTCARD || object->GetType() == ID_INCANDESCENCELIGHT))
 		{
 			for (int i = 0; i < objectID.size(); i++)
 			{
@@ -437,14 +437,13 @@ void RenderOptionsHook::CreateNSINodes(BaseDocument* doc, DL_SceneParser* parser
 				NSI::IntegerArg("sortkey", sortkey++),
 				NSI::StringArg("filter", filter_output.c_str())
 				));
-				
 			ctx.Connect(m_layer_handle, "", "3dlfc4d::scene_camera_screen", "outputlayers");
 			ctx.Connect(m_display_driver_handle, "", m_layer_handle, "outputdrivers");
 			
 			//Outputing Multilights in the Rendering.
 			for (int j = 0; j < selected_lights.size(); j++)
 			{
-				string multi_light_handle = string("3dlfc4d::multi_light" + std::to_string(j));
+				string multi_light_handle = string("3dlfc4d::multi_light" + std::to_string(sortkey));
 				ctx.Create(multi_light_handle, "outputlayer");
 				ctx.SetAttribute(multi_light_handle, (
 					NSI::StringArg("variablename", m_aov.c_str()),

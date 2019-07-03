@@ -1,5 +1,5 @@
 #include "CameraHook.h"
-#include "myres.h"
+#include "dlrendersettings.h"
 //#include "ri.h"
 #pragma warning(disable : 4265)
 #include "nsi.hpp"
@@ -16,6 +16,8 @@ void CameraHook::CreateNSINodes(BaseDocument* doc, DL_SceneParser* parser){
 	NSI::Context ctx(parser->GetContext());
 
 	ctx.Create(camera_name, "perspectivecamera");
+	transform_name = string("3dlfc4d::scene_camera_transform"); 
+	//string(parser->GetUniqueName("transform"));		
 	//transform_name = string("3dlfc4d::scene_camera_transform"); //string(parser->GetUniqueName("transform"));
 	ctx.Create(transform_name, "transform");
 	ctx.Create("3dlfc4d::scene_camera_screen", "screen");
@@ -35,7 +37,20 @@ void CameraHook::CreateNSINodes(BaseDocument* doc, DL_SceneParser* parser){
 	vector<int> resolution(2);
 	resolution[0]=render_data->GetInt32(RDATA_XRES);
 	resolution[1]=render_data->GetInt32(RDATA_YRES);
+	if (DL_Settings->GetBool(DL_ENABLE_INTERACTIVE_PREVIEW) == true)
+	{
+		float resolution_factor = 1;
+		if (DL_Settings->GetInt32(DL_RESOLUTION)==DL_HALF)
+			resolution_factor = 0.5;
 
+		else if (DL_Settings->GetInt32(DL_RESOLUTION)==DL_QUARTER)
+			resolution_factor = 0.25;
+
+		else if (DL_Settings->GetInt32(DL_RESOLUTION)==DL_EIGHTH)
+			resolution_factor = 0.125;
+		resolution[0] = resolution[0] * resolution_factor;
+		resolution[1] = resolution[1] * resolution_factor;
+	}
 	NSI::Argument resolution_arg("resolution");
 	resolution_arg.SetArrayType(NSITypeInteger,2);
 	resolution_arg.SetValuePointer((void*)&resolution[0]);
@@ -51,8 +66,6 @@ void CameraHook::CreateNSINodes(BaseDocument* doc, DL_SceneParser* parser){
 	screenwindow_arg.SetCount(2);
 	screenwindow_arg.SetValuePointer((void*)&screen_window[0]);
 
-	
-
 	double shutter_opening[2];
 	shutter_opening[0]=0.5*(1.0-DL_Settings->GetFloat(DL_SHUTTER_OPENING_EFFICIENCY,1));
 	shutter_opening[1]=1-0.5*(1.0-DL_Settings->GetFloat(DL_SHUTTER_CLOSING_EFFICIENCY,1));
@@ -63,12 +76,12 @@ void CameraHook::CreateNSINodes(BaseDocument* doc, DL_SceneParser* parser){
 
 	//Get scene camera
 	BaseDraw* bd=doc->GetActiveBaseDraw();
-	CameraObject* camera=(CameraObject*)bd->GetSceneCamera(doc);
+	CameraObject* camera = (CameraObject*)bd->GetSceneCamera(doc);
 
 	int pixel_samples=DL_Settings->GetInt32(DL_PIXEL_SAMPLES,16);
 	
 
-	ctx.SetAttribute(camera_name,(
+	ctx.SetAttribute(camera_name, (
 			shutteropening_arg,
 			NSI::IntegerArg("depthoffield.enable",enable_dof),
 			NSI::DoubleArg("depthoffield.fstop",fstop)
@@ -82,10 +95,10 @@ void CameraHook::CreateNSINodes(BaseDocument* doc, DL_SceneParser* parser){
 
 }
 
-void CameraHook::SampleAttributes(DL_SampleInfo* info,  BaseDocument* doc, DL_SceneParser* parser){
+void CameraHook::SampleAttributes(DL_SampleInfo* info, BaseDocument* doc, DL_SceneParser* parser) {
 	NSI::Context ctx(parser->GetContext());
 
-	if (info->sample==0) { //Set camera shutter range at first motion sample
+	if (info->sample == 0) { //Set camera shutter range at first motion sample
 		double shutter_range[2];
 		shutter_range[0] = info->shutter_open_time;
 		shutter_range[1] = info->shutter_close_time;
@@ -98,47 +111,45 @@ void CameraHook::SampleAttributes(DL_SampleInfo* info,  BaseDocument* doc, DL_Sc
 			shutter_arg
 			));
 	}
-	
+
 	//Get scene camera
 	BaseDraw* bd = doc->GetActiveBaseDraw();
 	CameraObject* camera = (CameraObject*)bd->GetSceneCamera(doc);
 
-	Float aperture=camera->GetAperture();
-	Float focus=camera->GetFocus();
-	float horizontal_fov=RadToDeg(2*ATan(0.5*aperture/focus));
+	Float aperture = camera->GetAperture();
+	Float focus = camera->GetFocus();
+	float horizontal_fov = RadToDeg(2 * ATan(0.5*aperture / focus));
 
 	float focal_length_cm = focus / 10;
-	
-
 
 	BaseContainer* camdata = camera->GetDataInstance();
 	double focus_distance = camdata->GetFloat(CAMERAOBJECT_TARGETDISTANCE);
-	
-	//Sample camera transform
-	Matrix m=camera->GetMg();
-	
-	Matrix flip; 
-	flip.sqmat.v1=Vector(1,0,0);
-	flip.sqmat.v2=Vector(0,1,0);
-	flip.sqmat.v3=Vector(0,0,-1);
-	m=(m*flip);
 
-	vector<double> v=MatrixToNSIMatrix(m);
-	
+	//Sample camera transform
+	Matrix m = camera->GetMg();
+
+	Matrix flip;
+	flip.sqmat.v1 = Vector(1, 0, 0);
+	flip.sqmat.v2 = Vector(0, 1, 0);
+	flip.sqmat.v3 = Vector(0, 0, -1);
+	m = (m*flip);
+
+	vector<double> v = MatrixToNSIMatrix(m);
+
 	NSI::Argument xform("transformationmatrix");
 	xform.SetType(NSITypeDoubleMatrix);
 	xform.SetValuePointer((void*)&v[0]);
 
 	ctx.SetAttributeAtTime(transform_name, info->sample_time, (
-			xform
+		xform
 		));
 
-	
+
 	//Sample fov
-	ctx.SetAttributeAtTime("3dlfc4d::scene_camera",info->sample_time,(
-			NSI::FloatArg("fov",horizontal_fov),
-			NSI::FloatArg("focallength", focal_length_cm),
-			NSI::DoubleArg("depthoffield.focaldistance", focus_distance)
+	ctx.SetAttributeAtTime("3dlfc4d::scene_camera", info->sample_time, (
+		NSI::FloatArg("fov", horizontal_fov),
+		NSI::FloatArg("focallength", focal_length_cm),
+		NSI::DoubleArg("depthoffield.focaldistance", focus_distance)
 		));
 
 }
