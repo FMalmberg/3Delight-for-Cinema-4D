@@ -21,6 +21,7 @@ class DL_Principled_command : public CommandData
 {
 
 public:
+	int shelf_used = 0;
 	virtual Bool Execute(BaseDocument* doc);
 };
 
@@ -28,32 +29,48 @@ public:
 
 Bool DL_Principled_command::Execute(BaseDocument* doc)
 {
-	Material* material = (Material*)BaseMaterial::Alloc(DL_PRINCIPLED);
-	if (!material)
-		return false;
-	doc->InsertMaterial(material);
-	AutoAlloc<AtomArray>selected_objects;
-	doc->GetActiveObjects(*selected_objects, GETACTIVEOBJECTFLAGS::NONE);
-	if (selected_objects)
+	if (shelf_used == 1)
 	{
-		Int32 object_count = selected_objects->GetCount();
-		for (int i = 0; i < object_count; i++)
+		Material* material = (Material*)BaseMaterial::Alloc(DL_PRINCIPLED);
+		if (!material)
+			return false;
+		doc->InsertMaterial(material);
+
+		AutoAlloc<AtomArray>selected_objects;
+		doc->GetActiveObjects(*selected_objects, GETACTIVEOBJECTFLAGS::NONE);
+		if (selected_objects)
 		{
-			BaseObject* object = (BaseObject*)selected_objects->GetIndex(i);
-			if (object)
+			Int32 object_count = selected_objects->GetCount();
+			for (int i = 0; i < object_count; i++)
 			{
-				TextureTag* const textureTag = static_cast<TextureTag*>(object->MakeTag(Ttexture));
-				textureTag->SetMaterial(material);
+				BaseObject* object = (BaseObject*)selected_objects->GetIndex(i);
+				if (object)
+				{
+					TextureTag* const textureTag = static_cast<TextureTag*>(object->MakeTag(Ttexture));
+					textureTag->SetMaterial(material);
+				}
 			}
 		}
+	}
 
+	else if (shelf_used == 0)
+	{
+		Material* material = (Material*)BaseMaterial::Alloc(DL_PRINCIPLED);
+		if (!material)
+			return false;
+		doc->InsertMaterial(material);
 	}
 	EventAdd();
+
 	return true;
 }
 
 
 Bool Register_DlPrincipled_Object(void)
 {
-	return RegisterCommandPlugin(DL_PRINCIPLED_COMMAND, "3Delight Principled"_s, PLUGINFLAG_HIDEPLUGINMENU, AutoBitmap("shelf_dlPrincipled_200.png"_s), String("Assign new Principled"_s),NewObjClear(DL_Principled_command));
+	DL_Principled_command* new_principled = NewObjClear(DL_Principled_command);
+	RegisterCommandPlugin(DL_PRINCIPLED_COMMAND, "3Delight Principled"_s, PLUGINFLAG_HIDEPLUGINMENU, AutoBitmap("shelf_dlPrincipled_200.png"_s), String("Assign new Principled"_s),NewObjClear(DL_Principled_command));
+	if (RegisterCommandPlugin(DL_PRINCIPLED_SHELF_COMMAND, "3Delight Principled"_s, PLUGINFLAG_HIDEPLUGINMENU, AutoBitmap("shelf_dlPrincipled_200.png"_s), String("Assign new Principled Material"_s), new_principled))
+		new_principled->shelf_used = 1;
+	return true;
 }
