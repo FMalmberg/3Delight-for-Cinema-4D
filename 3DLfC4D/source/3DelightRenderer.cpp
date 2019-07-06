@@ -79,11 +79,8 @@ Bool AddEmpty(Description *dc, Int32 id, const DescID &groupid)
 	{
 		BaseContainer bc = GetCustomDataTypeDefault(DTYPE_STATICTEXT);
 
-		//  Set CycleButton properties
 		bc.SetBool(DESC_ANIMATE, false);
 		bc.SetInt32(DESC_SCALEH, TRUE);
-
-		//  Create CycleButton
 		return dc->SetParameter(DescLevel(id, DTYPE_STATICTEXT, 0), bc, groupid);
 	}
 
@@ -119,6 +116,23 @@ bool Render3Dl(BaseDocument* doc, long frame, RENDER_MODE mode, bool progressive
 		streamParam.type = NSITypeString;
 
 		context_handle = NSIBegin(1, &streamParam);
+	}
+
+	else if (action == "Cloud")
+	{
+		int one = 1;
+		NSIParam_t cloud[3];
+		cloud[0].name = "cloud"; cloud[0].data = &one;
+		cloud[0].type = NSITypeInteger; cloud[0].count = 1;
+		cloud[0].flags = 0; cloud[0].arraylength = 0;
+
+		NSIErrorHandler_t eh = NSIErrorHandlerC4D;
+		cloud[1].name = "errorhandler";
+		cloud[1].data = &eh;
+		cloud[1].type = NSITypePointer; cloud[1].count = 1;
+		cloud[1].flags = 0; cloud[1].arraylength = 0;
+
+		context_handle = NSIBegin(1, cloud);
 	}
 
 	NSI::Context context(context_handle);
@@ -176,6 +190,7 @@ Bool RenderSettings::GetDDescription(
 	BaseContainer names;
 	names.SetString(0, "Render"_s);
 	names.SetString(1, "Export to NSI File..."_s);
+	names.SetString(2, "Render in Cloud"_s);
 
 	AddCycleButton(i_description, RENDER_CYCLEBUTTON, DescID(RENDER), "", names);
 	AddEmpty(i_description, RENDER_CYCLEBUTTON+1, DescID(RENDER));
@@ -292,6 +307,14 @@ Bool RenderSettings::Message(GeListNode* i_node, Int32 i_type, void* i_data)
 				}
 				Render3Dl(doc, frame, PREVIEW_RENDER, true, dldata);
 			}
+
+			else if (action == 2)
+			{
+				dldata->SetString(DL_ISCLICKED, "Cloud"_s);
+				Render3Dl(doc, frame, PREVIEW_RENDER, true, dldata);
+			}
+
+			
 		}
 		
 	}
